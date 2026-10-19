@@ -82,3 +82,6 @@ native/rlvr_language/prepare_resources.py
 native/rlvr_language/inspect_case.py
 native/rlvr_language/run_smoke.py
 native/rlvr_language/prepare_server.sh
+
+# direct runs (scripts/run_direct.py)
+runs/

@@ -142,8 +142,12 @@ def create_app(storage_root=None, worker_python=None, web_dist=None, components=
     def compare(options: dict = Body(...)):
         return compare_runs(services["store"], options["run_ids"], options.get("evaluations"))
 
+    from wms.app.embodied_visual import create_embodied_visual_router
+    app.include_router(create_embodied_visual_router(services))
+    from wms.app.redteam_api import create_redteam_router
+    app.include_router(create_redteam_router(services, registry))
+
     dist = Path(web_dist) if web_dist else PROJECT_ROOT / "web/dist"
     if (dist / "index.html").exists():
         app.mount("/", StaticFiles(directory=dist, html=True), name="web")
     return app
-

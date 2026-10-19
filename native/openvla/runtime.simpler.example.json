@@ -1,0 +1,16 @@
+{
+  "_comment": "OpenVLA as a step-by-step policy in SimplerEnv-Bridge. Uses the MemoryVLA Python (torch 2.2.0, transformers 4.40.1, timm 0.9.10 match OpenVLA's requirements) plus SimplerEnv.",
+  "python": "/path/to/world-model/envs/memoryvla-simpler-20261015/bin/python",
+  "simpler_dir": "/path/to/world-model/repos/SimplerEnv-eddb5690749a",
+  "checkpoint_dir": "/path/to/world-model/weights/openvla-7b",
+  "gpu_device": "0",
+  "env": {
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "TOKENIZERS_PARALLELISM": "false",
+    "VK_ICD_FILENAMES": "/etc/vulkan/icd.d/nvidia_icd.json"
+  },
+  "timeout_s": 21600
+}

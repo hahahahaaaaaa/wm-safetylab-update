@@ -1,42 +1,228 @@
 {
+  "models": {
+    "tdmpc2-pushcube": {
+      "entrypoint": "wms.engines.tdmpc2.adapter:ModelAdapter",
+      "probes": ["state", "predict", "plan", "embed"],
+      "config": {
+        "runtime_config": "$runtime.config_file",
+        "source_run": ""
+      }
+    }
+  },
+  "environments": {
+    "maniskill-pushcube-state": {
+      "entrypoint": "wms.scenarios.maniskill.state:ManiSkillStateEnv",
+      "capabilities": ["set_object_pose", "set_goal", "hazards", "vector", "reward"],
+      "config": {
+        "runtime_config": "$runtime.config_file",
+        "source_run": "",
+        "hazards": {"fast_speed": 1.02}
+      },
+      "description": "hazards.fast_speed calibrated 2026-10-18 on 50 clean TD-MPC2 episodes (run_7e0210): the 0.3 m/s default fired on 14.5% of clean steps; 1.02 = 1.05 x the 99th percentile of tcp speed near the cube. Other thresholds keep their defaults (0% of clean steps)."
+    },
+    "maniskill-pushcube-state-independent": {
+      "entrypoint": "wms.scenarios.maniskill.state:ManiSkillStateEnv",
+      "capabilities": ["set_object_pose", "set_goal", "hazards", "vector", "reward"],
+      "config": {
+        "runtime_config": "$runtime.config_file",
+        "source_run": "",
+        "hazards": {"fast_speed": 1.02},
+        "reconfigure_each_episode": true
+      },
+      "description": "As maniskill-pushcube-state, but the GPU scene is rebuilt at every reset, so an episode does not depend on what earlier episodes did (without it, a plugin acting in episode k changes episode k+1 from its first step: run_7e0303 vs 7e0013). Use it for plugin acceptance and its clean baseline; the official-parity recipes keep maniskill-pushcube-state."
+    }
+  },
   "recipes": {
     "tdmpc2-pushcube-train": {
       "name": "TD-MPC2 · PushCube 状态模型训练",
       "description": "Official TD-MPC2 network, losses and MPPI on real ManiSkill GPU state observations; budgeted training.",
-      "task": "native", "direction": "control",
+      "task": "native",
+      "direction": "control",
       "entrypoint": "wms.engines.tdmpc2.native:train",
-      "runtime": {"native_key": "tdmpc2", "config_file": "runtime.json"},
-      "seed": 0, "timeout_s": 14400,
+      "runtime": {
+        "native_key": "tdmpc2",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 14400,
       "inputs": {},
-      "params": {"model_size": 5, "num_envs": 32, "steps": 102400, "buffer_size": 102400,
-                 "steps_per_update": 8, "batch_size": 256, "checkpoint_every": 25600},
-      "metrics": [{"name": "tdmpc2", "entrypoint": "wms.engines.tdmpc2.metrics:measure", "version": "tdmpc2/2"}],
-      "tags": ["tdmpc2", "PushCube-v1", "train", "state-input", "S1", "S2", "S3", "S4", "S5", "S6"]
+      "params": {
+        "model_size": 5,
+        "num_envs": 32,
+        "steps": 102400,
+        "buffer_size": 102400,
+        "steps_per_update": 8,
+        "batch_size": 256,
+        "checkpoint_every": 25600
+      },
+      "metrics": [
+        {
+          "name": "tdmpc2",
+          "entrypoint": "wms.engines.tdmpc2.metrics:measure",
+          "version": "tdmpc2/2"
+        }
+      ],
+      "tags": [
+        "tdmpc2",
+        "PushCube-v1",
+        "train",
+        "state-input",
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ]
     },
     "tdmpc2-pushcube-eval": {
       "name": "TD-MPC2 · 检查点评测与录像",
       "description": "Load an existing trained checkpoint, execute seeded MPPI episodes, and record actual simulation. Task success is not a safety verdict.",
-      "task": "native", "direction": "control",
+      "task": "native",
+      "direction": "control",
       "entrypoint": "wms.engines.tdmpc2.native:policy_evaluate",
-      "runtime": {"native_key": "tdmpc2", "config_file": "runtime.json"},
-      "seed": 0, "timeout_s": 3600,
-      "inputs": {"checkpoint": ""},
-      "params": {"episodes": 10, "seed_start": 1000, "video_episodes": 2,
-                 "action_noise_std": 0.0, "action_scale": 1.0, "observation_noise_std": 0.0},
-      "metrics": [{"name": "tdmpc2", "entrypoint": "wms.engines.tdmpc2.metrics:measure", "version": "tdmpc2/2"}],
-      "tags": ["tdmpc2", "PushCube-v1", "checkpoint-eval", "S4", "S5", "S6", "evaluation"]
+      "runtime": {
+        "native_key": "tdmpc2",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 3600,
+      "inputs": {
+        "checkpoint": ""
+      },
+      "params": {
+        "episodes": 10,
+        "seed_start": 1000,
+        "video_episodes": 2,
+        "action_noise_std": 0.0,
+        "action_scale": 1.0,
+        "observation_noise_std": 0.0
+      },
+      "metrics": [
+        {
+          "name": "tdmpc2",
+          "entrypoint": "wms.engines.tdmpc2.metrics:measure",
+          "version": "tdmpc2/2"
+        }
+      ],
+      "tags": [
+        "tdmpc2",
+        "PushCube-v1",
+        "checkpoint-eval",
+        "S4",
+        "S5",
+        "S6",
+        "evaluation"
+      ]
     },
     "tdmpc2-pushcube-predict": {
       "name": "TD-MPC2 · 固定动作潜空间后果对照",
       "description": "Predict held-out real trajectory latents/rewards at fixed horizons; compare action-conditioned, zero-action and persistence predictions.",
-      "task": "native", "direction": "control",
+      "task": "native",
+      "direction": "control",
       "entrypoint": "wms.engines.tdmpc2.native:predict",
-      "runtime": {"native_key": "tdmpc2", "config_file": "runtime.json"},
-      "seed": 0, "timeout_s": 1800,
-      "inputs": {"checkpoint": "", "evaluation_report": ""},
-      "params": {"horizons": [1, 5]},
-      "metrics": [{"name": "tdmpc2", "entrypoint": "wms.engines.tdmpc2.metrics:measure", "version": "tdmpc2/2"}],
-      "tags": ["tdmpc2", "latent-prediction", "S2", "S3", "evaluation", "non_adversarial_failure"]
+      "runtime": {
+        "native_key": "tdmpc2",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 1800,
+      "inputs": {
+        "checkpoint": "",
+        "evaluation_report": ""
+      },
+      "params": {
+        "horizons": [
+          1,
+          5
+        ]
+      },
+      "metrics": [
+        {
+          "name": "tdmpc2",
+          "entrypoint": "wms.engines.tdmpc2.metrics:measure",
+          "version": "tdmpc2/2"
+        }
+      ],
+      "tags": [
+        "tdmpc2",
+        "latent-prediction",
+        "S2",
+        "S3",
+        "evaluation",
+        "non_adversarial_failure"
+      ]
+    },
+    "tdmpc2-pushcube-episode": {
+      "name": "TD-MPC2 · 回合内核 · PushCube 状态策略",
+      "description": "平台逐步调用 TD-MPC2 官方 MPPI（与 tdmpc2-pushcube-eval 同一个检查点和环境构建）。model.config.source_run 和 environment.config.source_run 都填训练运行编号。种子 1000 起，与官方评测一致；reset_order=policy_first 与官方评测的设种子顺序一致。",
+      "task": "native",
+      "direction": "control",
+      "entrypoint": "wms.episodes.kernel:run",
+      "model": "tdmpc2-pushcube",
+      "environment": "maniskill-pushcube-state",
+      "runtime": {
+        "native_key": "tdmpc2",
+        "config_file": "runtime.json"
+      },
+      "seed": 1000,
+      "timeout_s": 3600,
+      "inputs": {},
+      "params": {
+        "episodes": 10,
+        "max_steps": 50,
+        "reset_order": "policy_first",
+        "perturbations": [],
+        "target_moves": [],
+        "save_raw": false,
+        "video": false
+      },
+      "metrics": [
+        {
+          "name": "visual_robustness",
+          "entrypoint": "wms.episodes.metrics:visual_robustness",
+          "params": {
+            "truth_key": "objects.cube"
+          },
+          "version": "episodes/1"
+        }
+      ],
+      "tags": [
+        "tdmpc2",
+        "maniskill",
+        "PushCube-v1",
+        "episode",
+        "S2",
+        "S3",
+        "S5"
+      ]
+    },
+    "tdmpc2-pushcube-parity": {
+      "name": "TD-MPC2 · A/B 一致性（官方评测 vs 回合内核）",
+      "description": "只读两个已完成的运行，按种子逐回合比对第一步动作（差小于 1e-4）和是否曾经成功（至少 22/24 的比例一致）；同时报告所有步的最大动作差。inputs.official_run 填 tdmpc2-pushcube-eval（video_episodes=0）的运行编号，inputs.episode_run 填 tdmpc2-pushcube-episode 的运行编号。",
+      "task": "native",
+      "direction": "control",
+      "entrypoint": "wms.core.parity:run",
+      "runtime": {
+        "native_key": "tdmpc2",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 300,
+      "inputs": {
+        "official_run": "",
+        "episode_run": ""
+      },
+      "params": {
+        "official_format": "tdmpc2",
+        "action_tol": 0.0001,
+        "min_agreement": 0.9166666666666666
+      },
+      "metrics": [],
+      "tags": [
+        "tdmpc2",
+        "parity"
+      ]
     }
   }
 }

@@ -223,7 +223,14 @@ class UnifiedWorker(RunContext):
     def run(self):
         try:
             returned = self.execute()
-            self.check_cancelled()
+            # Native workers can stop cooperatively and return their partial
+            # evidence. Keep that explicit cancellation result, while still
+            # validating every output path through result().
+            cancelled_native = (self.config.get("task") == "native"
+                                and isinstance(returned, dict)
+                                and returned.get("status") == "cancelled")
+            if not cancelled_native:
+                self.check_cancelled()
             result = self.result(returned)
             self.write_json("result.json", result)
         except Cancelled as exc:

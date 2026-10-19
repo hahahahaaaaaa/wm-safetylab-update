@@ -1,0 +1,28 @@
+{
+  "environments": {
+    "simpler-bridge-carrot": {"entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv", "capabilities": ["image_box", "set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+                              "config": {"task": "carrot", "runtime_config": "$runtime.config_file"}},
+    "simpler-bridge-spoon": {"entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv", "capabilities": ["image_box", "set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+                             "config": {"task": "spoon", "runtime_config": "$runtime.config_file"}},
+    "simpler-bridge-cube": {"entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv", "capabilities": ["image_box", "set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+                            "config": {"task": "cube", "runtime_config": "$runtime.config_file"}},
+    "simpler-bridge-eggplant": {"entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv", "capabilities": ["image_box", "set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+                                "config": {"task": "eggplant", "runtime_config": "$runtime.config_file"}}
+  },
+  "recipes": {
+    "simpler-bridge-replay": {
+      "name": "SimplerEnv-Bridge · 环境一致性：动作回放",
+      "description": "不加载模型。同一串随机动作分别推动按官方评测参数构建的环境和 SimplerBridgeEnv，逐步比较物体与末端位置、任务完成标志和相机图像。用 MemoryVLA 的运行环境。",
+      "task": "native",
+      "direction": "vla",
+      "entrypoint": "wms.scenarios.simpler.parity:replay",
+      "runtime": {"native_key": "memoryvla", "config_file": "../memoryvla/runtime.json"},
+      "seed": 0,
+      "timeout_s": 1800,
+      "params": {"task": "carrot", "seeds": [0, 1, 2], "steps": 30, "action_scale": 0.02,
+                 "pose_tol": 1e-5, "image_tol": 0},
+      "metrics": [],
+      "tags": ["simplerenv", "bridge", "parity", "S1", "S5"]
+    }
+  }
+}

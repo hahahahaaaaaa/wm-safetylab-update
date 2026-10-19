@@ -1,0 +1,45 @@
+{
+  "models": {
+    "toy-centroid": {"entrypoint": "wms.scenarios.toy.policy:CentroidPickPolicy", "probes": ["state"],
+                     "config": {"memory": false}},
+    "toy-centroid-memory": {"entrypoint": "wms.scenarios.toy.policy:CentroidPickPolicy", "probes": ["state"],
+                            "config": {"memory": true}},
+    "toy-planner": {"entrypoint": "wms.scenarios.toy.planner:ToyPlannerPolicy", "probes": ["state", "predict", "plan", "embed"],
+                    "config": {"samples": 32, "horizon": 4}},
+    "toy-planner-online": {"entrypoint": "wms.scenarios.toy.planner:ToyOnlinePlannerPolicy",
+                           "probes": ["state", "predict", "plan", "embed", "learn"],
+                           "config": {"samples": 32, "horizon": 4, "initial_gain": 0.5}}
+  },
+  "environments": {
+    "toy-pick": {"entrypoint": "wms.scenarios.toy.env:ToyPickEnv",
+                 "capabilities": ["image_box", "set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+                 "config": {"image_size": 64, "max_steps": 60}},
+    "toy-pick-vector": {"entrypoint": "wms.scenarios.toy.env:ToyPickEnv",
+                        "capabilities": ["set_object_pose", "set_goal", "hazards", "vector", "reward"],
+                        "config": {"image_size": 64, "max_steps": 60, "observation": "vector"}}
+  },
+  "recipes": {
+    "toy-episode-occlusion": {
+      "name": "CPU 示例 · 回合内核 · 玩具抓放 + 跟随遮挡",
+      "description": "几秒跑完的流程检查：脚本策略按颜色找方块，第 4–12 步跟随遮住方块，第 6 步把方块平移。换 model 为 toy-centroid-memory 对比有记忆的版本。玩具环境不是物理仿真，结果不是机械臂证据。",
+      "task": "native",
+      "direction": "control",
+      "entrypoint": "wms.episodes.kernel:run",
+      "model": "toy-centroid",
+      "environment": "toy-pick",
+      "runtime": {"native_key": "toy", "config_file": "runtime.json"},
+      "seed": 0,
+      "timeout_s": 300,
+      "params": {
+        "episodes": 3,
+        "perturbations": [{"type": "occlude", "start": 4, "end": 12, "box": "object:cube", "margin": 0.04}],
+        "target_moves": [{"step": 6, "object": "cube", "delta": [0.15, 0.0]}],
+        "save_raw": true,
+        "video": false
+      },
+      "metrics": [{"name": "visual_robustness", "entrypoint": "wms.episodes.metrics:visual_robustness",
+                   "params": {"estimate_key": "estimate_cube", "truth_key": "cube"}, "version": "episodes/1"}],
+      "tags": ["toy", "episode", "cpu", "S1"]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+.embodied-scene{--scene-bg:#eef3f4;--scene-ink:#294c58;--scene-muted:#789098;position:relative;min-width:0;overflow:hidden;border:1px solid #dce6e9;border-radius:10px;background:#fff;color:var(--scene-ink);box-shadow:0 3px 14px #16313b06}
+.embodied-scene__heading{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:11px 14px;background:#fbfdfd;border-bottom:1px solid #e2ebee;flex-wrap:wrap}
+.embodied-scene__title{min-width:0;flex:1 1 110px;display:flex;align-items:center;gap:8px}
+.embodied-scene__title strong{font-size:12px;font-weight:650;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.embodied-scene__marker{flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:#15878a;box-shadow:0 0 0 3px #15878a10}
+.embodied-scene__tag{flex:none;color:#4f848d;font:9px/1.2 "Cascadia Code",Consolas,monospace;letter-spacing:1px;border:1px solid #d3e4e6;border-radius:3px;padding:3px 4px}
+.embodied-scene__controls{display:flex;align-items:center;flex:none;gap:3px;border:1px solid #dce7ea;border-radius:6px;padding:2px;background:#fff}
+.embodied-scene__controls button{background:transparent;color:#6c848e;font-size:10px;line-height:1.4;padding:5px 8px;border-radius:4px;white-space:nowrap;min-height:25px}
+.embodied-scene__controls button[aria-pressed=true]{background:#e9f4f3;color:#176e75;font-weight:650}
+.embodied-scene__controls button:hover:not(:disabled){background:#eef5f6;color:#285c66}
+.embodied-scene__controls button:disabled{opacity:.4}
+.embodied-scene__viewport{position:relative;height:clamp(300px,29vw,480px);min-height:300px;background:var(--scene-bg);isolation:isolate}
+.embodied-scene__canvas{position:absolute;inset:0;overflow:hidden}
+.embodied-scene__canvas canvas{display:block;width:100%;height:100%;touch-action:none;outline-offset:-4px!important}
+.embodied-scene__message{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px;background:var(--scene-bg);text-align:center;color:#56727d}
+.embodied-scene__message-icon{display:grid;place-items:center;width:36px;height:36px;border:1px solid #c9dbdf;border-radius:10px;color:#6b979e;font-size:22px;font-weight:300;background:#f8fbfb}
+.embodied-scene__message strong{font-size:13px;line-height:1.6;font-weight:600}
+.embodied-scene__message p{font-size:11px;line-height:1.9;max-width:280px;color:#78919b;overflow-wrap:anywhere}
+.embodied-scene__message--error .embodied-scene__message-icon{border-color:#e4ccb2;color:#b48a58;background:#fffaf3;font-size:17px}
+.embodied-scene__message button{font-size:11px;background:#fff;border:1px solid #cadce0;border-radius:5px;padding:8px 12px;color:#397782}
+.embodied-scene__footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 13px;border-top:1px solid #e0e9ec;color:var(--scene-muted);font-size:9px;line-height:1.5;background:#fbfdfd}
+.embodied-scene__time{font-variant-numeric:tabular-nums;color:#517781;white-space:nowrap}
+@media(max-width:800px){.embodied-scene__viewport{height:340px}.embodied-scene__heading{padding:10px 12px}.embodied-scene__footer{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.embodied-scene *{scroll-behavior:auto}}

@@ -1,0 +1,23 @@
+{
+  "python": "/path/to/embodied-jev-environment/bin/python",
+  "env": {
+    "EMBODIED_JEV_PERSISTENCE": "memory",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "profiles": {
+    "chat": {
+      "model": "gpt-5.5",
+      "base_url": "https://api.zhizengzeng.com/v1/",
+      "api_key_env": "EMBODIED_API_KEY",
+      "json_mode": true
+    },
+    "jev": {
+      "model": "jev-latest",
+      "api_key_env": "TYPESAFE_API_KEY",
+      "url": "https://api.typesafe.ai/v1/systemone"
+    }
+  },
+  "source_dir": "/path/to/clean/embodied-jev",
+  "timeout_s": 420
+}

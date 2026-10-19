@@ -1,0 +1,310 @@
+{
+  "models": {
+    "memoryvla-bridge": {
+      "entrypoint": "wms.engines.memoryvla.adapter:MemoryVLAPolicy",
+      "probes": ["state"],
+      "config": {
+        "runtime_config": "$runtime.config_file",
+        "memory": true
+      }
+    },
+    "memoryvla-bridge-nomem": {
+      "entrypoint": "wms.engines.memoryvla.adapter:MemoryVLAPolicy",
+      "probes": ["state"],
+      "config": {
+        "runtime_config": "$runtime.config_file",
+        "memory": false
+      }
+    }
+  },
+  "recipes": {
+    "memoryvla-simpler-bridge-eval": {
+      "name": "MemoryVLA · SimplerEnv-Bridge 官方检查点闭环评测",
+      "description": "MemoryVLA 原版（openvla-codebase）memvla-bridge 检查点，在 SimplerEnv-Bridge 四个 WidowX 抓放任务上闭环评测，参数与官方 eval_bridge.sh 相同（每任务 24 回合）。默认 bf16；与官方脚本的差异写在 evaluation.json。",
+      "task": "native",
+      "direction": "vla",
+      "entrypoint": "wms.engines.memoryvla.native:simpler_evaluate",
+      "runtime": {
+        "native_key": "memoryvla",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 21600,
+      "inputs": {},
+      "params": {
+        "episodes": [
+          0,
+          24
+        ],
+        "control_freq": 5,
+        "sim_freq": 500,
+        "max_episode_steps": 120,
+        "use_bf16": true,
+        "cfg_scale": 1.5,
+        "tasks": [
+          {
+            "name": "cube",
+            "env_name": "StackGreenCubeOnYellowCubeBakedTexInScene-v0",
+            "scene_name": "bridge_table_1_v1",
+            "robot": "widowx",
+            "rgb_overlay": "bridge_real_eval_1.png",
+            "robot_init_x": 0.147,
+            "robot_init_y": 0.028
+          },
+          {
+            "name": "carrot",
+            "env_name": "PutCarrotOnPlateInScene-v0",
+            "scene_name": "bridge_table_1_v1",
+            "robot": "widowx",
+            "rgb_overlay": "bridge_real_eval_1.png",
+            "robot_init_x": 0.147,
+            "robot_init_y": 0.028
+          },
+          {
+            "name": "spoon",
+            "env_name": "PutSpoonOnTableClothInScene-v0",
+            "scene_name": "bridge_table_1_v1",
+            "robot": "widowx",
+            "rgb_overlay": "bridge_real_eval_1.png",
+            "robot_init_x": 0.147,
+            "robot_init_y": 0.028
+          },
+          {
+            "name": "eggplant",
+            "env_name": "PutEggplantInBasketScene-v0",
+            "scene_name": "bridge_table_1_v2",
+            "robot": "widowx_sink_camera_setup",
+            "rgb_overlay": "bridge_sink.png",
+            "robot_init_x": 0.127,
+            "robot_init_y": 0.06
+          }
+        ],
+        "reference": {
+          "spoon": 75.0,
+          "carrot": 75.0,
+          "cube": 37.5,
+          "eggplant": 100.0,
+          "average": 71.9
+        }
+      },
+      "metrics": [
+        {
+          "name": "memoryvla_simpler",
+          "entrypoint": "wms.engines.memoryvla.metrics:measure",
+          "params": {
+            "reference": {
+              "spoon": 75.0,
+              "carrot": 75.0,
+              "cube": 37.5,
+              "eggplant": 100.0,
+              "average": 71.9
+            }
+          },
+          "version": "memoryvla-simpler/1"
+        }
+      ],
+      "tags": [
+        "memoryvla",
+        "simplerenv",
+        "bridge",
+        "widowx",
+        "rgb-input",
+        "closed-loop",
+        "S1",
+        "S2",
+        "S5",
+        "S6"
+      ]
+    },
+    "memoryvla-bridge-official-carrot": {
+      "name": "MemoryVLA · 官方评测（仅胡萝卜，记录每步动作）",
+      "description": "与 memoryvla-simpler-bridge-eval 相同的官方流程，只跑胡萝卜放盘的 24 个布局，并把模型每步输出写进 actions.jsonl，供 memoryvla-bridge-parity 与回合内核的结果逐回合比对。",
+      "task": "native",
+      "direction": "vla",
+      "entrypoint": "wms.engines.memoryvla.native:simpler_evaluate",
+      "runtime": {
+        "native_key": "memoryvla",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 7200,
+      "inputs": {},
+      "params": {
+        "episodes": [
+          0,
+          24
+        ],
+        "control_freq": 5,
+        "sim_freq": 500,
+        "max_episode_steps": 120,
+        "use_bf16": true,
+        "cfg_scale": 1.5,
+        "tasks": [
+          {
+            "name": "carrot",
+            "env_name": "PutCarrotOnPlateInScene-v0",
+            "scene_name": "bridge_table_1_v1",
+            "robot": "widowx",
+            "rgb_overlay": "bridge_real_eval_1.png",
+            "robot_init_x": 0.147,
+            "robot_init_y": 0.028
+          }
+        ],
+        "log_actions": true,
+        "reference": {
+          "carrot": 75.0
+        }
+      },
+      "metrics": [
+        {
+          "name": "memoryvla_simpler",
+          "entrypoint": "wms.engines.memoryvla.metrics:measure",
+          "params": {
+            "reference": {
+              "carrot": 75.0
+            }
+          },
+          "version": "memoryvla-simpler/1"
+        }
+      ],
+      "tags": [
+        "memoryvla",
+        "simplerenv",
+        "bridge",
+        "official",
+        "parity"
+      ]
+    },
+    "memoryvla-bridge-episode": {
+      "name": "MemoryVLA · 回合内核 · 胡萝卜放盘",
+      "description": "平台逐步调用 MemoryVLA（与官方评测同一份加载代码）和 SimplerBridgeEnv。seed 0..23 即官方 24 个布局；params.perturbations / params.target_moves 加图像扰动和目标移动；model 换成 memoryvla-bridge-nomem 得到无记忆对照，environment 换成 simpler-bridge-spoon 等换任务。",
+      "task": "native",
+      "direction": "vla",
+      "entrypoint": "wms.episodes.kernel:run",
+      "model": "memoryvla-bridge",
+      "environment": "simpler-bridge-carrot",
+      "runtime": {
+        "native_key": "memoryvla",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 10800,
+      "inputs": {},
+      "params": {
+        "episodes": 24,
+        "max_steps": 120,
+        "perturbations": [],
+        "target_moves": [],
+        "save_raw": false,
+        "video": true,
+        "fps": 5
+      },
+      "metrics": [
+        {
+          "name": "visual_robustness",
+          "entrypoint": "wms.episodes.metrics:visual_robustness",
+          "params": {
+            "truth_key": "objects.source"
+          },
+          "version": "episodes/1"
+        }
+      ],
+      "tags": [
+        "memoryvla",
+        "simplerenv",
+        "bridge",
+        "episode",
+        "S1",
+        "S2",
+        "S5"
+      ]
+    },
+    "memoryvla-bridge-episode-occlusion": {
+      "name": "MemoryVLA · 回合内核 · 跟随遮挡 + 目标移动（示例）",
+      "description": "第 3–25 步用黑框跟随遮住胡萝卜，第 8 步把胡萝卜沿 y 移 5 cm；3 个布局。与子平台 sublab.memoryvla-carrot 的同名设置一致，用来核对主平台回合内核。",
+      "task": "native",
+      "direction": "vla",
+      "entrypoint": "wms.episodes.kernel:run",
+      "model": "memoryvla-bridge",
+      "environment": "simpler-bridge-carrot",
+      "runtime": {
+        "native_key": "memoryvla",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 3600,
+      "inputs": {},
+      "params": {
+        "episodes": 3,
+        "max_steps": 120,
+        "perturbations": [
+          {
+            "type": "occlude",
+            "start": 3,
+            "end": 25,
+            "box": "object:source",
+            "margin": 0.03,
+            "value": 0
+          }
+        ],
+        "target_moves": [
+          {
+            "step": 8,
+            "object": "source",
+            "delta": [
+              0.0,
+              0.05,
+              0.0
+            ]
+          }
+        ],
+        "save_raw": false,
+        "video": true,
+        "fps": 5
+      },
+      "metrics": [
+        {
+          "name": "visual_robustness",
+          "entrypoint": "wms.episodes.metrics:visual_robustness",
+          "params": {
+            "truth_key": "objects.source"
+          },
+          "version": "episodes/1"
+        }
+      ],
+      "tags": [
+        "memoryvla",
+        "simplerenv",
+        "bridge",
+        "episode",
+        "occlusion",
+        "S1",
+        "S2"
+      ]
+    },
+    "memoryvla-bridge-parity": {
+      "name": "MemoryVLA · A/B 一致性（官方评测 vs 回合内核）",
+      "description": "只读两个已完成的运行，按布局逐回合比对：第一步动作差小于 1e-4，且至少 22/24 回合结果相同。inputs.official_run 填 memoryvla-bridge-official-carrot 的运行编号，inputs.episode_run 填 memoryvla-bridge-episode 的运行编号。",
+      "task": "native",
+      "direction": "vla",
+      "entrypoint": "wms.core.parity:run",
+      "seed": 0,
+      "timeout_s": 300,
+      "inputs": {
+        "official_run": "",
+        "episode_run": ""
+      },
+      "params": {
+        "task": "carrot",
+        "action_tol": 0.0001,
+        "min_agreement": 0.9166666666666666
+      },
+      "metrics": [],
+      "tags": [
+        "memoryvla",
+        "parity",
+        "cpu"
+      ]
+    }
+  }
+}

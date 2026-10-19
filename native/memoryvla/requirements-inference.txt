@@ -1,0 +1,48 @@
+# MemoryVLA (openvla-codebase, d732ea9) inference + SimplerEnv (eddb569) / ManiSkill2_real2sim (ef7a4d4).
+# Versions follow MemoryVLA's pyproject.toml. Left out: training-only flash_attn and the LIBERO
+# evaluation stack (robosuite, robomimic, bddl, gym). torch 2.2.0 from PyPI is the CUDA 12.1 build.
+# dlimp (git dependency, imported by MemoryVLA's data modules) is installed from a pinned archive.
+torch==2.2.0
+torchvision==0.17.0
+torchaudio==2.2.0
+accelerate>=0.25.0
+draccus>=0.8.0
+einops
+huggingface-hub==0.29.3
+json-numpy
+jsonlines
+matplotlib
+peft==0.11.1
+# On Python 3.10, tensorflow-metadata (via tensorflow_datasets, imported by MemoryVLA's data modules)
+# needs protobuf<4.21; newer tensorflow-metadata builds need protobuf>=5.26 and break TensorFlow 2.15.
+protobuf>=3.20.3,<4.21
+tensorflow-metadata==1.14.0
+rich
+sentencepiece==0.1.99
+timm==0.9.10
+tokenizers==0.19.1
+transformers==4.40.1
+wandb
+tensorflow==2.15.0
+tensorflow_datasets==4.9.3
+tensorflow_graphics==2021.12.3
+numpy==1.26.4
+opencv-python==4.11.0.86
+imageio==2.37.0
+imageio[ffmpeg]
+mediapy==1.2.0
+pyyaml
+setuptools<70                 # pkg_resources; uv-created environments have no setuptools
+# ManiSkill2_real2sim requirements.txt
+scipy
+gymnasium>=0.28.1,<1.0
+sapien==2.2.2
+h5py
+tqdm
+GitPython
+tabulate
+gdown>=4.6.0
+transforms3d
+trimesh
+rtree
+ruckig

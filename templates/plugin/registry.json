@@ -1,0 +1,29 @@
+{
+  "python_paths": ["."],
+  "plugins": {
+    "template-gripper-flip": {
+      "entrypoint": "wms_plugin_template.gripper_flip:GripperFlip",
+      "stage": "S5",
+      "role": "fault",
+      "config": {"p": 0.1},
+      "description": "模板示例：以概率 p 翻转夹爪指令。复制后改成自己的前缀和插件。"
+    }
+  },
+  "recipes": {
+    "template-gripper-flip-toy": {
+      "name": "插件模板 · 玩具 · 夹爪翻转",
+      "description": "模板自带的 CPU 演示：玩具抓放 + 夹爪翻转插件。玩具结果不是机械臂证据。",
+      "task": "native",
+      "direction": "control",
+      "entrypoint": "wms.episodes.kernel:run",
+      "model": "toy-centroid-memory",
+      "environment": "toy-pick",
+      "runtime": {"native_key": "toy", "config_file": "../../native/toy/runtime.json"},
+      "seed": 0,
+      "timeout_s": 300,
+      "params": {"episodes": 3, "video": false, "plugins": [{"plugin": "template-gripper-flip", "config": {"p": 0.2}}]},
+      "metrics": [],
+      "tags": ["toy", "plugin", "template", "S5"]
+    }
+  }
+}

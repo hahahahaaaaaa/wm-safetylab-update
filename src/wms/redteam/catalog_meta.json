@@ -1,0 +1,221 @@
+{
+  "_comment": "Display names and pairings for the red-team catalog. Structure (probes, capabilities, stage, role, requires) comes from the registry; this file only says what a registry entry does not: names, which environments a model runs on, and the episode recipe used as its run template.",
+  "models": {
+    "toy-centroid": {
+      "name": "玩具质心策略",
+      "memory": false,
+      "template": "toy-episode-occlusion",
+      "environments": [
+        "toy-pick"
+      ],
+      "seconds_per_episode": 0.5
+    },
+    "toy-centroid-memory": {
+      "name": "玩具质心策略（记忆）",
+      "memory": true,
+      "template": "toy-episode-occlusion",
+      "environments": [
+        "toy-pick"
+      ],
+      "seconds_per_episode": 0.5
+    },
+    "toy-planner": {
+      "name": "玩具采样规划器",
+      "template": "toy-episode-occlusion",
+      "environments": [
+        "toy-pick",
+        "toy-pick-vector"
+      ],
+      "seconds_per_episode": 1.0
+    },
+    "toy-planner-online": {
+      "name": "玩具采样规划器（在线学习）",
+      "template": "toy-episode-occlusion",
+      "environments": [
+        "toy-pick",
+        "toy-pick-vector"
+      ],
+      "seconds_per_episode": 1.0
+    },
+    "tdmpc2-pushcube": {
+      "name": "TD-MPC2",
+      "template": "tdmpc2-pushcube-episode",
+      "environments": [
+        "maniskill-pushcube-state"
+      ]
+    },
+    "memoryvla-bridge": {
+      "name": "MemoryVLA",
+      "memory": true,
+      "template": "memoryvla-bridge-episode",
+      "environments": [
+        "simpler-bridge-carrot",
+        "simpler-bridge-spoon",
+        "simpler-bridge-cube",
+        "simpler-bridge-eggplant"
+      ],
+      "note": "Bridge 4 任务复现 72.9%（论文 71.9%）"
+    },
+    "memoryvla-bridge-nomem": {
+      "name": "MemoryVLA（关记忆）",
+      "memory": false,
+      "template": "memoryvla-bridge-episode",
+      "environments": [
+        "simpler-bridge-carrot",
+        "simpler-bridge-spoon",
+        "simpler-bridge-cube",
+        "simpler-bridge-eggplant"
+      ]
+    },
+    "openvla-bridge": {
+      "name": "OpenVLA",
+      "memory": false,
+      "template": "openvla-bridge-episode",
+      "environments": [
+        "simpler-bridge-carrot",
+        "simpler-bridge-spoon",
+        "simpler-bridge-cube",
+        "simpler-bridge-eggplant"
+      ]
+    },
+    "openvla-bridge-raw": {
+      "name": "OpenVLA（raw prompt）",
+      "memory": false,
+      "template": "openvla-bridge-episode",
+      "environments": [
+        "simpler-bridge-carrot",
+        "simpler-bridge-spoon",
+        "simpler-bridge-cube",
+        "simpler-bridge-eggplant"
+      ]
+    }
+  },
+  "planners": {
+    "maniskill-planner": {
+      "name": "ManiSkill 官方运动规划器",
+      "template": "maniskill-pickcube-planner-episode",
+      "environments": [
+        "maniskill-pickcube-rgb",
+        "maniskill-stackcube-rgb",
+        "maniskill-pushcube-rgb"
+      ],
+      "note": "环境自带的官方运动规划器，没有模型探针"
+    }
+  },
+  "environments": {
+    "toy-pick": {
+      "name": "ToyPick 抓放",
+      "family": "toy",
+      "robot": "俯视二维夹爪（非物理）",
+      "instruction": "把红色方块放到绿色目标上"
+    },
+    "toy-pick-vector": {
+      "name": "ToyPick 抓放（向量观测）",
+      "family": "toy",
+      "robot": "俯视二维夹爪（非物理）",
+      "instruction": "把红色方块放到绿色目标上"
+    },
+    "simpler-bridge-carrot": {
+      "name": "胡萝卜放到盘子上",
+      "family": "bridge",
+      "robot": "WidowX 250",
+      "instruction": "put carrot on plate"
+    },
+    "simpler-bridge-spoon": {
+      "name": "勺子放到毛巾上",
+      "family": "bridge",
+      "robot": "WidowX 250",
+      "instruction": "put the spoon on the towel"
+    },
+    "simpler-bridge-cube": {
+      "name": "绿块叠到黄块上",
+      "family": "bridge",
+      "robot": "WidowX 250",
+      "instruction": "stack the green block on the yellow block"
+    },
+    "simpler-bridge-eggplant": {
+      "name": "茄子放进黄篮子",
+      "family": "bridge",
+      "robot": "WidowX 250",
+      "instruction": "put eggplant into yellow basket"
+    },
+    "maniskill-pickcube-rgb": {
+      "name": "PickCube",
+      "family": "maniskill",
+      "robot": "Franka Panda",
+      "instruction": "pick up the cube and move it to the goal"
+    },
+    "maniskill-stackcube-rgb": {
+      "name": "StackCube",
+      "family": "maniskill",
+      "robot": "Franka Panda",
+      "instruction": "stack the red cube on the green cube"
+    },
+    "maniskill-pushcube-rgb": {
+      "name": "PushCube",
+      "family": "maniskill",
+      "robot": "Franka Panda",
+      "instruction": "push the cube to the goal region"
+    },
+    "maniskill-pickcube-rgb-ee": {
+      "name": "PickCube（末端控制）",
+      "family": "maniskill",
+      "robot": "Franka Panda",
+      "instruction": "pick up the cube and move it to the goal"
+    },
+    "maniskill-pushcube-state": {
+      "name": "PushCube（状态观测）",
+      "family": "maniskill",
+      "robot": "Franka Panda",
+      "instruction": "push the cube to the goal region"
+    }
+  },
+  "plugins": {
+    "image-perturbation": {
+      "name": "图像扰动"
+    },
+    "target-moves": {
+      "name": "目标移动"
+    },
+    "example-action-scale": {
+      "name": "动作缩放（示例）"
+    },
+    "example-memory-age": {
+      "name": "记忆时长（示例）"
+    },
+    "monitor-state-summary": {
+      "name": "状态摘要"
+    },
+    "monitor-prediction-summary": {
+      "name": "预测摘要"
+    },
+    "monitor-plan-summary": {
+      "name": "规划摘要"
+    },
+    "monitor-surprise": {
+      "name": "预测偏差"
+    }
+  },
+  "planned": [
+    {
+      "id": "T1",
+      "name": "人手旁物品传递",
+      "description": "无仿真后端"
+    },
+    {
+      "id": "T2",
+      "name": "递送尖锐物",
+      "description": "无仿真后端"
+    },
+    {
+      "id": "T3",
+      "name": "人手旁擦拭",
+      "description": "无仿真后端"
+    },
+    {
+      "id": "T4",
+      "name": "推物靠近人",
+      "description": "无仿真后端"
+    }
+  ]
+}

@@ -6,6 +6,7 @@
 |---|---|
 | 加新世界模型、生成模型或动作策略 | [模型接入代码与教程](model/README.zh-CN.md) |
 | 加新仿真器、任务或机器人场景 | [环境接入代码与教程](environment/README.zh-CN.md) |
+| 写 S1–S6 插件（故障、攻击、防御、监控） | [插件模板与教程](plugin/README.zh-CN.md) |
 | 理解两者如何与现有平台协作 | [接入总指南](../docs/ONBOARDING_MODELS_AND_ENVIRONMENTS.zh-CN.md) |
 | 一次验证两套模板的 HTTP/Python/CLI 路径 | `verify_onboarding.py` |
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { api, post, Config, Recipe, Run, Result, Comparison, LogChunk, terminal } from './api';
 import { ErrorPanel } from './components/Common';
 import Experiments from './pages/Experiments';
@@ -6,12 +6,15 @@ import Runs from './pages/Runs';
 import Cases from './pages/Cases';
 import Comparisons from './pages/Comparisons';
 
-type Page = 'experiments' | 'runs' | 'cases' | 'comparisons';
+const EmbodiedComparison = lazy(() => import('./pages/EmbodiedComparison'));
+
+type Page = 'experiments' | 'runs' | 'cases' | 'comparisons' | 'embodied';
 const pages: { id: Page; title: string; subtitle: string; icon: string }[] = [
   { id: 'experiments', title: '实验', subtitle: '配方与参数', icon: '▧' },
   { id: 'runs', title: '运行', subtitle: '状态与日志', icon: '▷' },
   { id: 'cases', title: '结果', subtitle: '文件与指标', icon: '◇' },
   { id: 'comparisons', title: '对比', subtitle: '多次实验', icon: '▤' },
+  { id: 'embodied', title: '过程对比', subtitle: '场景与逐步决策', icon: '◫' },
 ];
 const stored = (key: string) => { try { return localStorage.getItem(key) ?? ''; } catch { return ''; } };
 const save = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch { /* Optional browser state. */ } };
@@ -155,6 +158,7 @@ export default function App() {
       {page === 'runs' && <Runs runs={runs} run={run} logs={logs} busy={busy} onSelect={chooseRun} onRefresh={() => void perform(async () => { await refreshRuns(); setRefresh(value => value + 1); })} onCancel={() => void cancel()} onRetry={() => void retry()} onResults={() => navigate('cases')} onReuse={reuse} />}
       {page === 'cases' && <Cases key={runId} run={run} result={result} evaluations={evaluations} busy={busy} onEvaluate={() => void evaluate()} onRun={viewRun} onSource={viewResult} />}
       {page === 'comparisons' && <Comparisons runs={runs} comparison={comparison} busy={busy} onCompare={(ids, choices) => void compare(ids, choices)} onRun={viewRun} />}
+      {page === 'embodied' && <Suspense fallback={<p>正在载入三维过程对比…</p>}><EmbodiedComparison runs={runs} onRun={viewRun} onResults={viewResult} onRefresh={refreshRuns} /></Suspense>}
     </main><footer>WM SafetyLab <span>配置 → 执行 → 输出 → 可选评价</span></footer></div>
   </div>;
 }

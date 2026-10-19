@@ -5,18 +5,29 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "dev:mock": "vite --host 127.0.0.1 --mode mock",
+    "api:types": "openapi-typescript openapi.json -o src/api/schema.d.ts",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "three": "0.180.0"
   },
   "devDependencies": {
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
+    "@types/three": "0.180.0",
     "@vitejs/plugin-react": "4.3.4",
+    "msw": "2.6.8",
+    "openapi-typescript": "7.4.4",
     "typescript": "5.7.2",
     "vite": "5.4.21"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
