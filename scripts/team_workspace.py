@@ -4,6 +4,9 @@ import json
 import os
 import subprocess
 import sys
+import re
+from datetime import datetime, timezone
+from uuid import uuid4
 
 ROOT = Path(__file__).resolve().parents[1]
 SETTINGS = json.loads((ROOT / '.workspace/settings.json').read_text())
@@ -44,8 +47,12 @@ def main():
     elif action == 'plugin-test':
         if not args:
             raise SystemExit('Usage: ./dev.sh plugin-test PLUGIN [options]')
+        label = re.sub(r'[^A-Za-z0-9_.-]+', '_', args[0])
+        stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+        output = ROOT / '.workspace/results' / f'plugin-test-{label}-{stamp}-{uuid4().hex[:8]}'
+        print('Plugin test output:', output, flush=True)
         execute([PYTHON, '-m', 'wms.app.cli', 'plugin', 'test', *args,
-                 '--output', str(ROOT / '.workspace/results/plugin-test')])
+                 '--output', str(output)])
     elif action in ('python', 'toy-python'):
         execute([PYTHON if action == 'python' else SETTINGS['toy_python'], *args])
     elif action == 'wms':
