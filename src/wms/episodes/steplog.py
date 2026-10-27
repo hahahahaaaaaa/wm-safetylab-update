@@ -8,7 +8,7 @@ Layout under the run's output directory:
   episodes/ep_000/steps.jsonl         one line per control step t
   episodes/ep_000/trace.jsonl         one line per control step t: which plugins ran per stage, their
                                       events, the proposed and executed action, takeover, hazards
-  episodes/ep_000/frames_<cam>.npz    seen[k]: frame the policy received at step k (k = 0..T-1),
+  episodes/ep_000/frames_<cam>.npz    seen[k]: policy RGB or separate observer recording at step k (k = 0..T-1),
                                       seen[T]: final frame after the last action
   episodes/ep_000/raw_<cam>.npz       same frames before perturbation (save_raw=True)
   episodes/ep_000/depth_<cam>.npz     rgbd only: depth seen by the policy ("seen") and before
@@ -18,7 +18,8 @@ Layout under the run's output directory:
 Line t of steps.jsonl belongs to frame t: state_before is the true state when
 frame t was observed, action is what the policy returned for it, state_after is
 the true state after that action. Perturbations and target moves applied at
-step t are listed on the same line.
+step t are listed on the same line. Observer-only cameras never enter the policy/S1
+observation; their names must differ from policy cameras. They have no raw/S1 counterpart.
 """
 from __future__ import annotations
 
@@ -75,10 +76,21 @@ class StepLogger:
         self.extra = jsonable(extra or {})
         self.count = 0
 
-    def frame(self, seen_obs, raw_obs=None):
-        """Store one observation's images (and depth, when present); call once per observation, in order."""
-        for camera, image in (seen_obs.get("rgb") or {}).items() if isinstance(seen_obs, dict) else []:
+    def frame(self, seen_obs, raw_obs=None, recording_rgb=None):
+        """Store aligned policy and optional observer frames without modifying either observation."""
+        policy_rgb = (seen_obs.get("rgb") or {}) if isinstance(seen_obs, dict) else {}
+        raw_rgb = (raw_obs.get("rgb") or {}) if isinstance(raw_obs, dict) else {}
+        recording_rgb = {} if recording_rgb is None else recording_rgb
+        if not isinstance(recording_rgb, dict):
+            raise TypeError("recording_rgb must map camera names to RGB frames")
+        collisions = set(recording_rgb) & (set(policy_rgb) | set(raw_rgb))
+        if collisions:
+            raise ValueError(f"Recording camera names collide with policy RGB cameras: {sorted(collisions)}")
+        for camera, image in policy_rgb.items():
             self.seen.setdefault(camera, []).append(np.asarray(image, dtype=np.uint8))
+        for camera, image in recording_rgb.items():
+            # Renderers can reuse their output buffer at the next step. Preserve this actual frame.
+            self.seen.setdefault(camera, []).append(np.array(image, dtype=np.uint8, copy=True))
         for camera, depth in (seen_obs.get("depth") or {}).items() if isinstance(seen_obs, dict) else []:
             self.depth_seen.setdefault(camera, []).append(np.asarray(depth))
         if self.save_raw and isinstance(raw_obs, dict):

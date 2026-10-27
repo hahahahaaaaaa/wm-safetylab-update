@@ -74,3 +74,19 @@ UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple UV_CONCURRENT_DOWNLOADS=3 
 官方成绩（README，每任务 24 回合）：勺子 75.0、胡萝卜 75.0、方块 37.5、茄子 100.0，平均 71.9。每任务只有 24 回合，一个回合就是 4.2 个百分点；官方建议每 2.5k 步评测一个检查点并取最好成绩，而这里只有发布的一个检查点。因此验收看四任务平均，单个任务差 ±10 个百分点以内都属正常波动。
 
 `evaluation.json` 有逐任务成功率、与官方的差值、版本和差异清单；`episodes.jsonl` 每回合一行；`videos/` 是每回合的录像和动作曲线。自动评价 `memoryvla_simpler` 从 `episodes.jsonl` 重新统计成功率，与 `evaluation.json` 不一致时报错。
+
+## 在主平台页面运行配对实验
+
+服务启动时，将 `--native-configs` 对应 JSON 的 `memoryvla` 键指向上述机器 runtime 文件。页面的 `MemoryVLA` 与 `MemoryVLA（关记忆）` 使用同一权重；后者每步清空记忆，是消融选项。任务选择 SimplerEnv-Bridge 四任务之一，不能直接沿用 TD-MPC2 的 PushCube 状态策略环境。
+
+胡萝卜放盘可选种子 0–9、每回合 120 步，添加 `image-perturbation` 的固定遮挡：
+
+```json
+{"schedule":[{"type":"occlude","start":10,"end":40,"camera":"3rd_view_camera","box":[0.25,0.25,0.75,0.75],"value":0}]}
+```
+
+仅勾选单独扰动组且关闭“监控挂到所有组”，得到完全无插件 A0 和仅图像遮挡 A1。遮挡覆盖 t=10..39 的中心 25% 面积，不读取物体真值。该设置用于输入扰动对照，不代表最优攻击或记忆有效性的消融证明。
+
+实验详情按相同环境和种子匹配基线，播放实际保存的 `3rd_view_camera` 图像。普通帧是 S1 处理后送入策略的图像；T+1 末帧只是动作后的记录。平台图像实验同时保存 `raw_3rd_view_camera.npz`，用于核查扰动前图像。`policy_info` 记录执行器、相机、记忆开关、是否重置和两类记忆库长度。
+
+Simpler 的 `success@120` 表示最后评价步成功，不是首次到达目标。默认环境在第 120 步评价；仅缩短内核 `max_steps` 会提前截断，不应把这样的冒烟回合作为正式成功率。查看回放时以最后一步的任务完成标志为准，目标距离不是任务成功判据。

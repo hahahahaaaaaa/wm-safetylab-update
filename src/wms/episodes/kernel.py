@@ -8,7 +8,8 @@ sub-platform's sublab_ext.tasks.visual_robustness; logs have the same layout.
 Recipe fields (task "native", entrypoint "wms.episodes.kernel:run")
   model        the policy under test (executor "model")
   environment  the environment; image_box() for boxes that follow objects,
-               set_object_pose()/set_goal() for target moves, hazards() for hazard predicates
+               set_object_pose()/set_goal() for target moves, hazards() for hazard predicates;
+               optional recording_frames() for separate observer-only RGB evidence
   seed         first episode seed; episode i uses seed + i unless params.seeds is given.
                The same seed goes to environment.reset() and policy.reset().
   inputs       "instruction" goes to model.act(); everything else to environment.reset()
@@ -29,7 +30,7 @@ Recipe fields (task "native", entrypoint "wms.episodes.kernel:run")
                        "policy_first": the other way round, for official loops that seed the policy's
                        random streams before resetting the simulator (TD-MPC2's evaluation)
     save_raw           also store unperturbed frames (default true)
-    video, fps         mp4 of what the policy saw (default true, 10)
+    video, fps         mp4 of logged policy/observer cameras (default true, 10)
 
 Order inside step t: ENV plugins (target moves) for t -> true state_before -> frame t
 rendered, S1 plugins, logged -> policy acts on that frame (S2-S4 plugins run inside, through
@@ -39,6 +40,8 @@ models with the learn probe -> after_step (with the transition, read-only) -> lo
 Every frame k in frames_<cam>.npz matches line t=k of steps.jsonl and trace.jsonl; the extra
 last frame is the observation after the final action. With no plugins, every step is exactly
 what it was before plugins existed.
+Observer-only recording_frames() is sampled at the same pre-action/final points, after ENV
+changes. Its RGB never enters policy observations or S1 plugins and grants no RGB capability.
 """
 from __future__ import annotations
 
@@ -126,6 +129,7 @@ class _Episode:
         self.env, self.plugins = env, plugins
         self.logger, self.context = logger, context
         self.hazard_source = getattr(env, "hazards", None) if callable(getattr(env, "hazards", None)) else None
+        self.recording_source = getattr(env, "recording_frames", None) if callable(getattr(env, "recording_frames", None)) else None
         self.raw = None
         self.events, self.success_step = [], None
         self.end_reason = "step_limit"
@@ -154,7 +158,7 @@ class _Episode:
         before = self.env.get_state()
         seen = self.plugins.call("on_observation", self.raw) if self.plugins.has("on_observation") else self.raw
         records = self.plugins.records("S1", "on_observation")
-        self.logger.frame(seen, self.raw)
+        self.logger.frame(seen, self.raw, recording_rgb=self.recording_source() if self.recording_source else None)
         self.perturbed_steps += bool(records)
         return seen, records, moved, before
 
@@ -242,7 +246,7 @@ class _Episode:
         self.plugins.begin_step(steps)
         seen = (self.plugins.call("on_observation", self.raw, final=True)
                 if self.plugins.has("on_observation") else self.raw)
-        self.logger.frame(seen, self.raw)
+        self.logger.frame(seen, self.raw, recording_rgb=self.recording_source() if self.recording_source else None)
         final = self.env.get_state()
         summary = {"success": self.success_step is not None, "success_step": self.success_step,
                    "end_reason": self.end_reason, "final_distance": final.get("distance_to_goal"),

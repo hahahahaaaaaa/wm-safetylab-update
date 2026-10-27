@@ -7,7 +7,7 @@ horizon, success not ending the episode. This class only adds what the episode k
 
 config: runtime_config  "$runtime.config_file" (TD-MPC2 runtime)
         checkpoint | source_run   the checkpoint whose environment settings to use (as the policy)
-        render          true: keep a render camera for observe()/video frames (default false)
+        render          true: record a separate real RGB camera (default false); never policy input
         hazards         thresholds for wms.scenarios.hazards; hazards() reports them after each step
         reconfigure_each_episode
                         true: rebuild the GPU scene at every reset (default false, as TD-MPC2's
@@ -27,18 +27,22 @@ class ManiSkillStateEnv:
     def __init__(self, config):
         from wms.engines.runtime import load_runtime
         from wms.engines.tdmpc2 import compat
-        from wms.engines.tdmpc2.native import _source
+        from wms.engines.tdmpc2.native import episode_checkpoint
         compat.prepare(load_runtime(config["runtime_config"]))
         import numpy as np
         import torch
         from omegaconf import OmegaConf
         self.np, self.torch = np, torch
-        checkpoint = _source(config, config.get("output_dir", "."))
+        checkpoint = episode_checkpoint(config)
         saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
         cfg = OmegaConf.create(saved["config"])
+        expected_env_id = config.get("expected_env_id")
+        if expected_env_id and cfg.env_id != expected_env_id:
+            raise ValueError(f"Checkpoint task {cfg.env_id!r} differs from requested task {expected_env_id!r}")
         cfg.num_envs = cfg.num_eval_envs = 1
         self.cfg = cfg
-        self.env = compat.StateEnvironment(cfg, 1, render=bool(config.get("render", False)))
+        self.record_render = bool(config.get("render", False))
+        self.env = compat.StateEnvironment(cfg, 1, render=self.record_render)
         self.native = self.env.native
         self.t, self._obs, self._succeeded = 0, None, False
         self.reconfigure = bool(config.get("reconfigure_each_episode", False))
@@ -78,6 +82,10 @@ class ManiSkillStateEnv:
         obs = self.native.get_obs()
         self._obs = self._vector(obs)
         return self._obs
+
+    def recording_frames(self):
+        """Observer-only RGB evidence; the policy and S1 plugins still receive a state vector."""
+        return {"render_camera": self.env.frame()} if self.record_render else {}
 
     def close(self):
         self.env.close()
@@ -122,6 +130,7 @@ class ManiSkillStateEnv:
         return {"env_id": self.cfg.env_id, "control_mode": self.cfg.control_mode, "action_dim": self.env.action_dim,
                 "action_low": [-1.0] * self.env.action_dim, "action_high": [1.0] * self.env.action_dim,
                 "observation": "privileged_state", "observation_dim": self.env.obs_dim, "cameras": {},
+                "recording_cameras": {"render_camera": {"policy_input": False}} if self.record_render else {},
                 "objects": ["cube"], "has_goal": True, "max_steps": self.env.horizon,
                 "reconfigure_each_episode": self.reconfigure,
                 "safety": self.hazard_check.spec()}

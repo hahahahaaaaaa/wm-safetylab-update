@@ -9,6 +9,7 @@ from __future__ import annotations
 from wms.plugins import base
 from wms.redteam.catalog import META, plugin_class, plugin_meta
 from wms.redteam.schema import Arm, Catalog, Estimate, ExperimentConfig, PluginCheck, StepIssue, ValidationResult
+from wms.scenarios.simpler.common import DEFAULTS as SIMPLER_DEFAULTS
 
 DISTURBANCES = ("fault", "attack")
 STAGE_STEP = {"S2": "state", "S3": "predict", "S4": "plan"}
@@ -79,8 +80,10 @@ def build_recipes(config, model, arms, selected, registry):
     out = []
     for arm in arms:
         for env in config.environments:
+            capabilities = registry.items["environments"].get(env, {}).get("capabilities", [])
             params = {"episodes": config.seeds.episodes, "perturbations": [], "target_moves": [],
-                      "plugins": [by_key[key].spec() for key in arm.plugins], "video": False, "save_raw": False}
+                      "plugins": [by_key[key].spec() for key in arm.plugins], "video": False,
+                      "save_raw": "rgb" in capabilities}
             if config.max_steps:
                 params["max_steps"] = config.max_steps
             recipe = {"recipe": meta.get("template"), "name": f"{config.name} · {arm.id} · {env}",
@@ -123,6 +126,15 @@ def validate_config(config: ExperimentConfig, catalog: Catalog, registry) -> Val
         add("envtask", "environments", "至少选择 1 个任务")
     if len(chosen) > 1 and len({e.family for e in chosen}) > 1:
         add("envtask", "environments", "一次实验的任务需来自同一个仿真环境", "warning")
+    if config.max_steps is not None:
+        for env in chosen:
+            if env.family != "bridge":
+                continue
+            # Bridge registry entries may omit the adapter's default episode horizon.
+            env_steps = env.max_steps or SIMPLER_DEFAULTS["max_episode_steps"]
+            if config.max_steps < env_steps:
+                add("judge", "max_steps", f"{env.name}（环境末步 {env_steps}）：只缩短内核会提前结束，"
+                    "未到环境末步评价；用于冒烟，不能按完整任务成功率解释", "warning")
 
     keys = [use.key for use in config.plugins]
     for key in {k for k in keys if keys.count(k) > 1}:
@@ -157,7 +169,7 @@ def validate_config(config: ExperimentConfig, catalog: Catalog, registry) -> Val
         for reason in reasons:
             add("plugins", f"plugins.{p.use.key}", f"{p.id}：{reason}", plugin=p.use.key)
         checks.append(PluginCheck(key=p.use.key, id=p.id, stage=p.stage, role=p.role, privileged=p.privileged,
-                                  oracle=p.oracle, requires=p.requires, available=not reasons))
+                                  oracle=p.oracle, requires=p.requires, available=not reasons, reasons=reasons))
 
     usable = [p for p, check in zip(selected, checks) if check.available]
     if not any(p.role in DISTURBANCES + ("defense",) for p in usable):

@@ -31,6 +31,45 @@ def validate(client, **overrides):
     return client.post("/api/v1/experiments/validate", json=config(**overrides)).json()
 
 
+def test_visual_experiments_keep_raw_evidence(client):
+    visual = validate(client, plugins=[])
+    vector = validate(client, plugins=[], environments=["toy-pick-vector"])
+    assert visual["valid"] and vector["valid"]
+    assert all(r["params"]["save_raw"] for r in visual["recipes"])
+    assert all(not r["params"]["save_raw"] for r in vector["recipes"])
+
+
+@pytest.mark.parametrize("environment,env_steps,budget,warn", [
+    ("simpler-bridge-carrot", None, 119, True),  # adapter default is 120
+    ("simpler-bridge-carrot", None, 120, False),
+    ("simpler-bridge-carrot", None, 121, False),
+    ("simpler-bridge-carrot", None, None, False),
+    ("simpler-bridge-carrot", 180, 120, True),  # honor an explicit environment horizon
+    ("simpler-bridge-carrot", 60, 60, False),
+    ("toy-pick", 60, 5, False),
+])
+def test_simpler_short_budget_warning_is_nonblocking(client, monkeypatch, environment, env_steps, budget, warn):
+    client.get("/api/v1/catalog")
+    lab = client.app.state.services["redteam"]
+    catalog = lab.catalog()
+    model_id = "memoryvla-bridge" if environment.startswith("simpler-") else "toy-planner"
+    model = next(m for m in catalog.models if m.id == model_id)
+    # Exercise API validation without requiring weights, a runtime file or a GPU.
+    model.configured, model.configuration_error = True, None
+    next(e for e in catalog.environments if e.id == environment).max_steps = env_steps
+    monkeypatch.setattr(lab, "catalog", lambda: catalog)
+
+    result = validate(client, model=model_id, environments=[environment], plugins=[], max_steps=budget)
+    assert result["valid"], result["issues"]
+    issues = [i for i in result["issues"] if i["field"] == "max_steps"]
+    assert bool(issues) is warn
+    if warn:
+        assert len(issues) == 1
+        assert issues[0]["severity"] == "warning" and issues[0]["step"] == "judge"
+        assert "只缩短内核会提前结束，未到环境末步评价；用于冒烟，不能按完整任务成功率解释" in issues[0]["message"]
+    assert all(r["params"].get("max_steps") == budget for r in result["recipes"])
+
+
 def test_catalog_comes_from_the_registry(client):
     catalog = client.get("/api/v1/catalog").json()
     models = {m["id"]: m for m in catalog["models"]}
@@ -40,6 +79,10 @@ def test_catalog_comes_from_the_registry(client):
     envs = {e["id"]: e for e in catalog["environments"]}
     assert "image_box" in envs["simpler-bridge-carrot"]["capabilities"]
     assert envs["maniskill-pushcube-state"]["observation"] == "vector"
+    independent = "maniskill-pushcube-state-independent"
+    assert independent in models["tdmpc2-pushcube"]["environments"]
+    assert envs[independent]["observation"] == "vector"
+    assert "rgb" not in envs[independent]["capabilities"]  # recording is not a policy input
     plugins = {p["id"]: p for p in catalog["plugins"]}
     assert (plugins["monitor-plan-summary"]["stage"], plugins["monitor-plan-summary"]["role"]) == ("S4", "monitor")
     assert plugins["monitor-surprise"]["stage"] == "S6"

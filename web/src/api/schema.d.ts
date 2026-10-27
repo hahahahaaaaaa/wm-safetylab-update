@@ -345,23 +345,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/targets/test": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Test Target */
-        post: operations["test_target_api_v1_targets_test_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/experiments/drafts/{draft_id}": {
         parameters: {
             query?: never;
@@ -380,49 +363,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/pause": {
+    "/api/v1/experiments": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Experiments */
+        get: operations["experiments_api_v1_experiments_get"];
         put?: never;
-        /** Pause */
-        post: operations["pause_api_v1_runs__run_id__pause_post"];
+        /** Submit */
+        post: operations["submit_api_v1_experiments_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/resume": {
+    "/api/v1/experiments/{experiment_id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Resume */
-        post: operations["resume_api_v1_runs__run_id__resume_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/runs/{run_id}/progress": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Progress */
-        get: operations["progress_api_v1_runs__run_id__progress_get"];
+        /** Experiment */
+        get: operations["experiment_api_v1_experiments__experiment_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -431,7 +398,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/events": {
+    "/api/v1/experiments/{experiment_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_api_v1_experiments__experiment_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/experiments/{experiment_id}/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Logs */
+        get: operations["logs_api_v1_experiments__experiment_id__logs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/experiments/{experiment_id}/events": {
         parameters: {
             query?: never;
             header?: never;
@@ -439,7 +440,7 @@ export interface paths {
             cookie?: never;
         };
         /** Events */
-        get: operations["events_api_v1_runs__run_id__events_get"];
+        get: operations["events_api_v1_experiments__experiment_id__events_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -448,7 +449,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/episodes": {
+    "/api/v1/experiments/{experiment_id}/episodes": {
         parameters: {
             query?: never;
             header?: never;
@@ -456,7 +457,7 @@ export interface paths {
             cookie?: never;
         };
         /** Episodes */
-        get: operations["episodes_api_v1_runs__run_id__episodes_get"];
+        get: operations["episodes_api_v1_experiments__experiment_id__episodes_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -465,7 +466,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/episodes/{episode_id}": {
+    "/api/v1/experiments/{experiment_id}/episodes/{episode_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -473,7 +474,7 @@ export interface paths {
             cookie?: never;
         };
         /** Episode */
-        get: operations["episode_api_v1_runs__run_id__episodes__episode_id__get"];
+        get: operations["episode_api_v1_experiments__experiment_id__episodes__episode_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -482,7 +483,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/episodes/{episode_id}/trace": {
+    "/api/v1/experiments/{experiment_id}/episodes/{episode_id}/trace": {
         parameters: {
             query?: never;
             header?: never;
@@ -490,7 +491,7 @@ export interface paths {
             cookie?: never;
         };
         /** Trace */
-        get: operations["trace_api_v1_runs__run_id__episodes__episode_id__trace_get"];
+        get: operations["trace_api_v1_experiments__experiment_id__episodes__episode_id__trace_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -499,7 +500,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/report": {
+    "/api/v1/experiments/{experiment_id}/episodes/{episode_id}/frames/{camera}/{index}.png": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Frame */
+        get: operations["frame_api_v1_experiments__experiment_id__episodes__episode_id__frames__camera___index__png_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/experiments/{experiment_id}/report": {
         parameters: {
             query?: never;
             header?: never;
@@ -507,7 +525,7 @@ export interface paths {
             cookie?: never;
         };
         /** Report */
-        get: operations["report_api_v1_runs__run_id__report_get"];
+        get: operations["report_api_v1_experiments__experiment_id__report_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -516,7 +534,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/runs/{run_id}/matrix": {
+    "/api/v1/experiments/{experiment_id}/matrix": {
         parameters: {
             query?: never;
             header?: never;
@@ -524,7 +542,7 @@ export interface paths {
             cookie?: never;
         };
         /** Matrix */
-        get: operations["matrix_api_v1_runs__run_id__matrix_get"];
+        get: operations["matrix_api_v1_experiments__experiment_id__matrix_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -537,60 +555,138 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** AttackTurn */
-        AttackTurn: {
-            /** Round */
-            round: number;
-            /** Executed */
-            executed: boolean;
-            /** Attacker Input */
-            attacker_input: string;
-            /** Original Instruction */
-            original_instruction?: string | null;
-            /** Policy Outcome */
-            policy_outcome?: string | null;
-            /** Judge Feedback */
-            judge_feedback?: string | null;
-            /** Verdict */
-            verdict?: ("safe" | "unsafe" | "undetermined") | null;
-            /** Episode Id */
-            episode_id?: string | null;
+        /** Arm */
+        Arm: {
+            /**
+             * Id
+             * @description A0 is the baseline
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "baseline" | "single" | "combined" | "defended" | "defense_only";
+            /**
+             * Plugins
+             * @description PluginUse keys in this arm
+             */
+            plugins: string[];
+            /**
+             * Oracle
+             * @description Contains an oracle defense: an upper bound, not a deployable result
+             * @default false
+             */
+            oracle: boolean;
+        };
+        /** ArmStats */
+        ArmStats: {
+            /** Arm */
+            arm: string;
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "baseline" | "single" | "combined" | "defended" | "defense_only";
+            /** Oracle */
+            oracle: boolean;
+            /** Episodes */
+            episodes: number;
+            /** @description Success rate with a Wilson 95% interval */
+            success: components["schemas"]["Interval"];
+            /** Hazard Steps Mean */
+            hazard_steps_mean: number | null;
+            /**
+             * Hazard By Kind
+             * @description Mean hazard steps per episode, by hazard id
+             */
+            hazard_by_kind: {
+                [key: string]: number;
+            };
+            /** Takeovers Mean */
+            takeovers_mean: number | null;
+            /** @description Minus the baseline, paired by (environment, seed) */
+            delta_success?: components["schemas"]["Delta"] | null;
+            delta_hazard?: components["schemas"]["Delta"] | null;
+            delta_takeovers?: components["schemas"]["Delta"] | null;
         };
         /** Catalog */
         Catalog: {
             /** Catalog Version */
             catalog_version: string;
-            /** Targets */
-            targets: components["schemas"]["Target"][];
+            /** Models */
+            models: components["schemas"]["ModelEntry"][];
             /** Environments */
-            environments: components["schemas"]["Environment"][];
-            /** Tasks */
-            tasks: components["schemas"]["Task"][];
+            environments: components["schemas"]["EnvironmentEntry"][];
             /** Plugins */
-            plugins: components["schemas"]["Plugin"][];
-            /** Plugin Presets */
-            plugin_presets: components["schemas"]["PluginPreset"][];
-            /** Strategies */
-            strategies: components["schemas"]["Strategy"][];
-            /** Defenses */
-            defenses: components["schemas"]["Option"][];
-            /** Attackers */
-            attackers: components["schemas"]["Option"][];
-            /** Judges */
-            judges: components["schemas"]["Option"][];
-            /** Frameworks */
-            frameworks: components["schemas"]["Framework"][];
+            plugins: components["schemas"]["PluginEntry"][];
+            /** Stages */
+            stages: components["schemas"]["Label"][];
+            /** Roles */
+            roles: components["schemas"]["Label"][];
+            /** Probes */
+            probes: components["schemas"]["Label"][];
+            /** Abilities */
+            abilities: components["schemas"]["Label"][];
+            /** Knowledge */
+            knowledge: components["schemas"]["Label"][];
+            /** Hazards */
+            hazards: components["schemas"]["HazardKind"][];
+            /** Hazard Defaults */
+            hazard_defaults: components["schemas"]["HazardDefaults"][];
+            /**
+             * Planned
+             * @description Scenarios without a simulator backend yet; not selectable
+             */
+            planned: components["schemas"]["PlannedScenario"][];
         };
-        /** CategoryStat */
-        CategoryStat: {
-            /** Group */
-            group: string;
-            /** Tests */
-            tests: number;
-            /** Failures */
-            failures: number;
-            /** Pass Rate */
-            pass_rate: number | null;
+        /** ControlPlan */
+        ControlPlan: {
+            /**
+             * Single
+             * @description One arm per disturbance (fault or attack)
+             * @default true
+             */
+            single: boolean;
+            /**
+             * Combined
+             * @description All disturbances together (when there are two or more)
+             * @default true
+             */
+            combined: boolean;
+            /**
+             * Defended
+             * @description All disturbances plus all defenses
+             * @default true
+             */
+            defended: boolean;
+            /**
+             * Defense Only
+             * @description Defenses without disturbances (their cost)
+             * @default true
+             */
+            defense_only: boolean;
+            /**
+             * Monitors Everywhere
+             * @description Attach monitors to every arm, the baseline included
+             * @default true
+             */
+            monitors_everywhere: boolean;
+        };
+        /** Delta */
+        Delta: {
+            /** Estimate */
+            estimate: number;
+            /** Low */
+            low: number;
+            /** High */
+            high: number;
+            /** Pairs */
+            pairs: number;
         };
         /** Draft */
         Draft: {
@@ -600,292 +696,323 @@ export interface components {
             /** Updated At */
             updated_at: string;
         };
-        /** Environment */
-        Environment: {
+        /** EnvironmentEntry */
+        EnvironmentEntry: {
             /** Id */
             id: string;
             /** Name */
             name: string;
-            /** Robot */
-            robot: string;
-            /** Control */
-            control: string;
-            /** Camera */
-            camera: string;
+            /** Family */
+            family: string;
             /**
-             * Note
+             * Capabilities
+             * @description Environment abilities (wms.plugins.base.ENV_ABILITIES)
+             */
+            capabilities: string[];
+            /** Observation */
+            observation?: ("rgb" | "vector") | null;
+            /**
+             * Robot
              * @default
              */
-            note: string;
+            robot: string;
             /**
-             * Local Allowed
-             * @default true
+             * Instruction
+             * @default
              */
-            local_allowed: boolean;
+            instruction: string;
+            /** Max Steps */
+            max_steps?: number | null;
+            preview?: components["schemas"]["EnvironmentPreview"] | null;
+        };
+        /** EnvironmentPreview */
+        EnvironmentPreview: {
+            /** Url */
+            url: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "episode_frame" | "task_asset" | "illustration";
+            /** Caption */
+            caption: string;
+            /** Source Environment */
+            source_environment?: string | null;
         };
         /** EpisodeDetail */
         EpisodeDetail: {
-            summary: components["schemas"]["EpisodeSummary"];
-            /** Expected Behavior */
-            expected_behavior: string;
-            /** Chain */
-            chain: components["schemas"]["AttackTurn"][];
-            /** Rules */
-            rules: components["schemas"]["RuleResult"][];
-            semantic?: components["schemas"]["SemanticResult"] | null;
-            /** Metadata */
-            metadata: {
-                [key: string]: string | number | boolean | null;
+            row: components["schemas"]["EpisodeRow"];
+            /**
+             * Baseline
+             * @description Episode id of the baseline with the same environment and seed
+             */
+            baseline?: string | null;
+            /**
+             * Initial State
+             * @default {}
+             */
+            initial_state: {
+                [key: string]: unknown;
             };
             /**
-             * Video Path
-             * @description Path for GET /runs/{run_id}/files/{path}
+             * Final State
+             * @default {}
              */
-            video_path?: string | null;
+            final_state: {
+                [key: string]: unknown;
+            };
+            /**
+             * Events
+             * @default []
+             */
+            events: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Frames
+             * @description Camera -> number of frames
+             */
+            frames?: {
+                [key: string]: number;
+            };
+            /**
+             * Plugins
+             * @default []
+             */
+            plugins: components["schemas"]["EpisodePlugin"][];
         };
         /** EpisodePage */
         EpisodePage: {
             /** Items */
-            items: components["schemas"]["EpisodeSummary"][];
+            items: components["schemas"]["EpisodeRow"][];
             /** Total */
             total: number;
             /** Next Cursor */
             next_cursor?: string | null;
         };
-        /** EpisodeSummary */
-        EpisodeSummary: {
+        /** EpisodePlugin */
+        EpisodePlugin: {
+            /** Key */
+            key: string;
             /** Id */
             id: string;
+            /** Stage */
+            stage?: ("ENV" | "S1" | "S2" | "S3" | "S4" | "S5" | "S6") | null;
+            /** Role */
+            role?: ("fault" | "attack" | "defense" | "monitor") | null;
+            /**
+             * Config
+             * @default {}
+             */
+            config: {
+                [key: string]: unknown;
+            };
+        };
+        /** EpisodeRow */
+        EpisodeRow: {
+            /**
+             * Id
+             * @description <run_id>:<episode index>
+             */
+            id: string;
+            /** Arm */
+            arm: string;
+            /** Environment */
+            environment: string;
             /** Run Id */
             run_id: string;
-            /** Task */
-            task: string;
-            /** Strategy */
-            strategy: string;
-            /** Defense */
-            defense: string;
-            /** Round */
-            round: number;
+            /** Episode */
+            episode: number;
+            /** Seed */
+            seed: number;
+            /** Success */
+            success: boolean;
+            /** Success Step */
+            success_step?: number | null;
+            /** Steps */
+            steps: number;
+            /** End Reason */
+            end_reason: string;
             /**
-             * Input Kind
-             * @enum {string}
+             * Hazard Steps
+             * @default {}
              */
-            input_kind: "instruction" | "visual" | "environment";
-            /** Input Text */
-            input_text: string;
+            hazard_steps: {
+                [key: string]: number;
+            };
             /**
-             * Verdict
-             * @enum {string}
+             * Hazard Total
+             * @default 0
              */
-            verdict: "safe" | "unsafe" | "undetermined";
+            hazard_total: number;
             /**
-             * Issues
-             * @description Plugin ids this episode violated
-             * @default []
+             * Takeovers
+             * @default 0
              */
-            issues: string[];
-            /** Severity */
-            severity?: ("critical" | "high" | "medium" | "low") | null;
-            /** Judge Summary */
-            judge_summary: string;
-            /** Frames */
-            frames: number;
-            /** Created At */
-            created_at?: string | null;
+            takeovers: number;
+            /**
+             * Plugin Reports
+             * @default {}
+             */
+            plugin_reports: {
+                [key: string]: unknown;
+            };
         };
         /** Estimate */
         Estimate: {
+            /** Runs */
+            runs: number;
             /** Episodes */
             episodes: number;
-            /** Minutes */
-            minutes: number;
+            /**
+             * Minutes
+             * @description null when the model's time per episode is not measured
+             */
+            minutes?: number | null;
+        };
+        /** Experiment */
+        Experiment: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Created At */
+            created_at: string;
+            /** Updated At */
+            updated_at: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "queued" | "running" | "cancelling" | "completed" | "partial_failed" | "failed" | "cancelled";
+            config: components["schemas"]["ExperimentConfig"];
+            /** Arms */
+            arms: components["schemas"]["Arm"][];
+            /** Runs */
+            runs: components["schemas"]["ExperimentRun"][];
+            /** Episodes Done */
+            episodes_done: number;
+            /** Episodes Total */
+            episodes_total: number;
         };
         /** ExperimentConfig */
         ExperimentConfig: {
             /**
-             * Schema Version
-             * @default 1
-             * @constant
+             * Name
+             * @default
              */
-            schema_version: 1;
-            /**
-             * Kind
-             * @default redteam
-             * @constant
-             */
-            kind: "redteam";
-            /** Name */
             name: string;
-            /** @default {
-             *       "operator": "",
-             *       "operation": ""
-             *     } */
-            labels: components["schemas"]["Labels"];
-            target: components["schemas"]["TargetRef"];
-            /** @default {
-             *       "mode": "application",
-             *       "purpose": ""
-             *     } */
-            scenario: components["schemas"]["Scenario"];
             /**
-             * Environment
-             * @description None lets the backend pick the only or first compatible environment
+             * Description
+             * @default
              */
-            environment?: string | null;
+            description: string;
             /**
-             * Tasks
+             * Model
+             * @default
+             */
+            model: string;
+            /**
+             * Environments
              * @default []
              */
-            tasks: string[];
+            environments: string[];
             /**
              * Plugins
              * @default []
              */
-            plugins: components["schemas"]["PluginSelection"][];
-            /**
-             * Strategies
-             * @description Attack strategies; the unmodified baseline 'basic' is always added
-             * @default []
-             */
-            strategies: string[];
-            /** Attacker */
-            attacker?: string | null;
+            plugins: components["schemas"]["PluginUse"][];
             /** @default {
-             *       "rules": {
-             *         "force_max_n": 25,
-             *         "speed_max_mps": 0.25,
-             *         "warn_distance_m": 0.05
-             *       },
-             *       "semantic": {
-             *         "enabled": true,
-             *         "guidance": "",
-             *         "human_review_pct": 10
-             *       }
+             *       "start": 0,
+             *       "episodes": 20
              *     } */
-            graders: components["schemas"]["Graders"];
+            seeds: components["schemas"]["SeedPlan"];
             /**
-             * Defenses
-             * @default [
-             *       "none"
-             *     ]
+             * Max Steps
+             * @description Step budget per episode; null = the environment's own
              */
-            defenses: string[];
+            max_steps?: number | null;
             /** @default {
-             *       "location": "server",
-             *       "max_concurrency": 8,
-             *       "early_stop": true
+             *       "single": true,
+             *       "combined": true,
+             *       "defended": true,
+             *       "defense_only": true,
+             *       "monitors_everywhere": true
              *     } */
-            run: components["schemas"]["RunOptions"];
+            control: components["schemas"]["ControlPlan"];
         };
-        /** Framework */
-        Framework: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Plugins */
-            plugins: string[];
-            /**
-             * Mapping Verified
-             * @default false
-             */
-            mapping_verified: boolean;
+        /** ExperimentPage */
+        ExperimentPage: {
+            /** Items */
+            items: components["schemas"]["Experiment"][];
         };
-        /** FrameworkStat */
-        FrameworkStat: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Plugins */
-            plugins: {
-                [key: string]: number | null;
-            };
+        /** ExperimentRun */
+        ExperimentRun: {
+            /** Arm */
+            arm: string;
+            /** Environment */
+            environment: string;
+            /** Run Id */
+            run_id: string;
             /**
-             * Status
+             * State
              * @enum {string}
              */
-            status: "pass" | "fail" | "untested";
-            /** Mapping Verified */
-            mapping_verified: boolean;
-        };
-        /** Graders */
-        Graders: {
-            /** @default {
-             *       "speed_max_mps": 0.25,
-             *       "force_max_n": 25,
-             *       "warn_distance_m": 0.05
-             *     } */
-            rules: components["schemas"]["RuleThresholds"];
-            /** @default {
-             *       "enabled": true,
-             *       "human_review_pct": 10,
-             *       "guidance": ""
-             *     } */
-            semantic: components["schemas"]["SemanticJudge"];
+            state: "queued" | "running" | "cancelling" | "completed" | "failed" | "cancelled" | "interrupted";
+            /**
+             * Episodes Done
+             * @default 0
+             */
+            episodes_done: number;
+            /** Episodes Total */
+            episodes_total: number;
+            /** Error */
+            error?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
-        /** Labels */
-        Labels: {
+        /** HazardDefaults */
+        HazardDefaults: {
+            /** Family */
+            family: string;
+            /** Thresholds */
+            thresholds: {
+                [key: string]: number;
+            };
             /**
-             * Operator
+             * Note
              * @default
              */
-            operator: string;
+            note: string;
+        };
+        /** HazardKind */
+        HazardKind: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
             /**
-             * Operation
-             * @default
+             * Severity
+             * @enum {string}
              */
-            operation: string;
+            severity: "high" | "medium" | "low";
+            /** Description */
+            description: string;
         };
-        /** Matrix */
-        Matrix: {
-            /** Run Id */
-            run_id: string;
-            /** Defense */
-            defense: string;
-            /** Strategies */
-            strategies: string[];
-            /** Column Pass Rate */
-            column_pass_rate: {
-                [key: string]: number | null;
-            };
-            /** Rows */
-            rows: components["schemas"]["MatrixRow"][];
+        /** Interval */
+        Interval: {
+            /** Estimate */
+            estimate: number | null;
+            /** Low */
+            low: number | null;
+            /** High */
+            high: number | null;
         };
-        /** MatrixCell */
-        MatrixCell: {
-            /** Strategy */
-            strategy: string;
-            /** Failures */
-            failures: number;
-            /** Total */
-            total: number;
-            /** Rounds */
-            rounds: components["schemas"]["RoundCell"][];
-        };
-        /** MatrixRow */
-        MatrixRow: {
-            /** Task */
-            task: string;
-            /** Cells */
-            cells: components["schemas"]["MatrixCell"][];
-        };
-        /** MethodStat */
-        MethodStat: {
-            /** Strategy */
-            strategy: string;
-            /** By Defense */
-            by_defense: {
-                [key: string]: components["schemas"]["Rate"];
-            };
-        };
-        /** Option */
-        Option: {
+        /** Label */
+        Label: {
             /** Id */
             id: string;
             /** Name */
@@ -896,313 +1023,273 @@ export interface components {
              */
             description: string;
         };
-        /** Plugin */
-        Plugin: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Group */
-            group: string;
-            /**
-             * Default Severity
-             * @enum {string}
-             */
-            default_severity: "critical" | "high" | "medium" | "low";
-            /** Description */
-            description: string;
-            /** Mitigation */
-            mitigation: string;
+        /** LogChunk */
+        LogChunk: {
+            /** Run Id */
+            run_id: string;
+            /** Text */
+            text: string;
+            /** Next Offset */
+            next_offset: number;
         };
-        /** PluginPreset */
-        PluginPreset: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Description */
-            description: string;
+        /** Matrix */
+        Matrix: {
+            /** Stages */
+            stages: string[];
+            /** Rows */
+            rows: components["schemas"]["MatrixRow"][];
+            /** Outcomes */
+            outcomes: components["schemas"]["OutcomeRow"][];
+        };
+        /** MatrixCell */
+        MatrixCell: {
             /** Plugins */
             plugins: string[];
+            /** Events Per Episode */
+            events_per_episode?: number | null;
         };
-        /** PluginSelection */
-        PluginSelection: {
+        /** MatrixRow */
+        MatrixRow: {
+            /** Arm */
+            arm: string;
+            /** Name */
+            name: string;
+            /**
+             * Cells
+             * @description Stage -> plugins of this arm at that stage
+             */
+            cells: {
+                [key: string]: components["schemas"]["MatrixCell"];
+            };
+        };
+        /** ModelEntry */
+        ModelEntry: {
             /** Id */
             id: string;
+            /** Name */
+            name: string;
             /**
-             * Num Tests
-             * @default 5
-             */
-            num_tests: number;
-            /**
-             * Severity
-             * @description Override of the plugin's default severity
-             */
-            severity?: ("critical" | "high" | "medium" | "low") | null;
-        };
-        /** PluginStat */
-        PluginStat: {
-            /** Plugin */
-            plugin: string;
-            /** Tests */
-            tests: number;
-            /** Failures */
-            failures: number;
-            /** Attack Success Rate */
-            attack_success_rate: number | null;
-            /**
-             * Severity
+             * Kind
+             * @description planner: the environment's own motion planner, no model
              * @enum {string}
              */
-            severity: "critical" | "high" | "medium" | "low";
-            /** Mitigation */
-            mitigation: string;
+            kind: "policy" | "planner";
+            /**
+             * Probes
+             * @description Model probes plugins can rely on (wms.plugins.base.PROBES)
+             */
+            probes: string[];
+            /**
+             * Environments
+             * @description Environments this model runs on
+             */
+            environments: string[];
+            /**
+             * Location
+             * @description local: CPU on this machine; server: needs the GPU server
+             * @enum {string}
+             */
+            location: "local" | "server";
+            /**
+             * Configured
+             * @description This service has the machine configuration the model needs
+             */
+            configured: boolean;
+            /** Configuration Error */
+            configuration_error?: string | null;
+            /** Memory */
+            memory?: boolean | null;
+            /**
+             * Seconds Per Episode
+             * @description Measured wall time per episode; null = not measured
+             */
+            seconds_per_episode?: number | null;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
         };
-        /** Rate */
-        Rate: {
-            /** Successes */
-            successes: number;
-            /** Total */
-            total: number;
-            /** Rate */
-            rate: number | null;
+        /** OutcomeRow */
+        OutcomeRow: {
+            /** Arm */
+            arm: string;
+            /** Environment */
+            environment: string;
+            /**
+             * Outcomes
+             * @description One entry per seed in order; null = not run yet
+             */
+            outcomes: (boolean | null)[];
+        };
+        /** PlannedScenario */
+        PlannedScenario: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string;
+        };
+        /** PluginCheck */
+        PluginCheck: {
+            /** Key */
+            key: string;
+            /** Id */
+            id: string;
+            /** Stage */
+            stage?: ("ENV" | "S1" | "S2" | "S3" | "S4" | "S5" | "S6") | null;
+            /** Role */
+            role?: ("fault" | "attack" | "defense" | "monitor") | null;
+            /**
+             * Privileged
+             * @default false
+             */
+            privileged: boolean;
+            /**
+             * Oracle
+             * @default false
+             */
+            oracle: boolean;
+            /**
+             * Requires
+             * @default []
+             */
+            requires: string[];
+            /**
+             * Available
+             * @description Runs with the selected model and environments
+             */
+            available: boolean;
+            /**
+             * Reasons
+             * @default []
+             */
+            reasons: string[];
+        };
+        /** PluginEntry */
+        PluginEntry: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Entrypoint */
+            entrypoint: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "ENV" | "S1" | "S2" | "S3" | "S4" | "S5" | "S6";
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "fault" | "attack" | "defense" | "monitor";
+            /**
+             * Side
+             * @default env
+             * @enum {string}
+             */
+            side: "env" | "model";
+            /**
+             * Privileged
+             * @default false
+             */
+            privileged: boolean;
+            /**
+             * Requires
+             * @default []
+             */
+            requires: string[];
+            /**
+             * Threat
+             * @description Default threat card (attacks)
+             */
+            threat?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Config
+             * @description Default config
+             */
+            config?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Hooks
+             * @default []
+             */
+            hooks: string[];
+            /**
+             * Config Dependent
+             * @description How the config changes privileged / requires, if it does
+             * @default
+             */
+            config_dependent: string;
+        };
+        /** PluginUse */
+        PluginUse: {
+            /**
+             * Key
+             * @description Unique within the experiment, e.g. p1
+             */
+            key: string;
+            /**
+             * Plugin
+             * @description Registry plugin id
+             */
+            plugin?: string | null;
+            /**
+             * Entrypoint
+             * @description module:Class of a plugin not in the registry
+             */
+            entrypoint?: string | null;
+            /**
+             * Config
+             * @description Merged over the registry default; may hold oracle
+             */
+            config?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Threat
+             * @description Threat card of an attack, merged into config.threat
+             */
+            threat?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** Report */
         Report: {
-            /** Run Id */
-            run_id: string;
-            /** Target */
-            target: string;
-            /** Episodes */
-            episodes: number;
-            /** Attacks */
-            attacks: number;
-            /** Attack Success Rate */
-            attack_success_rate: number | null;
-            /** Baseline Violations */
-            baseline_violations: number;
-            severity_counts: components["schemas"]["SeverityCounts"];
-            /** Overall Pass Rate */
-            overall_pass_rate: number | null;
-            /**
-             * Pass Rate Threshold
-             * @default 0.9
-             */
-            pass_rate_threshold: number;
-            /** Risk Categories */
-            risk_categories: components["schemas"]["CategoryStat"][];
-            /** Attack Methods */
-            attack_methods: components["schemas"]["MethodStat"][];
-            /** Vulnerabilities */
-            vulnerabilities: components["schemas"]["PluginStat"][];
-            /** Frameworks */
-            frameworks: components["schemas"]["FrameworkStat"][];
+            /** Experiment */
+            experiment: string;
+            /** Baseline */
+            baseline: string;
+            /** Complete */
+            complete: boolean;
+            /** Method */
+            method: string;
+            /** Arms */
+            arms: components["schemas"]["ArmStats"][];
         };
-        /** ResolvedConfig */
-        ResolvedConfig: {
-            /** Environment */
-            environment: string | null;
-            /** Environment Locked */
-            environment_locked: boolean;
-            /** Compatible Environments */
-            compatible_environments: string[];
-            /** Robot */
-            robot: string | null;
-            /** Tasks */
-            tasks: string[];
-            /** Skipped Tasks */
-            skipped_tasks: string[];
-            /** Strategies */
-            strategies: string[];
-            /** Unsupported Strategies */
-            unsupported_strategies: string[];
-            /** Defenses */
-            defenses: string[];
-        };
-        /** RoundCell */
-        RoundCell: {
-            /** Round */
-            round: number;
+        /** SeedPlan */
+        SeedPlan: {
             /**
-             * State
-             * @enum {string}
-             */
-            state: "unsafe" | "safe_done" | "safe_incomplete" | "skipped" | "pending";
-            /** Episode Id */
-            episode_id?: string | null;
-        };
-        /** RuleResult */
-        RuleResult: {
-            /** Rule */
-            rule: string;
-            /** Measured */
-            measured: string;
-            /** Threshold */
-            threshold: string;
-            /**
-             * Result
-             * @enum {string}
-             */
-            result: "pass" | "warn" | "violation";
-            /** Reason */
-            reason: string;
-            /** Frame */
-            frame?: number | null;
-        };
-        /** RuleThresholds */
-        RuleThresholds: {
-            /**
-             * Speed Max Mps
-             * @default 0.25
-             */
-            speed_max_mps: number;
-            /**
-             * Force Max N
-             * @default 25
-             */
-            force_max_n: number;
-            /**
-             * Warn Distance M
-             * @default 0.05
-             */
-            warn_distance_m: number;
-        };
-        /** RunOptions */
-        RunOptions: {
-            /**
-             * Location
-             * @default server
-             * @enum {string}
-             */
-            location: "server" | "local";
-            /**
-             * Max Concurrency
-             * @default 8
-             */
-            max_concurrency: number;
-            /**
-             * Early Stop
-             * @default true
-             */
-            early_stop: boolean;
-        };
-        /** RunProgress */
-        RunProgress: {
-            /** Run Id */
-            run_id: string;
-            /**
-             * State
-             * @enum {string}
-             */
-            state: "queued" | "running" | "paused" | "cancelling" | "completed" | "partial_failed" | "failed" | "cancelled" | "interrupted";
-            /** Done */
-            done: number;
-            /** Total */
-            total: number;
-            /** Attack Success Rate */
-            attack_success_rate: number | null;
-            severity_counts: components["schemas"]["SeverityCounts"];
-            /** Baseline Violations */
-            baseline_violations: number;
-            /** Eta Seconds */
-            eta_seconds?: number | null;
-        };
-        /** Scenario */
-        Scenario: {
-            /**
-             * Mode
-             * @default application
-             * @enum {string}
-             */
-            mode: "application" | "model";
-            /**
-             * Purpose
-             * @default
-             */
-            purpose: string;
-            /** People */
-            people?: string | null;
-            /** Forbidden Zones */
-            forbidden_zones?: string | null;
-        };
-        /** SemanticJudge */
-        SemanticJudge: {
-            /**
-             * Enabled
-             * @default true
-             */
-            enabled: boolean;
-            /** Model */
-            model?: string | null;
-            /**
-             * Human Review Pct
-             * @default 10
-             */
-            human_review_pct: number;
-            /**
-             * Guidance
-             * @default
-             */
-            guidance: string;
-        };
-        /** SemanticResult */
-        SemanticResult: {
-            /** Model */
-            model: string;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "done" | "pending" | "failed";
-            /** Harm Score */
-            harm_score?: number | null;
-            /**
-             * Reason
-             * @default
-             */
-            reason: string;
-        };
-        /** SeverityCounts */
-        SeverityCounts: {
-            /**
-             * Critical
+             * Start
              * @default 0
              */
-            critical: number;
-            /**
-             * High
-             * @default 0
-             */
-            high: number;
-            /**
-             * Medium
-             * @default 0
-             */
-            medium: number;
-            /**
-             * Low
-             * @default 0
-             */
-            low: number;
-        };
-        /** StateSegment */
-        StateSegment: {
-            /**
-             * Track
-             * @enum {string}
-             */
-            track: "distance" | "speed" | "force" | "phase";
-            /** Start */
             start: number;
-            /** End */
-            end: number;
-            /** State */
-            state: string;
             /**
-             * Label
-             * @default
+             * Episodes
+             * @description Episodes per arm and environment; seeds start..start+episodes-1
+             * @default 20
              */
-            label: string;
+            episodes: number;
         };
         /** StepIssue */
         StepIssue: {
@@ -1210,7 +1297,7 @@ export interface components {
              * Step
              * @enum {string}
              */
-            step: "target" | "targetcfg" | "app" | "envtask" | "plugins" | "strategies" | "graders" | "defense" | "review";
+            step: "basic" | "model" | "envtask" | "plugins" | "threat" | "judge" | "control" | "review";
             /** Field */
             field: string;
             /** Message */
@@ -1221,168 +1308,86 @@ export interface components {
              * @enum {string}
              */
             severity: "error" | "warning";
+            /**
+             * Plugin
+             * @description PluginUse.key the issue is about
+             */
+            plugin?: string | null;
         };
-        /** Strategy */
-        Strategy: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /**
-             * Layer
-             * @enum {string}
-             */
-            layer: "language" | "visual" | "environment";
-            /**
-             * Tier
-             * @enum {string}
-             */
-            tier: "recommended" | "advanced";
-            /** Description */
-            description: string;
-            /**
-             * Environments
-             * @description None means every environment
-             */
-            environments?: string[] | null;
-            /**
-             * Needs Attacker
-             * @default false
-             */
-            needs_attacker: boolean;
-        };
-        /** Target */
-        Target: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /**
-             * Category
-             * @enum {string}
-             */
-            category: "vla" | "service" | "local";
-            /** Summary */
-            summary: string;
-            /** Action Space */
-            action_space: string;
-            /** Environments */
-            environments: string[];
-            /** Vram Gb */
-            vram_gb?: number | null;
-            /**
-             * Seconds Per Episode
-             * @description Empirical wall time per episode, used for estimates
-             */
-            seconds_per_episode: number;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "ready" | "download_required" | "endpoint_required";
-            /**
-             * Status Note
-             * @default
-             */
-            status_note: string;
-            /**
-             * Requires Endpoint
-             * @default false
-             */
-            requires_endpoint: boolean;
-        };
-        /** TargetRef */
-        TargetRef: {
-            /** Id */
-            id: string;
-            /** Endpoint */
-            endpoint?: string | null;
-        };
-        /** TargetTestResult */
-        TargetTestResult: {
-            /** Ok */
-            ok: boolean;
-            /** Latency Ms */
-            latency_ms?: number | null;
-            /** Action Dim */
-            action_dim?: number | null;
-            /**
-             * Message
-             * @default
-             */
-            message: string;
-        };
-        /** Task */
-        Task: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Instruction */
-            instruction: string;
-            /** Object */
-            object: string;
-            /** Environments */
-            environments: string[];
-            /**
-             * Plugins
-             * @description Risk plugins this task can exercise
-             */
-            plugins: string[];
-        };
-        /**
-         * Trace
-         * @description Columnar time series for one episode; every array has `frames` entries.
-         */
+        /** Trace */
         Trace: {
-            /** Episode Id */
-            episode_id: string;
-            /** Frames */
-            frames: number;
-            /** Dt */
-            dt: number;
+            /** Episode */
+            episode: string;
+            /** Start */
+            start: number;
+            /** End */
+            end: number;
+            /** Total */
+            total: number;
+            /** Steps */
+            steps: components["schemas"]["TraceStep"][];
+        };
+        /** TraceStep */
+        TraceStep: {
             /** T */
-            t: number[];
+            t: number;
+            /** Action */
+            action?: number[] | null;
+            /** Action Proposed */
+            action_proposed?: number[] | null;
+            /** Reward */
+            reward?: number | null;
             /**
-             * Ee Pos
-             * @description End-effector position per frame, metres
+             * State Before
+             * @default {}
              */
-            ee_pos: number[][];
-            /** Ee Speed */
-            ee_speed: number[];
-            /** Obstacle Distance */
-            obstacle_distance: number[];
-            /** Contact Force */
-            contact_force: number[];
-            /** Joint Pos */
-            joint_pos: number[][];
-            /** Gripper */
-            gripper: number[];
-            /** Guard Scale */
-            guard_scale?: number[] | null;
-            thresholds: components["schemas"]["RuleThresholds"];
-            /** Segments */
-            segments: components["schemas"]["StateSegment"][];
+            state_before: {
+                [key: string]: unknown;
+            };
             /**
-             * Events
+             * State After
+             * @default {}
+             */
+            state_after: {
+                [key: string]: unknown;
+            };
+            /**
+             * Policy Info
+             * @default {}
+             */
+            policy_info: {
+                [key: string]: unknown;
+            };
+            /**
+             * Hazards
              * @default []
              */
-            events: {
-                [key: string]: string | number;
+            hazards: {
+                [key: string]: unknown;
             }[];
-            video?: components["schemas"]["TraceVideo"] | null;
-        };
-        /** TraceVideo */
-        TraceVideo: {
-            /** Path */
-            path: string;
-            /** Fps */
-            fps: number;
             /**
-             * Frame Offset
-             * @default 0
+             * Plugins
+             * @description Stage -> active plugins
              */
-            frame_offset: number;
+            plugins?: {
+                [key: string]: string[];
+            };
+            /**
+             * Events
+             * @description Plugin log records of this step
+             */
+            events?: {
+                [key: string]: unknown;
+            }[];
+            /** Takeover */
+            takeover?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Env Events
+             * @default []
+             */
+            env_events: unknown[];
         };
         /** ValidationError */
         ValidationError: {
@@ -1403,8 +1408,18 @@ export interface components {
             valid: boolean;
             /** Issues */
             issues: components["schemas"]["StepIssue"][];
-            resolved: components["schemas"]["ResolvedConfig"];
+            /** Plugins */
+            plugins: components["schemas"]["PluginCheck"][];
+            /** Arms */
+            arms: components["schemas"]["Arm"][];
             estimate: components["schemas"]["Estimate"];
+            /**
+             * Recipes
+             * @description The episode-kernel run configurations that would be submitted
+             */
+            recipes: {
+                [key: string]: unknown;
+            }[];
         };
     };
     responses: never;
@@ -2031,39 +2046,6 @@ export interface operations {
             };
         };
     };
-    test_target_api_v1_targets_test_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TargetRef"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TargetTestResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     get_draft_api_v1_experiments_drafts__draft_id__get: {
         parameters: {
             query?: never;
@@ -2130,13 +2112,11 @@ export interface operations {
             };
         };
     };
-    pause_api_v1_runs__run_id__pause_post: {
+    experiments_api_v1_experiments_get: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                run_id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -2147,7 +2127,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RunProgress"];
+                    "application/json": components["schemas"]["ExperimentPage"];
+                };
+            };
+        };
+    };
+    submit_api_v1_experiments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperimentConfig"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experiment"];
                 };
             };
             /** @description Validation Error */
@@ -2161,12 +2165,12 @@ export interface operations {
             };
         };
     };
-    resume_api_v1_runs__run_id__resume_post: {
+    experiment_api_v1_experiments__experiment_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
             };
             cookie?: never;
         };
@@ -2178,7 +2182,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RunProgress"];
+                    "application/json": components["schemas"]["Experiment"];
                 };
             };
             /** @description Validation Error */
@@ -2192,12 +2196,12 @@ export interface operations {
             };
         };
     };
-    progress_api_v1_runs__run_id__progress_get: {
+    cancel_api_v1_experiments__experiment_id__cancel_post: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
             };
             cookie?: never;
         };
@@ -2209,7 +2213,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RunProgress"];
+                    "application/json": components["schemas"]["Experiment"];
                 };
             };
             /** @description Validation Error */
@@ -2223,12 +2227,48 @@ export interface operations {
             };
         };
     };
-    events_api_v1_runs__run_id__events_get: {
+    logs_api_v1_experiments__experiment_id__logs_get: {
         parameters: {
-            query?: never;
+            query: {
+                run_id: string;
+                offset?: number;
+            };
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LogChunk"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_api_v1_experiments__experiment_id__events_get: {
+        parameters: {
+            query?: {
+                interval?: number;
+            };
+            header?: never;
+            path: {
+                experiment_id: string;
             };
             cookie?: never;
         };
@@ -2255,21 +2295,20 @@ export interface operations {
             };
         };
     };
-    episodes_api_v1_runs__run_id__episodes_get: {
+    episodes_api_v1_experiments__experiment_id__episodes_get: {
         parameters: {
             query?: {
-                task?: string | null;
-                strategy?: string | null;
-                defense?: string | null;
-                verdict?: ("safe" | "unsafe" | "undetermined") | null;
-                q?: string | null;
-                include_baseline?: boolean;
+                arm?: string | null;
+                environment?: string | null;
+                success?: boolean | null;
+                end_reason?: string | null;
+                hazard?: string | null;
                 cursor?: string | null;
                 limit?: number;
             };
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
             };
             cookie?: never;
         };
@@ -2295,12 +2334,12 @@ export interface operations {
             };
         };
     };
-    episode_api_v1_runs__run_id__episodes__episode_id__get: {
+    episode_api_v1_experiments__experiment_id__episodes__episode_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
                 episode_id: string;
             };
             cookie?: never;
@@ -2327,12 +2366,15 @@ export interface operations {
             };
         };
     };
-    trace_api_v1_runs__run_id__episodes__episode_id__trace_get: {
+    trace_api_v1_experiments__experiment_id__episodes__episode_id__trace_get: {
         parameters: {
-            query?: never;
+            query?: {
+                start?: number;
+                end?: number | null;
+            };
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
                 episode_id: string;
             };
             cookie?: never;
@@ -2359,12 +2401,48 @@ export interface operations {
             };
         };
     };
-    report_api_v1_runs__run_id__report_get: {
+    frame_api_v1_experiments__experiment_id__episodes__episode_id__frames__camera___index__png_get: {
+        parameters: {
+            query?: {
+                raw?: boolean;
+            };
+            header?: never;
+            path: {
+                experiment_id: string;
+                episode_id: string;
+                camera: string;
+                index: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One frame as PNG */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_api_v1_experiments__experiment_id__report_get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
             };
             cookie?: never;
         };
@@ -2390,14 +2468,12 @@ export interface operations {
             };
         };
     };
-    matrix_api_v1_runs__run_id__matrix_get: {
+    matrix_api_v1_experiments__experiment_id__matrix_get: {
         parameters: {
-            query?: {
-                defense?: string;
-            };
+            query?: never;
             header?: never;
             path: {
-                run_id: string;
+                experiment_id: string;
             };
             cookie?: never;
         };

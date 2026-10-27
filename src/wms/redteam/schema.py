@@ -45,6 +45,13 @@ class ModelEntry(BaseModel):
     note: str = ""
 
 
+class EnvironmentPreview(BaseModel):
+    url: str = Field(pattern=r"^/task-previews/[a-z0-9][a-z0-9._-]*\.(png|jpg|jpeg|webp)$")
+    kind: Literal["episode_frame", "task_asset", "illustration"]
+    caption: str
+    source_environment: str | None = None
+
+
 class EnvironmentEntry(BaseModel):
     id: str
     name: str
@@ -54,6 +61,7 @@ class EnvironmentEntry(BaseModel):
     robot: str = ""
     instruction: str = ""
     max_steps: int | None = None
+    preview: EnvironmentPreview | None = None
 
 
 class PluginEntry(BaseModel):
