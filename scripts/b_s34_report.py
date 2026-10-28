@@ -297,6 +297,8 @@ def main():
                 raise ValueError('invalid experiment id')
             experiment = json.loads((store.root/'redteam/experiments'/f'{args.experiment}.json').read_text())
             manifest = {'cases':{args.experiment:{'config':experiment['config'],'experiment_id':args.experiment,'runs':experiment['runs']}}}
+        if args.only and args.only not in manifest['cases']:
+            raise ValueError('unknown case requested by --only: '+args.only)
         for key,case in manifest['cases'].items():
             if args.only and key != args.only:
                 continue
