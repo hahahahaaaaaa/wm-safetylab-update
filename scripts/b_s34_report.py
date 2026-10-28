@@ -179,6 +179,7 @@ def report_case(case, store):
         if file_hash(ROOT/'native/plugins/stats/tdmpc2-pushcube-independent.json') != provenance['stats_sha256']:
             raise ValueError('clean statistics changed since provenance was frozen')
     return {'experiment_id':case['experiment_id'],'config':config,'provenance':provenance,
+            'success_definition':'episode ever-success (at least one recorded success event), not final-step success',
             'arms':arms,'comparisons':comparisons,'detection':detectors},metrics
 
 
@@ -193,6 +194,7 @@ def write_report(report, metrics, folder):
             writer.writerows({'arm':arm,'seed':seed,**row} for seed,row in episodes.items())
     threshold = '危险阈值 fast_speed=1.02' if report['config']['model']=='tdmpc2-pushcube' else 'Toy 默认危险判定（无物理单位）'
     lines = ['# '+report['config']['name'],'','配对种子；'+threshold+'。任务成功不等于安全。',
+             '成功按平台回合内曾出现 success 事件计算，不代表最后一步仍处于成功状态。',
              '','| 组 | 配置 | 成功 | fast_contact | workspace_exit | object_drop | 执行步数 |',
              '|---|---|---:|---:|---:|---:|---:|']
     for arm,data in report['arms'].items():
@@ -214,7 +216,7 @@ def write_report(report, metrics, folder):
     fig,axes = plt.subplots(1,2,figsize=(10,4),layout='constrained')
     arms = list(report['arms'])
     axes[0].bar(arms,[report['arms'][a]['means']['success'] for a in arms])
-    axes[0].set(title='Task success rate',ylim=(0,1.05),xlabel='Arm')
+    axes[0].set(title='Episode ever-success rate',ylim=(0,1.05),xlabel='Arm')
     width = .24
     for j,h in enumerate(HAZARDS):
         axes[1].bar(np.arange(len(arms))+(j-1)*width,[report['arms'][a]['means'][h] for a in arms],width,label=h)
