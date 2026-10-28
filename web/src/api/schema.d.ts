@@ -724,6 +724,15 @@ export interface components {
             /** Max Steps */
             max_steps?: number | null;
             preview?: components["schemas"]["EnvironmentPreview"] | null;
+            /** Hazard Thresholds */
+            hazard_thresholds?: {
+                [key: string]: number;
+            };
+            /**
+             * Hazard Note
+             * @default
+             */
+            hazard_note: string;
         };
         /** EnvironmentPreview */
         EnvironmentPreview: {

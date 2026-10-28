@@ -81,7 +81,9 @@ def build_recipes(config, model, arms, selected, registry):
     for arm in arms:
         for env in config.environments:
             capabilities = registry.items["environments"].get(env, {}).get("capabilities", [])
-            params = {"episodes": config.seeds.episodes, "perturbations": [], "target_moves": [],
+            params = {"episodes": config.seeds.episodes,
+                      "seeds": list(range(config.seeds.start, config.seeds.start + config.seeds.episodes)),
+                      "perturbations": [], "target_moves": [],
                       "plugins": [by_key[key].spec() for key in arm.plugins], "video": False,
                       "save_raw": "rgb" in capabilities}
             if config.max_steps:

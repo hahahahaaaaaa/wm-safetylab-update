@@ -1928,6 +1928,18 @@
                 "type": "null"
               }
             ]
+          },
+          "hazard_thresholds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Hazard Thresholds"
+          },
+          "hazard_note": {
+            "type": "string",
+            "title": "Hazard Note",
+            "default": ""
           }
         },
         "type": "object",

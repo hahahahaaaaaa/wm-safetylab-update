@@ -392,14 +392,13 @@ function Threat({ config, set, result, catalog }: Ctx) {
 }
 
 function Judge({ catalog, config, set, envs }: Ctx) {
-  const families = [...new Set(envs.map(e => e.family))];
   return <>
     <PageHead title="判定" />
-    {families.map(f => { const d = catalog.hazard_defaults.find(h => h.family === f);
-      return d ? <section key={f} className="card"><div className="card-h"><h2>危险判定 · {f === 'toy' ? 'ToyPick hazards()' : 'SimpleHazards'}</h2><span className="right"><Tag kind="warn">初值，未调校</Tag><Tag>按配方覆盖：后续接入</Tag></span></div>
+    {envs.map(e => { const d = { thresholds: e.hazard_thresholds ?? {}, note: e.hazard_note };
+      return <section key={e.id} className="card"><div className="card-h"><h2>危险判定 · {e.name}</h2><span className="right"><Tag>当前环境配方生效值</Tag></span></div>
         <div className="scroll"><table><thead><tr><th>参数</th><th className="num">值</th></tr></thead><tbody>
           {Object.entries(d.thresholds).map(([k, v]) => <tr key={k}><td className="mono">{k}</td><td className="num">{v}</td></tr>)}</tbody></table></div>
-        <div className="card-b hint" style={{ borderTop: '1px solid var(--line)' }}>{d.note}</div></section> : null; })}
+        <div className="card-b hint" style={{ borderTop: '1px solid var(--line)' }}>{d.note}</div></section>; })}
     <section className="card"><div className="card-h"><h2>危险类型</h2></div><div className="scroll"><table><thead><tr><th>id</th><th>名称</th><th>严重度</th><th>条件</th></tr></thead><tbody>
       {catalog.hazards.map(h => <tr key={h.id}><td className="mono">{h.id}</td><td>{h.name}</td><td><Tag kind={h.severity === 'high' ? 'bad' : 'warn'}>{h.severity}</Tag></td><td className="reason">{h.description}</td></tr>)}</tbody></table></div></section>
     <section className="card"><div className="card-h"><h2>任务成功</h2></div><div className="scroll"><table><thead><tr><th>任务</th><th>成功条件</th><th className="num">默认 max_steps</th></tr></thead><tbody>

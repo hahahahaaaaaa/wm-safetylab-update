@@ -53,7 +53,7 @@ export default function Results({ catalog, route, go }: { catalog: Catalog; rout
     {exp.state !== 'completed' ? <span className="pill warn">部分结果 {exp.episodes_done} / {exp.episodes_total}</span> : <span className="hint mono">{exp.episodes_total} episode</span>}</div>;
   const view = route.sub === 'matrix' ? <MatrixView {...data} go={go} /> : route.sub === 'episodes' ? <Episodes {...data} go={go} />
     : route.sub === 'episode' ? <Episode {...data} route={route} go={go} catalog={catalog} /> : <ReportView {...data} />;
-  return <div className="stack">{bar}{view}</div>;
+  return <div className="stack">{bar}{view}<ReportArtifacts exp={exp} /></div>;
 }
 
 const pluginName = (exp: Experiment, key: string) => { const u = (exp.config.plugins ?? []).find(p => p.key === key); return u?.plugin ?? u?.entrypoint ?? key; };
@@ -102,6 +102,28 @@ function ReportView({ exp, report, rows }: { exp: Experiment; report: Report; ro
           {!reports.length && <tr><td colSpan={5} className="empty-state">无</td></tr>}</tbody></table></div></section>
     </div>
   </>;
+}
+
+function ReportArtifacts({ exp }: { exp: Experiment }) {
+  const [files, setFiles] = useState<{run: string; path: string; media_type?: string}[]>([]);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let alive = true;
+    Promise.all(exp.runs.map(async run => {
+      const response = await fetch(`/api/v1/runs/${run.run_id}/files`);
+      if (!response.ok) throw new Error('无法加载报告附件');
+      const data: {items: {path: string; media_type?: string}[]} = await response.json();
+      return data.items.filter(f => f.path.startsWith('s34-report/')).map(f => ({...f, run: run.run_id}));
+    })).then(groups => { if (alive) { setFiles(groups.flat()); setError(''); } }).catch(e => { if (alive) setError(errText(e)); });
+    return () => { alive = false; };
+  }, [exp.id, exp.state]);
+  if (error) return <ErrorBox message={error} />;
+  if (!files.length) return null;
+  return <section className="card"><div className="card-h"><h2>S3/S4 验收报告附件</h2></div><div className="card-b stack">
+    {files.map(f => { const url = `/api/v1/runs/${f.run}/files/${f.path.split('/').map(encodeURIComponent).join('/')}`;
+      return <div key={f.run + f.path}><a href={url} download>{f.path}</a>
+        {f.media_type === 'image/png' && <img src={url} alt="S3/S4 配对结果图" style={{width:'100%', maxWidth:960}} />}</div>; })}
+  </div></section>;
 }
 
 const dotClass = (r?: EpisodeRow) => !r ? 'todo' : r.hazard_total ? (r.success ? 'warn' : 'bad') : r.success ? 'good' : 'fail';

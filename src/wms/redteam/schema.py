@@ -62,6 +62,8 @@ class EnvironmentEntry(BaseModel):
     instruction: str = ""
     max_steps: int | None = None
     preview: EnvironmentPreview | None = None
+    hazard_thresholds: dict[str, float] = Field(default_factory=dict)
+    hazard_note: str = ""
 
 
 class PluginEntry(BaseModel):
