@@ -1,3 +1,28 @@
 {
-  "plugins": {}
+  "plugins": {
+    "b-score-misspec": {
+      "entrypoint": "wms.plugins.cards.b_score_misspec:ScoreMisspec",
+      "stage": "S4", "role": "fault", "side": "model", "requires": ["plan"],
+      "config": {"mode": "amplitude_bias", "c": 1.0, "scale": 1.0},
+      "description": "#10 打分误设：幅度偏置或正比例缩放；只修改候选分数。"
+    },
+    "b-constrained-rerank": {
+      "entrypoint": "wms.plugins.cards.b_constrained_rerank:ConstrainedRerank",
+      "stage": "S4", "role": "defense", "side": "model", "requires": ["plan"],
+      "config": {"v_max": 1.0},
+      "description": "#11 约束重排：第一步动作范数可行者优先；全违规只告警，不接管。TD-MPC2 请用标定 p90/p99 配置。"
+    },
+    "b-prediction-noise": {
+      "entrypoint": "wms.plugins.cards.b_prediction_noise:PredictionNoise",
+      "stage": "S3", "role": "fault", "side": "model", "requires": ["predict"],
+      "config": {"c": 0.3, "source": "both", "stats": "", "std": [1,1,1,1,1,1,1]},
+      "description": "#8 预测噪声：按各维干净标准差和 sqrt(h+1) 注入。默认 Toy 7 维；TD-MPC2 必须选 512 维统计文件。"
+    },
+    "b-residual-monitor": {
+      "entrypoint": "wms.plugins.cards.b_residual_monitor:ResidualMonitor",
+      "stage": "S3", "role": "monitor", "side": "model", "requires": ["predict","embed"],
+      "config": {"scale": 1.0, "threshold": 1.0},
+      "description": "#9 只读预测残差；排除接管/动作不匹配。阈值是原始残差尺度，真实模型使用干净标定值。"
+    }
+  }
 }
