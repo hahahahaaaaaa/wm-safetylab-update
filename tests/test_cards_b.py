@@ -87,6 +87,13 @@ def test_rerank_feasible_all_violating_and_neutral():
     assert 'takeover' not in ctx.alarms[0][1]
 
 
+def test_rerank_rejects_float32_erased_separation():
+    p = {'candidates': np.array([[[1.00001]], [[0.]]], np.float32),
+         'scores': np.array([1e20, 1e20], np.float32)}
+    with pytest.raises(ValueError, match='precision'):
+        ConstrainedRerank({'v_max': 1}).on_plan(p, context())
+
+
 def test_noise_formula_replay_source_and_neutral():
     p = np.ones((4, 2), np.float32)
     obj, ctx = PredictionNoise({'c': .3, 'std': [1, 2]}), context()
@@ -113,6 +120,37 @@ def test_noise_dimension_validation_and_reset():
     assert obj.end_episode(ctx)['noise_calls'] == 1
     obj.reset({}, ctx)
     assert obj.end_episode(ctx)['noise_calls'] == 0
+
+
+@pytest.mark.parametrize('source', ['typo', '', None])
+def test_noise_rejects_invalid_source(source):
+    with pytest.raises(ValueError, match='source'):
+        PredictionNoise({'source': source})
+
+
+@pytest.mark.parametrize('h', [-1, 0.5, '1', None])
+def test_noise_rejects_invalid_horizon(h):
+    obj, ctx = PredictionNoise({'std': [1, 2]}), context()
+    obj.reset({}, ctx)
+    ctx.meta['h'] = h
+    with pytest.raises(ValueError, match='rollout h'):
+        obj.on_prediction(np.ones((4, 2)), ctx)
+
+
+@pytest.mark.parametrize('std', [[], [-1], [float('nan')], [float('inf')], [[1, 2]], None])
+def test_noise_rejects_invalid_std(std):
+    with pytest.raises(ValueError, match='std'):
+        PredictionNoise({'std': std}).reset({}, context())
+
+
+def test_noise_rejects_stats_dimension_mismatch(tmp_path):
+    import json
+    path = tmp_path / 'stats.json'
+    path.write_text(json.dumps({'latent': {'std': [1, 2, 3]}}), encoding='utf-8')
+    obj, ctx = PredictionNoise({'stats': str(path)}), context()
+    obj.reset({}, ctx)
+    with pytest.raises(ValueError, match='dimension matching std'):
+        obj.on_prediction(np.ones((4, 2)), ctx)
 
 
 def test_residual_matches_legacy_with_partial_missing():
