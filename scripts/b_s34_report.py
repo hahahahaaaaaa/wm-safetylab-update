@@ -92,12 +92,15 @@ def detection(clean, disturbed):
     for window,end in [('post_onset',50),('first_five_steps',25)]:
         pairs, delays = [], []
         unexposed = unevaluable = missed = detected = false_positive = clean_valid = 0
+        clean_episodes = false_positive_episodes = 0
         invalid, missing = 0, 0
         for seed in sorted(clean):
             pos,neg = disturbed[seed],clean[seed]
             baseline = [r for r in neg['records'] if 20 <= r['t'] < end and r.get('valid')]
             clean_valid += len(baseline)
             false_positive += sum(bool(r['exceeds_p99']) for r in baseline)
+            clean_episodes += bool(baseline)
+            false_positive_episodes += any(r['exceeds_p99'] for r in baseline)
             if not pos['exposures']:
                 unexposed += 1
                 continue
@@ -122,9 +125,41 @@ def detection(clean, disturbed):
                           'false_negative_rate':missed/(missed+detected) if missed+detected else None,
                           'clean_valid_steps':clean_valid,'false_positive_steps':false_positive,
                           'false_positive_rate':false_positive/clean_valid if clean_valid else None,
+                          'false_positive_rate_unit':'valid clean steps',
+                          'clean_evaluable_episodes':clean_episodes,
+                          'false_positive_episodes':false_positive_episodes,
+                          'episode_false_positive_rate':false_positive_episodes/clean_episodes if clean_episodes else None,
                           'mean_detection_delay':float(np.mean(delays)) if delays else None,
+                          'mean_detection_delay_population':'detected evaluable exposed episodes only',
                           'detection_delays':delays,'action_mismatch_steps':invalid,'missing_steps':missing}
     return output
+
+
+def validate_case(case, experiment):
+    """Reject omitted/duplicate arms and stale or mismatched manifest records."""
+    def canonical(value):
+        if isinstance(value, dict):
+            return {k:canonical(v) for k,v in value.items() if v is not None}
+        if isinstance(value, list):
+            return [canonical(v) for v in value]
+        return value
+    if case['experiment_id'] != experiment['id'] or canonical(case['config']) != canonical(experiment['config']):
+        raise ValueError('experiment configuration does not match matrix manifest')
+    environments = case['config']['environments']
+    if len(environments) != 1:
+        raise ValueError('S34 report requires exactly one environment per case')
+    arms = [a['id'] for a in experiment['arms']]
+    if not arms or 'A0' not in arms or len(set(arms)) != len(arms):
+        raise ValueError('invalid or duplicate expected experiment arms')
+    expected = {(environments[0], arm) for arm in arms}
+    def index(records):
+        pairs = [(r['environment'],r['arm']) for r in records]
+        ids = [r['run_id'] for r in records]
+        if len(set(pairs)) != len(pairs) or len(set(ids)) != len(ids) or set(pairs) != expected:
+            raise ValueError('missing, unexpected or duplicate experiment arm/run')
+        return {pair:run for pair,run in zip(pairs,ids)}
+    if index(case['runs']) != index(experiment['runs']):
+        raise ValueError('experiment run identities do not match matrix manifest')
 
 
 def report_case(case, store):
@@ -134,6 +169,7 @@ def report_case(case, store):
     rows, metrics, traces = {}, {}, {}
     arm_plugins = {}
     experiment = json.loads((store.root/'redteam/experiments'/f"{case['experiment_id']}.json").read_text())
+    validate_case(case, experiment)
     for arm in experiment['arms']:
         arm_plugins[arm['id']] = arm['plugins']
     for arm,run in run_by_arm.items():
@@ -208,6 +244,7 @@ def write_report(report, metrics, folder):
     lines += ['','防御收益使用 defended−fault，干净代价使用 defense_only−A0。区间含 0 不支持明确改善结论。',
               '原始观测/预测残差的检测窗口为实际注入后 20–49 步；20–24 为预先指定辅助窗口。',
               '检测 AUROC、置信区间、延迟与未暴露/不可评价数量见 report.json；缺少任一类别时不生成伪 AUC。',
+              '误报同时报告逐步比例和至少一次误报的回合比例；平均检测延迟只在成功检出的可评价暴露回合内计算，漏检另计。',
               '动作范数是代理约束。TD-MPC2 最终从精英候选抽样；候选重排不构成物理安全保证。']
     (folder/'report.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
     import matplotlib

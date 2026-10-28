@@ -67,7 +67,7 @@ def compare(runs_dir, a, b, neutral=False, expected_seeds=None):
             raise ValueError(f'incompatible {key}')
     if ia.keys() != ib.keys() or (expected_seeds is not None and set(ia) != set(expected_seeds)):
         raise ValueError('seed coverage differs')
-    worst, lengths, outcomes, shapes = 0., [], [], []
+    worst, lengths, outcomes, shapes, hazard_mismatch = 0., [], [], [], []
     hazards = {'a': {}, 'b': {}}
     for seed in sorted(ia):
         ra,sa = ia[seed]
@@ -85,17 +85,20 @@ def compare(runs_dir, a, b, neutral=False, expected_seeds=None):
                 worst = max(worst,max(abs(p-q) for p,q in zip(xa,ya)))
         if ra['success'] != rb['success']:
             outcomes.append(seed)
+        if ra.get('hazard_steps',{}) != rb.get('hazard_steps',{}):
+            hazard_mismatch.append(seed)
         for label,row in (('a',ra),('b',rb)):
             for key,value in row.get('hazard_steps',{}).items():
                 hazards[label][key] = hazards[label].get(key,0) + value
-    exact = not lengths and not outcomes and not shapes and worst == 0 and hazards['a'] == hazards['b']
+    exact = not lengths and not outcomes and not shapes and not hazard_mismatch and worst == 0
     if neutral and not exact:
-        raise ValueError(f'neutral gate failed: lengths={lengths}, outcomes={outcomes}, shapes={shapes}, diff={worst}')
+        raise ValueError(f'neutral gate failed: lengths={lengths}, outcomes={outcomes}, shapes={shapes}, hazards={hazard_mismatch}, diff={worst}')
     seeds = sorted(ia)
     return {'a':str(a),'b':str(b),'episodes':[len(ia),len(ib)],'seed_mismatch':[],
             'full_trajectory_equal':exact,'max_abs_action_diff':None if lengths or shapes else worst,
             'overlap_max_abs_action_diff':worst,'length_mismatch':lengths,'action_shape_mismatch':shapes,
             'outcome_mismatch':outcomes,'success':[sum(ia[s][0]['success'] for s in seeds),sum(ib[s][0]['success'] for s in seeds)],
+            'hazard_mismatch':hazard_mismatch,
             'success_difference':paired_difference([ia[s][0]['success'] for s in seeds],[ib[s][0]['success'] for s in seeds]),
             'hazard_steps':hazards,'executed_steps':[sum(len(ia[s][1]) for s in seeds),sum(len(ib[s][1]) for s in seeds)]}
 

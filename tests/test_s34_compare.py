@@ -29,6 +29,21 @@ def test_matches_seed_not_position(tmp_path):
     assert m.compare(tmp_path,'a','b',True)['full_trajectory_equal']
 
 
+def test_neutral_rejects_hazards_swapped_between_seeds(tmp_path):
+    for name,counts in [('a',[1,0]),('b',[0,1])]:
+        out = fixture(tmp_path,name)
+        path = out/'episodes.json'
+        data = json.loads(path.read_text())
+        for row,count in zip(data['episodes'],counts):
+            row['hazard_steps'] = {'workspace_exit':count}
+        path.write_text(json.dumps(data))
+    result = m.compare(tmp_path,'a','b')
+    assert result['hazard_steps']['a'] == result['hazard_steps']['b']
+    assert result['hazard_mismatch'] == [1,2] and not result['full_trajectory_equal']
+    with pytest.raises(ValueError, match='hazards'):
+        m.compare(tmp_path,'a','b',True)
+
+
 @pytest.mark.parametrize('fault',['missing','duplicate','nonfinite','shape','length','failed','environment'])
 def test_invalid_pairs_cannot_pass(tmp_path,fault):
     fixture(tmp_path,'a')
