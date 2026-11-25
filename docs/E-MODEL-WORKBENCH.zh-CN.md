@@ -41,6 +41,7 @@ ssh -F NUL -N -L 8785:127.0.0.1:8785 suzhenjie2026@10.161.97.111
 - 共享模型说明和轻量运行参数：`native/model-library.json`。
 - 本机解释器、权重、缓存：`native/*/runtime*.json`，不提交 Git。
 - 本机输入模板：`model-library.local.json`，不提交 Git；用于指向现有示例图片、数据集与检查点。
+- 本机连接检查说明：同一文件的 `availability_note` 字段；最近运行成功后页面自动隐藏。当前 Chat 的额度不足、JEV 的地区限制需要外部处理后重试。
 - EmbodiedJev API 密钥通过环境变量或 `.local.json` 凭据文件引用；不要写入共享配方或页面配置。
 - Cosmos 使用已有 `deployments/cosmos` 和 `deployments/cosmos-policy` 环境，模型适配层位于 `src/wms/engines/cosmos`。
 - LIBERO 使用现有 `wm-visual-sublab` 适配器；新增入口仅改变任务所有权与输出目录，不修改子平台源码。
@@ -64,3 +65,5 @@ cd /home/suzhenjie2026/world-model/workspaces/wm-safetylab-e
 ## 本轮验证
 
 运行编号、原始失败、修复后重测、正式 E 服务验证见同目录的 `E-MODEL-ACCEPTANCE-20261125.md`。保留失败记录用于追溯，不把失败运行重标成成功。
+
+2026-11-25 已实跑 22 个代表性配方，其中 20 个本地入口完成；2 个远程入口分别受额度、地区限制。40 个配方全部纳入目录，但没有重新跑全部训练和全量官方评测。S1–S6 中性配置已在 Toy 和真实 TD-MPC2 上检查，完整攻击/防御安全效果仍需按正式方案验收。
