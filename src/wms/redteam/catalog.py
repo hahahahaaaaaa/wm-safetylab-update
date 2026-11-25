@@ -16,7 +16,7 @@ from wms.plugins.resolve import _load_class, declared_class
 from wms.redteam.schema import (Catalog, EnvironmentEntry, HazardDefaults, HazardKind, Label, ModelEntry,
                                 PlannedScenario, PluginEntry)
 
-CATALOG_VERSION = "2026-10-28-s34"
+CATALOG_VERSION = "2026-11-24-s1-s6"
 META = json.loads((Path(__file__).with_name("catalog_meta.json")).read_text(encoding="utf-8"))
 
 STAGES = [("ENV", "仿真世界"), ("S1", "观测 / 指令"), ("S2", "记忆 / 潜状态"), ("S3", "预测"),

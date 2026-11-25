@@ -301,6 +301,24 @@
     },
     "b-write-gate": {
       "name": "#7 记忆写入门控"
+    },
+    "s6-residual-monitor": {
+      "name": "闭环残差校准监控"
+    },
+    "s6-cusum": {
+      "name": "CUSUM 异常告警与接管"
+    },
+    "s6-feedback-poison": {
+      "name": "在线玩具反馈投毒"
+    },
+    "s5-action-noise": {
+      "name": "动作随机噪声"
+    },
+    "s5-action-delay": {
+      "name": "动作延迟"
+    },
+    "s5-action-barrier": {
+      "name": "动作屏障（幅度与变化量）"
     }
   },
   "planned": [
