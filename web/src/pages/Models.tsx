@@ -20,6 +20,9 @@ export default function Models() {
   const [busy, setBusy] = useState(false);
   const model = items.find(i => i.id === selected);
   const active = runs.find(r => r.id === runId);
+  const outputs = active?.result?.outputs ?? [];
+  const previews = [...outputs.filter(o => o.media_type?.startsWith('video/')).slice(0, 3),
+    ...outputs.filter(o => o.media_type?.startsWith('image/')).slice(0, 6)];
 
   useEffect(() => {
     let live = true;
@@ -90,11 +93,13 @@ export default function Models() {
         <p>{statusTitle[active.state] ?? active.state} · {active.id} · 独立评价：{active.evaluation_status ?? '未提供'}
           {!terminal(active.state) && <button className="btn" onClick={() => post(`/runs/${active.id}/cancel`).catch(e => setError(String(e)))}>取消此任务</button>}</p>
         {active.error != null && <ErrorBox message={typeof active.error === 'string' ? active.error : JSON.stringify(active.error)} />}
-        <div className="model-artifacts">{active.result?.outputs.map((o, i) => <div key={`${o.path}-${i}`}>
+        <div className="model-artifacts">{previews.map((o, i) => <div key={`${o.path}-${i}`}>
           <a href={fileUrl(active.id, o.path)} target="_blank" rel="noreferrer">{o.kind} · {o.path}</a>
           {o.media_type?.startsWith('video/') && <video controls preload="metadata" src={fileUrl(active.id, o.path)} />}
-          {o.media_type?.startsWith('image/') && <img alt={o.kind} src={fileUrl(active.id, o.path)} />}
+          {o.media_type?.startsWith('image/') && <img loading="lazy" alt={o.kind} src={fileUrl(active.id, o.path)} />}
         </div>)}</div>
+        <details><summary>全部产物（{outputs.length}）</summary><ul>{outputs.map((o, i) =>
+          <li key={`${o.path}-${i}`}><a href={fileUrl(active.id, o.path)} target="_blank" rel="noreferrer">{o.kind} · {o.path}</a></li>)}</ul></details>
         <details><summary>运行结果 JSON</summary><pre>{JSON.stringify(active.result, null, 2)}</pre></details>
         <h3>运行日志</h3><pre aria-label="模型运行日志" className="model-log">{log || '暂无日志'}</pre>
       </>}
