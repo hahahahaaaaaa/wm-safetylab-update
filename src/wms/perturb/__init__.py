@@ -28,6 +28,8 @@ import math
 
 import numpy as np
 
+from .image_cards import brightness, contrast, color_bias, affine
+
 TYPES = {"occlude", "blur", "noise", "drop", "freeze"}
 
 

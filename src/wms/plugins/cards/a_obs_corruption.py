@@ -1,6 +1,37 @@
-"""Minimal vector variant of existing S1 card #1, needed by S3 #9 acceptance."""
+"""Card #1: image corruptions and calibrated vector noise."""
 from ..base import Plugin
 from .b_numeric import nonnegative, std_vector, cast_finite
+from .a_common import active, window, images, changed_images
+
+
+class ObsCorruption(Plugin):
+    stage, role, requires = 'S1', 'fault', ('rgb',)
+    neutral = {'severity': 0}
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.severity = self.config.get('severity', 3)
+        if type(self.severity) is not int or not 0 <= self.severity <= 5:
+            raise ValueError('severity must be an integer in 0..5')
+        self.kind = self.config.get('kind', 'noise')
+        if self.kind not in ('noise', 'brightness', 'contrast', 'color_bias', 'blur'):
+            raise ValueError('unknown image corruption kind')
+        window(self.config)
+
+    def on_observation(self, obs, ctx):
+        if self.severity == 0 or not active(self.config, ctx.t):
+            return obs
+        from wms import perturb
+        out = {}
+        for camera, image in images(obs, self.config.get('camera', '*')):
+            if self.kind == 'noise':
+                out[camera] = perturb.noise(image, 255*(.08,.12,.18,.26,.38)[self.severity-1], ctx.rng)
+            elif self.kind == 'blur':
+                out[camera] = perturb.blur(image, (.5,1,2,3,4)[self.severity-1])
+            else:
+                out[camera] = getattr(perturb, self.kind)(image, self.severity)
+            ctx.log(injected=True, kind=self.kind, severity=self.severity, camera=camera)
+        return changed_images(obs, out)
 
 
 class VectorObsNoise(Plugin):

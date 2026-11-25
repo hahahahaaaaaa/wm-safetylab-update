@@ -149,6 +149,10 @@ def validate_config(config: ExperimentConfig, catalog: Catalog, registry) -> Val
         if p.error:
             reasons.append(p.error)
         else:
+            phases = getattr(p.cls, 'required_state_phases', ())
+            offered = registry.items['models'].get(config.model, {}).get('state_phases', [])
+            if phases and not set(phases) <= set(offered):
+                reasons.append(f'需要状态阶段 {list(phases)}，该模型只声明 {offered}')
             for text in base.problems(p.cls, p.config):
                 if "privileged defense" in text:
                     add("threat", f"plugins.{p.use.key}.config.oracle",

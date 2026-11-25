@@ -2,9 +2,140 @@
   "plugins": {
     "a-obs-noise-vector": {
       "entrypoint": "wms.plugins.cards.a_obs_corruption:VectorObsNoise",
-      "stage": "S1", "role": "fault", "requires": ["vector"],
-      "config": {"c": 0.1, "start": 0, "end": null, "stats": "", "std": [1,1,1,1,1,1,1]},
+      "stage": "S1",
+      "role": "fault",
+      "requires": [
+        "vector"
+      ],
+      "config": {
+        "c": 0.1,
+        "start": 0,
+        "end": null,
+        "stats": "",
+        "std": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
       "description": "#1 最小向量观测噪声，供 #9 验收。默认 Toy 7 维；TD-MPC2 需 35 维 observation_vector 统计。"
+    },
+    "a-obs-corruption": {
+      "entrypoint": "wms.plugins.cards.a_obs_corruption:ObsCorruption",
+      "stage": "S1",
+      "role": "fault",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "kind": "noise",
+        "severity": 3
+      },
+      "description": "#1 图像观测损坏，五级剂量，0 为中性"
+    },
+    "a-camera-jitter": {
+      "entrypoint": "wms.plugins.cards.a_camera_jitter:CameraJitter",
+      "stage": "S1",
+      "role": "fault",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "shift": 0.05,
+        "rotate": 5,
+        "scale": 0.05,
+        "mode": "persistent"
+      },
+      "description": "#2 图像平面仿射抖动：持续或每步"
+    },
+    "a-patch-attack": {
+      "entrypoint": "wms.plugins.cards.a_patch_attack:FixedPatch",
+      "stage": "S1",
+      "role": "attack",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "area": 0.1
+      },
+      "description": "#3 固定遮挡块；外部黑盒搜索，训练/留出分离"
+    },
+    "a-frame-guard": {
+      "entrypoint": "wms.plugins.cards.a_frame_guard:FrameGuard",
+      "stage": "S1",
+      "role": "defense",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "tau": null,
+        "max_replacements": 5
+      },
+      "description": "#4 异常帧替换；真实实验须提供干净标定阈值"
+    },
+    "a-input-monitor": {
+      "entrypoint": "wms.plugins.cards.a_input_monitor:InputMahalanobis",
+      "stage": "S1",
+      "role": "monitor",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "mean": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "std": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "threshold": null
+      },
+      "description": "#5 图像输入异常监控；默认仅 Toy 接口检查，真实实验必须拟合 stats"
+    },
+    "a-input-monitor-vector": {
+      "entrypoint": "wms.plugins.cards.a_input_monitor:VectorInputMahalanobis",
+      "stage": "S1",
+      "role": "monitor",
+      "requires": [
+        "vector"
+      ],
+      "config": {
+        "mean": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "std": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "threshold": null
+      },
+      "description": "#5 向量输入异常监控；默认 Toy 7 维，真实实验必须拟合 stats"
     }
   }
 }

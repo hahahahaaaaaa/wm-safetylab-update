@@ -51,7 +51,7 @@ TOY_ENVS = {
 }
 TOY_MODELS = {
     "toy-centroid-memory": {"entrypoint": "wms.scenarios.toy.policy:CentroidPickPolicy", "probes": ["state"],
-                            "config": {"memory": True}},
+                            "config": {"memory": True}, "state_phases": ["read", "written"]},
     "toy-planner": {"entrypoint": "wms.scenarios.toy.planner:ToyPlannerPolicy",
                     "probes": ["state", "predict", "plan", "embed"], "config": {"samples": 32, "horizon": 4}},
     "toy-planner-online": {"entrypoint": "wms.scenarios.toy.planner:ToyOnlinePlannerPolicy",
@@ -89,7 +89,8 @@ def toys_for(cls):
     requires = set(getattr(cls, "requires", ()) or ())
     return [(m, e) for m, e in TOYS
             if requires & set(PROBES) <= set(TOY_MODELS[m]["probes"])
-            and requires - set(PROBES) <= set(TOY_ENVS[e]["capabilities"])]
+            and requires - set(PROBES) <= set(TOY_ENVS[e]["capabilities"])
+            and set(getattr(cls, 'required_state_phases', ())) <= set(TOY_MODELS[m].get('state_phases',()))]
 
 
 def _same_run(a, b, episodes):

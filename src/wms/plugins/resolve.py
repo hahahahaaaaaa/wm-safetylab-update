@@ -126,6 +126,9 @@ def check(config):
             continue
         out += [f"plugin {spec['id']}: {text}" for text in mismatches(cls, spec)]
         out += [f"plugin {spec['id']}: {text}" for text in problems(cls, spec.get("config"))]
+        phases = getattr(cls, 'required_state_phases', ())
+        if phases and not set(phases) <= set(model.get('state_phases', ())):
+            out.append(f"plugin {spec['id']} requires state phases {list(phases)}; model declares {model.get('state_phases', [])}")
         for need in getattr(cls, "requires", ()) or ():
             if need in PROBES:
                 if executor != "model":

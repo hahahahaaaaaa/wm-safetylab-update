@@ -250,6 +250,9 @@ class PluginSet:
         from .resolve import mismatches
         for item in self.items:
             errors += problems(type(item.plugin), item.plugin.config)
+            phases = getattr(item.plugin, 'required_state_phases', ())
+            if phases and not set(phases) <= set(getattr(model, 'state_phases', ())):
+                errors.append(f'{item.id}: model does not offer required state phases {list(phases)}')
             errors += [f"{item.id}: {text}" for text in mismatches(type(item.plugin), item.spec)]
             if item.privileged and item.role == "defense" and not item.plugin.config.get("oracle"):
                 errors.append(f"{item.id}: privileged defense needs config.oracle = true")

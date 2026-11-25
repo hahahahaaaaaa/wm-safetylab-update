@@ -20,6 +20,7 @@ import numpy as np
 
 class CentroidPickPolicy:
     probes = ("state",)
+    state_phases = ('read', 'written')
 
     def __init__(self, config):
         self.camera = config.get("camera", "top")
