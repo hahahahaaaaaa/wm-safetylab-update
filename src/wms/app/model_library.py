@@ -30,6 +30,8 @@ def resource_issues(config):
             return
         try:
             value = json.loads(path.read_text(encoding="utf-8-sig"))
+            if not isinstance(value, dict):
+                raise ValueError("Runtime configuration must be an object")
             for key in path_keys:
                 item = value.get(key)
                 if isinstance(item, str):
@@ -74,7 +76,7 @@ def catalog(registry, runs=()):
         details = metadata["families"].get(family, {"name": family, "scope": "接口示例", "stages": []})
         resolved = registry.recipe(recipe_id)
         issues = resource_issues(resolved) if resolved["configured"] else ["缺少或无效的机器配置"]
-        template = {"seed": 0, "inputs": deepcopy(raw.get("inputs", {})),
+        template = {"seed": raw.get("seed", 0), "inputs": deepcopy(raw.get("inputs", {})),
                     "params": deepcopy(raw.get("params", {}))}
         # Machine-bound values must be resolved server-side, not sent back by UI.
         for key in ("runtime_config", "profile", "adapter_entrypoint"):
@@ -92,6 +94,8 @@ def catalog(registry, runs=()):
             "family": family, "family_name": details["name"], "scope": details["scope"],
             "stages": stages,
             "notes": details.get("notes", ""), "ready": not issues, "issues": issues,
+            "availability_note": local.get(recipe_id, {}).get("availability_note", "")
+                if not latest or latest.get("state") != "completed" else "",
             "template": template,
             "latest_run": {k: latest.get(k) for k in ("id", "state", "created_at", "evaluation_status")} if latest else None})
     return result

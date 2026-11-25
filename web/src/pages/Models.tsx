@@ -5,6 +5,7 @@ import { ErrorBox } from '../ui';
 interface ModelRecipe {
   id: string; name: string; description: string; family: string; family_name: string;
   scope: string; stages: string[]; notes: string; ready: boolean; issues: string[];
+  availability_note?: string;
   template: JsonObject; latest_run: { id: string; state: string } | null;
 }
 
@@ -83,6 +84,7 @@ export default function Models() {
       <p>{model.description}</p><p>{model.notes}</p>
       <p><b>插件挂点：</b>{model.stages.length ? model.stages.join(' · ') : '此配方为原生任务入口，不使用通用逐步插件内核'}</p>
       <p><b>接入状态：</b>{model.ready ? '资源就绪，支持提交' : model.issues.join('；')}　<b>最近运行：</b>{model.latest_run ? statusTitle[model.latest_run.state] ?? model.latest_run.state : '尚无工作台运行记录'}</p>
+      {model.availability_note && <p><b>连接检查：</b>{model.availability_note}</p>}
       <label>运行配置（JSON）<textarea aria-label="模型运行配置" spellCheck={false} rows={16} value={text} onChange={e => setText(e.target.value)} /></label>
       <button className="btn primary" disabled={!model.ready || busy} onClick={submit}>{busy ? '提交中…' : '提交实验'}</button>
     </section>}

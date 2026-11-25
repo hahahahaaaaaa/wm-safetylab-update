@@ -20,6 +20,7 @@ def test_catalog_never_exposes_runtime_credentials(tmp_path):
     assert "runtime" not in next(i for i in items if i["id"] == "native-cosmos")["template"]
     assert next(i for i in items if i["id"] == "native-cosmos")["stages"] == []
     assert next(i for i in items if i["id"] == "toy-episode-occlusion")["stages"] == ['S1', 'S2', 'S5', 'S6']
+    assert next(i for i in items if i["id"] == "tdmpc2-pushcube-episode")["template"]["seed"] == 1000
     assert next(i for i in items if i["id"] == "demo-predict")["latest_run"] is None
 
 
@@ -32,6 +33,8 @@ def test_missing_nested_resources_are_not_marked_ready(tmp_path):
     assert any("checkpoint_dir" in message for message in model_library.resource_issues(config))
     child.write_text(json.dumps({"config": "runtime.json"}))
     assert not model_library.resource_issues(config)  # cycles are bounded
+    child.write_text('[]')
+    assert any('无法读取' in message for message in model_library.resource_issues(config))
 
 
 def test_credentials_checked_using_worker_environment(tmp_path):
@@ -43,6 +46,22 @@ def test_credentials_checked_using_worker_environment(tmp_path):
     assert not model_library.resource_issues(config)
     config["runtime"]["env"] = {}
     assert model_library.resource_issues(config)
+
+
+def test_connection_note_clears_after_a_successful_retest(tmp_path, monkeypatch):
+    registry = Registry()
+    (tmp_path / 'native').mkdir()
+    metadata = (model_library.PROJECT_ROOT / 'native/model-library.json').read_text()
+    (tmp_path / 'native/model-library.json').write_text(metadata)
+    (tmp_path / 'model-library.local.json').write_text(json.dumps({
+        'demo-predict': {'availability_note': 'Previous provider quota error'}}))
+    monkeypatch.setattr(model_library, 'PROJECT_ROOT', tmp_path)
+    run = {'id': 'run_test', 'state': 'failed', 'config': {'workbench_recipe': 'demo-predict'}}
+    item = next(i for i in model_library.catalog(registry, [run]) if i['id'] == 'demo-predict')
+    assert item['availability_note'] == 'Previous provider quota error'
+    run['state'] = 'completed'
+    item = next(i for i in model_library.catalog(registry, [run]) if i['id'] == 'demo-predict')
+    assert item['availability_note'] == ''
 
 
 def test_submit_runs_actual_worker_and_keeps_recipe_identity(tmp_path):
