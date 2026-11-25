@@ -35,6 +35,23 @@ ssh -N -L 8785:127.0.0.1:8785 suzhenjie2026@10.161.97.111
 
 模型适用性：Toy 和 MemoryVLA 支持上述图像/记忆实验；TD-MPC2 走向量观测与 latent/规划热启动故障，不支持写入门控。注册校验、Web 提交校验和运行时均拒绝不具备 written 阶段的写门控配置。
 
+### 配置参数
+
+故障/攻击的 `start` 包含起点、`end` 不包含终点，`end=null` 表示持续到回合结束。图像插件 `camera` 为相机名，`*` 表示全部；MemoryVLA 使用 `3rd_view_camera`，本次 Toy 使用 `top`。防御和监控不使用这个注入时间窗口。
+
+| 插件 | 主要配置 |
+|---|---|
+| a-obs-corruption | `kind`: noise/brightness/contrast/color_bias/blur；`severity`: 0–5；`start`、`end`、`camera`。亮度/对比度采用 ImageNet-C 的五级常数，color_bias 为本项目自定义红蓝偏移。 |
+| a-obs-noise-vector | `c`≥0；`stats` 为包含 observation_vector.std 的统计 JSON，或直接提供 `std` 数组；`start`、`end`。TD-MPC2 现有统计为 native/plugins/stats/tdmpc2-pushcube-independent.json。 |
+| a-camera-jitter | `mode`: persistent/per_step；`shift` 为边长比例上限（0–1）；`rotate` 为角度上限；`scale` 为缩放波动上限（0≤scale<1）；`start`、`end`、`camera`。 |
+| a-patch-attack | `area` 为最大面积比例（0–1）；`box=[x0,y0,x1,y1]` 归一化坐标且面积不超预算；省略 box 时采用居中正方形；`value` 为 0–255 整数或 mean；`start`、`end`、`camera`。面积为 0 时中性。 |
+| a-frame-guard | `tau` 为标定得到的帧差阈值，null 中性；`max_replacements` 默认 5；`camera`。 |
+| a-input-monitor / vector | `stats` 为拟合脚本输出；也可直接传 `mean`、`precision` 或 `std`、`threshold`；图像版额外指定 `camera`。真实验收必须提供标定统计。 |
+| b-memory-fault | `mode`: none/wipe/stale/noise；`steps` 指定注入时点列表；`start`、`end` 指定窗口；stale 使用 `k`；noise 使用 `c`、`stats`、`stats_field`，或显式 `std`。TD-MPC2 的 stats_field 为 latent；MemoryVLA 为 memory。 |
+| b-write-gate | `tau` 为标定距离阈值，null 中性；`recent` 默认 16；`collect_moments=true` 仅在干净标定时收集每个记忆 bank 的均值/标准差信息。 |
+
+真实实验的完整、可直接解析配置保存在每组 `runs/<组名>/request.json` 和 `config.json`。变更剂量时以 request 为参考，不手改已经运行过的配置或结果文件。
+
 ## 阅读顺序与公式
 
 1. `src/wms/plugins/base.py`、`runtime.py`：生命周期、随机数、日志与插件顺序。
