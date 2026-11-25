@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import sys
 import time
@@ -9,7 +10,7 @@ from fastapi.testclient import TestClient
 from wms.app.api import create_app
 from wms.redteam import stats
 
-TOY_PYTHON = Path("K:/world-model/envs/wms-onboarding/Scripts/python.exe")
+TOY_PYTHON = Path(os.environ.get("WMS_TOY_PYTHON", "K:/world-model/envs/wms-onboarding/Scripts/python.exe"))
 ATTACK, GATE = "redteam_fixtures:NudgeAttack", "redteam_fixtures:TruthGate"
 
 

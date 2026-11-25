@@ -1,0 +1,223 @@
+{
+  "families": {
+    "minimal": {
+      "name": "CPU 示例",
+      "scope": "接口与任务流程示例",
+      "stages": []
+    },
+    "toy": {
+      "name": "Toy",
+      "scope": "在线学习与插件机制验证",
+      "stages": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ]
+    },
+    "memoryvla": {
+      "name": "MemoryVLA",
+      "scope": "SimplerEnv 闭环与记忆读写",
+      "stages": [
+        "S1",
+        "S2",
+        "S5",
+        "S6"
+      ],
+      "notes": "S3 预测与 S4 候选规划不适用；S6 为反馈监控，不代表真实模型在线更新。"
+    },
+    "tdmpc2": {
+      "name": "TD-MPC2",
+      "scope": "ManiSkill 训练、预测与闭环规划",
+      "stages": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "notes": "状态输入模型；图像攻击不适用。真实训练更新与回滚需单独验收。"
+    },
+    "tdmpc2_center": {
+      "name": "TD-MPC2 中心场景",
+      "scope": "独立训练与评测配置",
+      "stages": []
+    },
+    "openvla": {
+      "name": "OpenVLA",
+      "scope": "动作推理与 SimplerEnv 闭环",
+      "stages": [
+        "S1",
+        "S5",
+        "S6"
+      ],
+      "notes": "无可写记忆及预测、候选规划探针。S6 仅支持适用的反馈监控。"
+    },
+    "dreamer": {
+      "name": "Dreamer RSSM",
+      "scope": "工程检查点离线预测",
+      "stages": [],
+      "notes": "不是完整 Dreamer 训练复现或 S1–S6 逐步闭环。"
+    },
+    "rlvr_language": {
+      "name": "RLVR-World 语言",
+      "scope": "离线后果预测",
+      "stages": []
+    },
+    "rlvr_video": {
+      "name": "RLVR-World 视频",
+      "scope": "离线视频预测",
+      "stages": []
+    },
+    "wan": {
+      "name": "Wan2.1 T2V 1.3B",
+      "scope": "文本生成视频",
+      "stages": []
+    },
+    "modelscope": {
+      "name": "ModelScope T2V",
+      "scope": "文本生成视频",
+      "stages": []
+    },
+    "renew": {
+      "name": "RENEW",
+      "scope": "2048 小规模反馈更新机制",
+      "stages": [],
+      "notes": "不等同于机械臂训练期安全更新。"
+    },
+    "embodied_jev": {
+      "name": "EmbodiedJev",
+      "scope": "MuJoCo 候选技能决策",
+      "stages": [],
+      "notes": "baseline 为规则策略；Chat/JEV 需要可用的 API 凭据。当前入口不使用通用 S1–S6 插件内核。"
+    },
+    "state_wm_maniskill": {
+      "name": "Small State WM",
+      "scope": "ManiSkill 数据采集、训练与后果评测",
+      "stages": []
+    },
+    "maniskill": {
+      "name": "ManiSkill",
+      "scope": "仿真环境、基准控制与回放",
+      "stages": [],
+      "notes": "环境和基准控制器，不是额外的预训练模型。"
+    },
+    "simpler": {
+      "name": "SimplerEnv",
+      "scope": "仿真轨迹回放",
+      "stages": []
+    },
+    "cosmos": {
+      "name": "Cosmos3-Edge",
+      "scope": "图像与文本生成视频",
+      "stages": []
+    },
+    "cosmos_policy": {
+      "name": "Cosmos3-Edge-Policy-DROID",
+      "scope": "离线动作块推理",
+      "stages": [],
+      "notes": "不控制实体机械臂。Isaac Sim 闭环尚未通过；历史部署记录显示渲染器与驱动兼容问题。"
+    },
+    "openvla_libero": {
+      "scope": "视觉微调模型与 LIBERO 闭环",
+      "notes": "复用固定视觉子平台适配器，支持其图像干预；尚未接入通用 S1–S6 插件内核。",
+      "stages": [],
+      "name": "OpenVLA LIBERO-Spatial"
+    }
+  },
+  "smoke": {
+    "native-wan": {
+      "inputs": {
+        "generation": {
+          "size": [
+            320,
+            192
+          ],
+          "frame_num": 17,
+          "sampling_steps": 4
+        }
+      }
+    },
+    "native-modelscope": {
+      "inputs": {
+        "generation": {
+          "num_frames": 8,
+          "num_inference_steps": 4
+        }
+      }
+    },
+    "native-dreamer": {
+      "inputs": {
+        "sequence_steps": 8
+      }
+    },
+    "native-renew": {
+      "inputs": {
+        "warmup_steps": 20,
+        "update_steps": 4,
+        "max_steps": 20,
+        "batch_size": 8
+      }
+    },
+    "memoryvla-bridge-episode": {
+      "params": {
+        "episodes": 1,
+        "max_steps": 120,
+        "video": true
+      }
+    },
+    "memoryvla-bridge-episode-occlusion": {
+      "params": {
+        "episodes": 1,
+        "max_steps": 120,
+        "video": true
+      }
+    },
+    "openvla-bridge-episode": {
+      "params": {
+        "episodes": 1,
+        "max_steps": 120,
+        "video": true
+      }
+    },
+    "tdmpc2-pushcube-episode": {
+      "params": {
+        "episodes": 1,
+        "max_steps": 50,
+        "video": true
+      }
+    },
+    "tdmpc2-pushcube-eval": {
+      "params": {
+        "episodes": 1,
+        "video_episodes": 1
+      }
+    },
+    "state-wm-maniskill": {
+      "params": {
+        "episodes": 8,
+        "max_episode_steps": 30,
+        "training_seeds": [
+          0
+        ],
+        "epochs": 5,
+        "batch_size": 32
+      }
+    },
+    "embodied-jev-baseline": {
+      "params": {
+        "max_cycles": 10,
+        "record_video": true
+      }
+    },
+    "toy-episode-occlusion": {
+      "params": {
+        "episodes": 1,
+        "max_steps": 10
+      }
+    }
+  }
+}
