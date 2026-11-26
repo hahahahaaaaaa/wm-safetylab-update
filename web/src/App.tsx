@@ -4,9 +4,8 @@ import Setup, { type StepId } from './pages/Setup';
 import Progress from './pages/Progress';
 import Results from './pages/Results';
 import { ErrorBox } from './ui';
-import Models from './pages/Models';
 
-export type Section = 'new' | 'config' | 'progress' | 'results' | 'models';
+export type Section = 'new' | 'config' | 'progress' | 'results';
 export interface Route { sec: Section; sub: string; exp?: string; ep?: string }
 export type Go = (route: Partial<Route> & { sec: Section }) => void;
 
@@ -15,11 +14,13 @@ const SECTIONS: { id: Section; title: string; subs?: [string, string][] }[] = [
   { id: 'config', title: '实验配置' },
   { id: 'progress', title: '实验进度', subs: [['runs', '运行列表'], ['live', '实时监控'], ['logs', '运行日志']] },
   { id: 'results', title: '实验结果', subs: [['report', '对照报告'], ['matrix', '环节 × 插件'], ['episodes', 'Episodes'], ['episode', 'Episode 详情']] },
-  { id: 'models', title: '模型工作台' },
 ];
-const DEFAULT_SUB: Record<Section, string> = { new: 'basic', config: 'plugins', progress: 'runs', results: 'report', models: 'library' };
+const DEFAULT_SUB: Record<Section, string> = { new: 'basic', config: 'plugins', progress: 'runs', results: 'report' };
 
 function readRoute(): Route {
+  if (/^#models(?:[/?]|$)/.test(location.hash)) {
+    history.replaceState(null, '', '#new/basic');
+  }
   const [path, search] = location.hash.slice(1).split('?');
   const [sec, sub] = path.split('/') as [Section, string];
   const params = new URLSearchParams(search ?? '');
@@ -72,7 +73,7 @@ export default function App() {
       </nav></div></div>}
     </header>
     <main className="wrap">
-      {route.sec === 'models' ? <Models /> : error ? <ErrorBox message={error} /> : !catalog ? <div className="empty-state">加载目录…</div>
+      {error ? <ErrorBox message={error} /> : !catalog ? <div className="empty-state">加载目录…</div>
         : route.sec === 'new' || route.sec === 'config' ? <Setup catalog={catalog} sec={route.sec} step={route.sub as StepId} go={go} />
         : route.sec === 'progress' ? <Progress catalog={catalog} route={route} go={go} />
         : <Results catalog={catalog} route={route} go={go} />}
