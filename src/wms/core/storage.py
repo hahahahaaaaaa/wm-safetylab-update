@@ -88,6 +88,14 @@ class Store:
             rows = self._db.execute("SELECT body FROM runs ORDER BY rowid DESC").fetchall()
         return [json.loads(row[0]) for row in rows]
 
+    def list_workbench_runs(self, limit=200):
+        """Bound model-workbench polling independently of large red-team stores."""
+        with self.lock:
+            rows = self._db.execute(
+                "SELECT body FROM runs WHERE json_extract(body, '$.config.workbench_recipe') IS NOT NULL "
+                "ORDER BY rowid DESC LIMIT ?", (limit,)).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
     def update(self, run_id, **fields):
         with self.lock:
             run = self.get(run_id)

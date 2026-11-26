@@ -65,6 +65,8 @@ class EnvironmentEntry(BaseModel):
     category: str | None = Field(None, description="Optional UI grouping; embodied_safety is a runnable safety scenario")
     scenario: str = Field("", description="Scenario scope and hazard interpretation")
     hazard_ids: list[str] | None = Field(None, description="Relevant hazard IDs; absent keeps the legacy hazard set")
+    hazard_thresholds: dict[str, float] = Field(default_factory=dict)
+    hazard_note: str = ""
 
 
 class PluginEntry(BaseModel):

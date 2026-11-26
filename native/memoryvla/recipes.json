@@ -2,19 +2,31 @@
   "models": {
     "memoryvla-bridge": {
       "entrypoint": "wms.engines.memoryvla.adapter:MemoryVLAPolicy",
-      "probes": ["state"],
+      "probes": [
+        "state"
+      ],
       "config": {
         "runtime_config": "$runtime.config_file",
         "memory": true
-      }
+      },
+      "state_phases": [
+        "read",
+        "written"
+      ]
     },
     "memoryvla-bridge-nomem": {
       "entrypoint": "wms.engines.memoryvla.adapter:MemoryVLAPolicy",
-      "probes": ["state"],
+      "probes": [
+        "state"
+      ],
       "config": {
         "runtime_config": "$runtime.config_file",
         "memory": false
-      }
+      },
+      "state_phases": [
+        "read",
+        "written"
+      ]
     }
   },
   "recipes": {

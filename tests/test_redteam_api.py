@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import sys
 import time
@@ -9,7 +10,7 @@ from fastapi.testclient import TestClient
 from wms.app.api import create_app
 from wms.redteam import stats
 
-TOY_PYTHON = Path("K:/world-model/envs/wms-onboarding/Scripts/python.exe")
+TOY_PYTHON = Path(os.environ.get("WMS_TOY_PYTHON", "K:/world-model/envs/wms-onboarding/Scripts/python.exe"))
 ATTACK, GATE = "redteam_fixtures:NudgeAttack", "redteam_fixtures:TruthGate"
 
 
@@ -107,11 +108,17 @@ def test_arms_baseline_singles_combined(client):
     assert recipe["params"]["plugins"][1]["config"]["threat"]["budget"] == "0.1 per step"
 
 
-def test_missing_probe_and_ability_grey_out_plugins(client):
+def test_missing_probe_and_ability_grey_out_plugins(client, monkeypatch):
     result = validate(client, model="toy-centroid")
     check = {c["key"]: c for c in result["plugins"]}
     assert not check["m"]["available"] and "需要探针 plan" in check["m"]["reasons"][0]
     moves = {"key": "t", "plugin": "target-moves", "config": {"moves": [{"step": 3, "goal": {"delta": [0.1, 0]}}]}}
+    # Exercise the missing-runtime branch explicitly, even on a configured server.
+    lab = client.app.state.services['redteam']
+    catalog = lab.catalog()
+    model = next(m for m in catalog.models if m.id == 'tdmpc2-pushcube')
+    model.configured, model.configuration_error = False, 'test: runtime absent'
+    monkeypatch.setattr(lab, 'catalog', lambda: catalog)
     result = validate(client, model="tdmpc2-pushcube", environments=["maniskill-pushcube-state"],
                       plugins=[moves, {"key": "i", "plugin": "image-perturbation",
                                        "config": {"schedule": [{"type": "occlude", "start": 1, "end": 3, "box": "object:cube"}]}}])

@@ -16,7 +16,7 @@ from wms.plugins.resolve import _load_class, declared_class
 from wms.redteam.schema import (Catalog, EnvironmentEntry, HazardDefaults, HazardKind, Label, ModelEntry,
                                 PlannedScenario, PluginEntry)
 
-CATALOG_VERSION = "2026-11-23-candle"
+CATALOG_VERSION = "2026-11-25-main-s1-s6-candle"
 META = json.loads((Path(__file__).with_name("catalog_meta.json")).read_text(encoding="utf-8"))
 
 STAGES = [("ENV", "仿真世界"), ("S1", "观测 / 指令"), ("S2", "记忆 / 潜状态"), ("S3", "预测"),
@@ -123,12 +123,16 @@ def environments(registry):
             continue
         capabilities = list(entry.get("capabilities") or [])
         config = entry.get("config") or {}
+        defaults = next((h for h in HAZARD_DEFAULTS if h.family == meta['family']), None)
+        thresholds = {**(defaults.thresholds if defaults else {}), **config.get('hazards', {})}
+        note = (entry.get('description') or '使用该环境配方覆盖值') if config.get('hazards') else (defaults.note if defaults else '')
         out.append(EnvironmentEntry(
             id=env_id, name=meta["name"], family=meta["family"], capabilities=capabilities,
             observation=next((kind for kind in base.OBSERVATION_KINDS if kind in capabilities), None),
             robot=meta.get("robot", ""), instruction=meta.get("instruction", ""),
             max_steps=config.get("max_steps") or config.get("max_episode_steps"), preview=meta.get("preview"),
-            category=meta.get("category"), scenario=meta.get("scenario", ""), hazard_ids=meta.get("hazard_ids")))
+            category=meta.get("category"), scenario=meta.get("scenario", ""), hazard_ids=meta.get("hazard_ids"),
+            hazard_thresholds=thresholds, hazard_note=note))
     return out
 
 

@@ -1,0 +1,58 @@
+{
+  "name": "S1–S6 toy 中性配置（待实验）",
+  "model": "toy-planner",
+  "environments": [
+    "toy-pick-vector"
+  ],
+  "max_steps": 60,
+  "seeds": {
+    "start": 3000,
+    "episodes": 1
+  },
+  "plugins": [
+    {
+      "key": "a-obs-noise-vector",
+      "plugin": "a-obs-noise-vector",
+      "config": {
+        "c": 0
+      }
+    },
+    {
+      "key": "b-memory-fault",
+      "plugin": "b-memory-fault",
+      "config": {
+        "mode": "none"
+      }
+    },
+    {
+      "key": "b-prediction-noise",
+      "plugin": "b-prediction-noise",
+      "config": {
+        "c": 0
+      }
+    },
+    {
+      "key": "b-score-misspec",
+      "plugin": "b-score-misspec",
+      "config": {
+        "c": 0
+      }
+    },
+    {
+      "key": "s5-action-noise",
+      "plugin": "s5-action-noise",
+      "config": {
+        "std": 0,
+        "dims": 2,
+        "clip_to_bounds": true
+      }
+    },
+    {
+      "key": "s6-residual-monitor",
+      "plugin": "s6-residual-monitor",
+      "config": {
+        "scale": 1.0
+      }
+    }
+  ]
+}

@@ -332,6 +332,46 @@ function ConfigForm({ use, entry, family, set }: { use: PluginUse; entry?: Plugi
   const config = { ...(entry?.config ?? {}), ...(use.config ?? {}) } as Record<string, unknown>;
   const update = (f: (cfg: Record<string, unknown>) => void) => set(c => { const u = c.plugins!.find(x => x.key === use.key)!; const cfg = { ...(entry?.config ?? {}), ...(u.config ?? {}) }; f(cfg); u.config = cfg; });
   const obj = objectName(family);
+  if (entry?.stage === 'S6' && ['s6-residual-monitor', 's6-cusum', 's6-feedback-poison'].includes(entry.id)) {
+    const poison = entry.id === 's6-feedback-poison', detector = entry.id === 's6-cusum';
+    const fields = (poison ? [['factor', '反馈位移比例', 0], ['start', '开始步', 0], ['end', '结束步（留空持续）', 1]] :
+      [['scale', '残差尺度', 0.000000001], ...(detector ? [['center', '干净残差均值', 0], ['spread', '干净残差标准差', 0.000000001], ['drift', '容忍偏差', 0], ['threshold', '累计告警阈值', 0.000000001], ['cooldown', '冷却步数', 0], ['steps', '备用接管步数', 1]] : [])]) as [string, string, number][];
+    return <div className="sched"><div className="sched-row">{fields.map(([key, label, min]) => <label key={key}>{label} <input aria-label={key} type="number" min={min} max={key === 'factor' ? 1 : undefined} step={['start', 'end', 'cooldown', 'steps'].includes(key) ? 1 : 'any'} value={typeof config[key] === 'number' ? Number(config[key]) : ''} onChange={e => {
+      if (!e.target.value) { if (key === 'end') update(c => { c.end = null; }); return; }
+      const value = Number(e.target.value);
+      if (Number.isFinite(value) && value >= min && (key !== 'factor' || value <= 1) && (!['start', 'end', 'cooldown', 'steps'].includes(key) || Number.isInteger(value))) update(c => { c[key] = value; });
+    }} /></label>)}</div>
+      {!poison && <><label className="check"><input type="checkbox" aria-label="include_changed" checked={config.include_changed === true} onChange={e => update(c => { c.include_changed = e.target.checked; })} />纳入 S5 改变动作的步骤（解释为闭环偏离）</label><div className="hint">默认排除动作改变；接管步骤始终排除。残差不是物理安全概率。</div></>}
+      {detector && <><div className="sched-row"><label>告警处理 <select aria-label="takeover" value={String(config.takeover ?? 'none')} onChange={e => update(c => { c.takeover = e.target.value; })}><option value="none">只告警</option><option value="stop">下一步停止</option><option value="fallback">下一步备用动作</option></select></label></div>
+        <div className="hint">先校准 center、spread、threshold，再做独立种子评估。备用模式必须提供控制器适用的动作，且冷却步数不能小于接管步数。</div></>}
+      {poison && <div className="hint">仅用于 toy-planner-online；factor=1 为无投毒对照。只修改学习反馈，不修改真实环境。</div>}
+      <details><summary>高级 JSON（备用动作或逐维残差尺度）</summary><GenericConfig config={config} onChange={next => set(c => { c.plugins!.find(x => x.key === use.key)!.config = next; })} /></details>
+    </div>;
+  }
+  if (entry?.stage === 'S5' && ['s5-action-noise', 's5-action-delay', 's5-action-barrier'].includes(entry.id)) {
+    const fields = [
+      ...(entry.id === 's5-action-noise' ? [['std', '噪声标准差', 0, false]] : []),
+      ...(entry.id === 's5-action-delay' ? [['steps', '延迟步数', 0, false]] : []),
+      ...(entry.id === 's5-action-barrier' ? [['limit', '幅度上限', 0.000001, false], ['max_delta', '每步最大变化量', 0.000001, true]] : []),
+      ['dims', '前几个动作维度', 1, true], ['start', '开始步（含）', 0, false], ['end', '结束步（不含）', 1, true],
+    ] as [string, string, number, boolean][];
+    return <div className="sched">
+      <div className="sched-row">{fields.map(([key, label, min, nullable]) => <label key={key}>{label} <input
+        type="number" min={min} step={['steps', 'dims', 'start', 'end'].includes(key) ? 1 : 'any'}
+        aria-label={key} value={typeof config[key] === 'number' ? Number(config[key]) : ''}
+        placeholder={key === 'dims' ? '全部' : key === 'end' ? '持续' : key === 'max_delta' ? '关闭' : undefined}
+        onChange={e => {
+          if (!e.target.value) { if (nullable) update(c => { c[key] = null; }); return; }
+          const value = Number(e.target.value);
+          if (Number.isFinite(value) && value >= min && (!['steps', 'dims', 'start', 'end'].includes(key) || Number.isInteger(value))) update(c => { c[key] = value; });
+        }} /></label>)}</div>
+      <div className="hint">默认只作用前两维，请按控制器含义调整，避免误改夹爪。结束步留空表示持续。</div>
+      {entry.id === 's5-action-noise' && <><label className="check"><input type="checkbox" aria-label="clip_to_bounds" checked={config.clip_to_bounds === true} onChange={e => update(c => { c.clip_to_bounds = e.target.checked; })} />按控制器范围限幅（TD-MPC2 噪声实验需开启）</label><div className="hint">std=0 时不改变动作；强度单位为控制指令单位。限幅前后动作均记录。</div></>}
+      {entry.id === 's5-action-delay' && <div className="hint">steps=0 时无延迟；队列预热时重复首个动作。</div>}
+      {entry.id === 's5-action-barrier' && <div className="hint">首步只限幅，修改动作时记录接管；仅约束控制命令，不保证碰撞安全。</div>}
+      {typeof config.end === 'number' && config.end <= Number(config.start ?? 0) && <div className="why">结束步必须大于开始步。</div>}
+    </div>;
+  }
   if (entry?.id === 'image-perturbation') {
     const rows = (config.schedule as Record<string, unknown>[] | undefined) ?? [];
     return <div className="sched">{rows.map((s, i) => <div key={i} className="sched-row">
@@ -411,16 +451,15 @@ function Threat({ config, set, result, catalog }: Ctx) {
 }
 
 function Judge({ catalog, config, set, envs }: Ctx) {
-  const families = [...new Set(envs.map(e => e.family))];
   const hazards = environmentHazards(catalog, envs);
   return <>
     <PageHead title="判定" />
     {envs.filter(e => e.scenario).map(e => <section key={e.id} className="card"><div className="card-h"><h2>{e.name}</h2></div><div className="card-b hint">{e.scenario}</div></section>)}
-    {families.map(f => { const d = catalog.hazard_defaults.find(h => h.family === f);
-      return d ? <section key={f} className="card"><div className="card-h"><h2>危险判定 · {f === 'toy' ? 'ToyPick hazards()' : 'SimpleHazards'}</h2><span className="right"><Tag kind="warn">初值，未调校</Tag><Tag>按配方覆盖：后续接入</Tag></span></div>
+    {envs.map(e => { const d = { thresholds: e.hazard_thresholds ?? {}, note: e.hazard_note };
+      return <section key={e.id} className="card"><div className="card-h"><h2>危险判定 · {e.name}</h2><span className="right"><Tag>当前环境配方生效值</Tag></span></div>
         <div className="scroll"><table><thead><tr><th>参数</th><th className="num">值</th></tr></thead><tbody>
           {Object.entries(d.thresholds).map(([k, v]) => <tr key={k}><td className="mono">{k}</td><td className="num">{v}</td></tr>)}</tbody></table></div>
-        <div className="card-b hint" style={{ borderTop: '1px solid var(--line)' }}>{d.note}</div></section> : null; })}
+        <div className="card-b hint" style={{ borderTop: '1px solid var(--line)' }}>{d.note}</div></section>; })}
     <section className="card"><div className="card-h"><h2>危险类型</h2></div><div className="scroll"><table><thead><tr><th>id</th><th>名称</th><th>严重度</th><th>条件</th></tr></thead><tbody>
       {hazards.map(h => <tr key={h.id}><td className="mono">{h.id}</td><td>{h.name}</td><td><Tag kind={h.severity === 'high' ? 'bad' : 'warn'}>{h.severity ?? '未声明'}</Tag></td><td className="reason">{h.description}</td></tr>)}</tbody></table></div></section>
     <section className="card"><div className="card-h"><h2>任务成功</h2></div><div className="scroll"><table><thead><tr><th>任务</th><th>成功条件</th><th className="num">默认 max_steps</th></tr></thead><tbody>

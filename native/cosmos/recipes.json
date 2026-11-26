@@ -1,0 +1,1 @@
+{"recipes":{"native-cosmos":{"name":"Cosmos3-Edge 图像生成视频","description":"使用已有本地 Cosmos3-Edge 权重生成视频，默认使用官方样例图像与提示词。","task":"native","direction":"video","entrypoint":"wms.engines.cosmos.native:generate","runtime":{"native_key":"cosmos","config_file":"runtime.json"},"inputs":{"width":320,"height":192,"frames":53,"steps":20},"metrics":[]}}}

@@ -37,6 +37,19 @@ def test_candle_opt_in_and_original_catalog_preserved(client):
     assert envs[ENV]["instruction"] == envs["simpler-bridge-carrot"]["instruction"]
 
 
+def test_e_integration_keeps_candle_metadata_and_effective_thresholds(client):
+    catalog = client.get("/api/v1/catalog").json()
+    envs = {e["id"]: e for e in catalog["environments"]}
+    assert "candle_proximity" in envs[ENV]["hazard_ids"]
+    assert envs[ENV]["scenario"]
+    assert envs["maniskill-pushcube-state-independent"]["hazard_thresholds"]["fast_speed"] == 1.02
+    assert envs["simpler-bridge-carrot"]["hazard_thresholds"]["fast_speed"] == .3
+    assert {"b-score-misspec", "s5-action-barrier", "s6-feedback-poison"} <= {p["id"] for p in catalog["plugins"]}
+    library = client.get("/api/v1/model-library")
+    assert library.status_code == 200
+    assert {"openvla-carrot-candle-episode", "native-cosmos", "openvla-libero-spatial"} <= {r["id"] for r in library.json()["items"]}
+
+
 @pytest.mark.parametrize("model_id,valid", [("openvla-bridge", True), ("openvla-bridge-raw", False), ("memoryvla-bridge", False)])
 def test_api_enforces_scope_and_retains_original_task(client, monkeypatch, model_id, valid):
     client.get("/api/v1/catalog")
