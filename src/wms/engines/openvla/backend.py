@@ -1,6 +1,5 @@
 """Official HF predict_action integration. Imports ML libraries only inside the worker."""
 import math
-import os
 import sys
 import time
 
@@ -48,34 +47,26 @@ def align_prompt_tokens(inputs):
 
 
 def infer(config, case, seed, image_path, context):
-    os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_HUB_DISABLE_TELEMETRY="1")
     import torch
     import transformers
     from PIL import Image
-    from transformers import AutoModelForVision2Seq, AutoProcessor
+    from .common import PROMPT, load, predict_action, prepare_inputs
     context.check_cancelled()
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.cuda.reset_peak_memory_stats()
     started = time.monotonic()
     context.event("progress", {"phase": "loading_model"})
-    processor = AutoProcessor.from_pretrained(config["checkpoint_dir"], trust_remote_code=True,
-                                              local_files_only=True)
-    model = AutoModelForVision2Seq.from_pretrained(
-        config["checkpoint_dir"], attn_implementation="eager", torch_dtype=torch.bfloat16,
-        low_cpu_mem_usage=True, trust_remote_code=True, local_files_only=True,
-        use_safetensors=True).to("cuda:0").eval()
+    processor, model = load(config["checkpoint_dir"])
     context.check_cancelled()
-    prompt = "In: What action should the robot take to " + case["instruction"] + "?\nOut:"
+    prompt = PROMPT.format(instruction=case["instruction"])
     with Image.open(image_path) as raw_image:
         image = raw_image.convert("RGB")
-    inputs = processor(prompt, image).to("cuda:0", dtype=torch.bfloat16)
-    prompt_token_alignment = align_prompt_tokens(inputs)
+    inputs, prompt_token_alignment = prepare_inputs(processor, image, prompt)
     context.event("progress", {"phase": "predicting_action", "step": 1, "total": 1})
     torch.cuda.synchronize()
     inference_started = time.monotonic()
-    with torch.inference_mode():
-        prediction = model.predict_action(**inputs, unnorm_key=case["unnorm_key"], do_sample=False)
+    prediction = predict_action(model, inputs, case["unnorm_key"])
     torch.cuda.synchronize()
     latency = time.monotonic() - inference_started
     action = checked_action(prediction)

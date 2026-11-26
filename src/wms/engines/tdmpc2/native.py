@@ -36,6 +36,26 @@ def _source(inputs, output, field="checkpoint"):
     return path
 
 
+def episode_checkpoint(config, runtime=None):
+    """Select a shared episode checkpoint without copying weights.
+
+    Explicit component checkpoint/source_run takes precedence. Web experiments
+    may use episode_checkpoint from the machine runtime, relative to that file.
+    """
+    source = dict(config)
+    if not source.get("checkpoint") and not source.get("source_run"):
+        from wms.engines.runtime import load_runtime
+        reference = config.get("runtime_config")
+        runtime = runtime if runtime is not None else load_runtime(reference)
+        selected = (runtime or {}).get("episode_checkpoint")
+        if selected:
+            path = Path(selected)
+            if not path.is_absolute() and isinstance(reference, (str, Path)):
+                path = Path(reference).resolve().parent / path
+            source["checkpoint"] = str(path)
+    return _source(source, config.get("output_dir", "."))
+
+
 def _result(output, data):
     import mimetypes
     files = []

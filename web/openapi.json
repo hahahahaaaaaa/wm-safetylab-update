@@ -1,0 +1,3607 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WM SafetyLab",
+    "version": "0.3.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recipes": {
+      "get": {
+        "summary": "Recipes",
+        "operationId": "recipes_api_v1_recipes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recipes/{recipe_id}": {
+      "get": {
+        "summary": "Recipe",
+        "operationId": "recipe_api_v1_recipes__recipe_id__get",
+        "parameters": [
+          {
+            "name": "recipe_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recipe Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/components": {
+      "get": {
+        "summary": "Components List",
+        "operationId": "components_list_api_v1_components_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs": {
+      "get": {
+        "summary": "Runs",
+        "operationId": "runs_api_v1_runs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Submit",
+        "operationId": "submit_api_v1_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Config"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}": {
+      "get": {
+        "summary": "Run",
+        "operationId": "run_api_v1_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/logs": {
+      "get": {
+        "summary": "Logs",
+        "operationId": "logs_api_v1_runs__run_id__logs_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/result": {
+      "get": {
+        "summary": "Result",
+        "operationId": "result_api_v1_runs__run_id__result_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/files": {
+      "get": {
+        "summary": "Files",
+        "operationId": "files_api_v1_runs__run_id__files_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/files/{path}": {
+      "get": {
+        "summary": "File",
+        "operationId": "file_api_v1_runs__run_id__files__path__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/cancel": {
+      "post": {
+        "summary": "Cancel",
+        "operationId": "cancel_api_v1_runs__run_id__cancel_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/retry": {
+      "post": {
+        "summary": "Retry",
+        "operationId": "retry_api_v1_runs__run_id__retry_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/evaluate": {
+      "post": {
+        "summary": "Evaluate",
+        "operationId": "evaluate_api_v1_runs__run_id__evaluate_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "default": {},
+                "title": "Options"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/evaluations": {
+      "get": {
+        "summary": "Evaluations",
+        "operationId": "evaluations_api_v1_runs__run_id__evaluations_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/comparisons": {
+      "post": {
+        "summary": "Compare",
+        "operationId": "compare_api_v1_comparisons_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Options"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/embodied-jev": {
+      "get": {
+        "summary": "Status",
+        "operationId": "status_api_v1_runs__run_id__embodied_jev_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/embodied-jev/assets/{asset}": {
+      "get": {
+        "summary": "Asset",
+        "operationId": "asset_api_v1_runs__run_id__embodied_jev_assets__asset__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "asset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/embodied-jev/prepare": {
+      "post": {
+        "summary": "Prepare",
+        "operationId": "prepare_api_v1_runs__run_id__embodied_jev_prepare_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Catalog",
+        "operationId": "catalog_api_v1_catalog_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/validate": {
+      "post": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Validate",
+        "operationId": "validate_api_v1_experiments_validate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExperimentConfig"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/drafts/{draft_id}": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Get Draft",
+        "operationId": "get_draft_api_v1_experiments_drafts__draft_id__get",
+        "parameters": [
+          {
+            "name": "draft_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Draft Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Draft"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Put Draft",
+        "operationId": "put_draft_api_v1_experiments_drafts__draft_id__put",
+        "parameters": [
+          {
+            "name": "draft_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Draft Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExperimentConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Draft"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Experiments",
+        "operationId": "experiments_api_v1_experiments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentPage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Submit",
+        "operationId": "submit_api_v1_experiments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExperimentConfig"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Experiment"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Experiment",
+        "operationId": "experiment_api_v1_experiments__experiment_id__get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Experiment"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/cancel": {
+      "post": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Cancel",
+        "operationId": "cancel_api_v1_experiments__experiment_id__cancel_post",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Experiment"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/logs": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Logs",
+        "operationId": "logs_api_v1_experiments__experiment_id__logs_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogChunk"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/events": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Events",
+        "operationId": "events_api_v1_experiments__experiment_id__events_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 10,
+              "minimum": 0.2,
+              "default": 1.0,
+              "title": "Interval"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Server-sent RunEvent objects",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/event-stream": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/episodes": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Episodes",
+        "operationId": "episodes_api_v1_experiments__experiment_id__episodes_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "arm",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Arm"
+            }
+          },
+          {
+            "name": "environment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Environment"
+            }
+          },
+          {
+            "name": "success",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Success"
+            }
+          },
+          {
+            "name": "end_reason",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Reason"
+            }
+          },
+          {
+            "name": "hazard",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Hazard"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/episodes/{episode_id}": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Episode",
+        "operationId": "episode_api_v1_experiments__experiment_id__episodes__episode_id__get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Episode Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/episodes/{episode_id}/trace": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Trace",
+        "operationId": "trace_api_v1_experiments__experiment_id__episodes__episode_id__trace_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Episode Id"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trace"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/episodes/{episode_id}/frames/{camera}/{index}.png": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Frame",
+        "operationId": "frame_api_v1_experiments__experiment_id__episodes__episode_id__frames__camera___index__png_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Episode Id"
+            }
+          },
+          {
+            "name": "camera",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Camera"
+            }
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          },
+          {
+            "name": "raw",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Raw"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One frame as PNG",
+            "content": {
+              "image/png": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/report": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_experiments__experiment_id__report_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Report"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/matrix": {
+      "get": {
+        "tags": [
+          "redteam"
+        ],
+        "summary": "Matrix",
+        "operationId": "matrix_api_v1_experiments__experiment_id__matrix_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Matrix"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/model-library": {
+      "get": {
+        "summary": "Models",
+        "operationId": "models_api_v1_model_library_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/model-library/runs": {
+      "get": {
+        "summary": "Runs",
+        "operationId": "runs_api_v1_model_library_runs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/model-library/{recipe_id}/runs": {
+      "post": {
+        "summary": "Submit",
+        "operationId": "submit_api_v1_model_library__recipe_id__runs_post",
+        "parameters": [
+          {
+            "name": "recipe_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recipe Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "default": {},
+                "title": "Options"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Arm": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "A0 is the baseline"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "baseline",
+              "single",
+              "combined",
+              "defended",
+              "defense_only"
+            ],
+            "title": "Kind"
+          },
+          "plugins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Plugins",
+            "description": "PluginUse keys in this arm"
+          },
+          "oracle": {
+            "type": "boolean",
+            "title": "Oracle",
+            "description": "Contains an oracle defense: an upper bound, not a deployable result",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "plugins"
+        ],
+        "title": "Arm"
+      },
+      "ArmStats": {
+        "properties": {
+          "arm": {
+            "type": "string",
+            "title": "Arm"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "baseline",
+              "single",
+              "combined",
+              "defended",
+              "defense_only"
+            ],
+            "title": "Kind"
+          },
+          "oracle": {
+            "type": "boolean",
+            "title": "Oracle"
+          },
+          "episodes": {
+            "type": "integer",
+            "title": "Episodes"
+          },
+          "success": {
+            "$ref": "#/components/schemas/Interval",
+            "description": "Success rate with a Wilson 95% interval"
+          },
+          "hazard_steps_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hazard Steps Mean"
+          },
+          "hazard_by_kind": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Hazard By Kind",
+            "description": "Mean hazard steps per episode, by hazard id"
+          },
+          "takeovers_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeovers Mean"
+          },
+          "delta_success": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Delta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Minus the baseline, paired by (environment, seed)"
+          },
+          "delta_hazard": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Delta"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "delta_takeovers": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Delta"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "arm",
+          "name",
+          "kind",
+          "oracle",
+          "episodes",
+          "success",
+          "hazard_steps_mean",
+          "hazard_by_kind",
+          "takeovers_mean"
+        ],
+        "title": "ArmStats"
+      },
+      "Catalog": {
+        "properties": {
+          "catalog_version": {
+            "type": "string",
+            "title": "Catalog Version"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelEntry"
+            },
+            "type": "array",
+            "title": "Models"
+          },
+          "environments": {
+            "items": {
+              "$ref": "#/components/schemas/EnvironmentEntry"
+            },
+            "type": "array",
+            "title": "Environments"
+          },
+          "plugins": {
+            "items": {
+              "$ref": "#/components/schemas/PluginEntry"
+            },
+            "type": "array",
+            "title": "Plugins"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array",
+            "title": "Stages"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array",
+            "title": "Roles"
+          },
+          "probes": {
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array",
+            "title": "Probes"
+          },
+          "abilities": {
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array",
+            "title": "Abilities"
+          },
+          "knowledge": {
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array",
+            "title": "Knowledge"
+          },
+          "hazards": {
+            "items": {
+              "$ref": "#/components/schemas/HazardKind"
+            },
+            "type": "array",
+            "title": "Hazards"
+          },
+          "hazard_defaults": {
+            "items": {
+              "$ref": "#/components/schemas/HazardDefaults"
+            },
+            "type": "array",
+            "title": "Hazard Defaults"
+          },
+          "planned": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedScenario"
+            },
+            "type": "array",
+            "title": "Planned",
+            "description": "Scenarios without a simulator backend yet; not selectable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "catalog_version",
+          "models",
+          "environments",
+          "plugins",
+          "stages",
+          "roles",
+          "probes",
+          "abilities",
+          "knowledge",
+          "hazards",
+          "hazard_defaults",
+          "planned"
+        ],
+        "title": "Catalog"
+      },
+      "ControlPlan": {
+        "properties": {
+          "single": {
+            "type": "boolean",
+            "title": "Single",
+            "description": "One arm per disturbance (fault or attack)",
+            "default": true
+          },
+          "combined": {
+            "type": "boolean",
+            "title": "Combined",
+            "description": "All disturbances together (when there are two or more)",
+            "default": true
+          },
+          "defended": {
+            "type": "boolean",
+            "title": "Defended",
+            "description": "All disturbances plus all defenses",
+            "default": true
+          },
+          "defense_only": {
+            "type": "boolean",
+            "title": "Defense Only",
+            "description": "Defenses without disturbances (their cost)",
+            "default": true
+          },
+          "monitors_everywhere": {
+            "type": "boolean",
+            "title": "Monitors Everywhere",
+            "description": "Attach monitors to every arm, the baseline included",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "ControlPlan"
+      },
+      "Delta": {
+        "properties": {
+          "estimate": {
+            "type": "number",
+            "title": "Estimate"
+          },
+          "low": {
+            "type": "number",
+            "title": "Low"
+          },
+          "high": {
+            "type": "number",
+            "title": "High"
+          },
+          "pairs": {
+            "type": "integer",
+            "title": "Pairs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estimate",
+          "low",
+          "high",
+          "pairs"
+        ],
+        "title": "Delta"
+      },
+      "Draft": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "config": {
+            "$ref": "#/components/schemas/ExperimentConfig"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "config",
+          "updated_at"
+        ],
+        "title": "Draft"
+      },
+      "EnvironmentEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "family": {
+            "type": "string",
+            "title": "Family"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capabilities",
+            "description": "Environment abilities (wms.plugins.base.ENV_ABILITIES)"
+          },
+          "observation": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "rgb",
+                  "vector"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observation"
+          },
+          "robot": {
+            "type": "string",
+            "title": "Robot",
+            "default": ""
+          },
+          "instruction": {
+            "type": "string",
+            "title": "Instruction",
+            "default": ""
+          },
+          "max_steps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Steps"
+          },
+          "preview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentPreview"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "description": "Optional UI grouping; embodied_safety is a runnable safety scenario"
+          },
+          "scenario": {
+            "type": "string",
+            "title": "Scenario",
+            "description": "Scenario scope and hazard interpretation",
+            "default": ""
+          },
+          "hazard_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hazard Ids",
+            "description": "Relevant hazard IDs; absent keeps the legacy hazard set"
+          },
+          "hazard_thresholds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Hazard Thresholds"
+          },
+          "hazard_note": {
+            "type": "string",
+            "title": "Hazard Note",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "family",
+          "capabilities"
+        ],
+        "title": "EnvironmentEntry"
+      },
+      "EnvironmentPreview": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "pattern": "^/task-previews/[a-z0-9][a-z0-9._-]*\\.(png|jpg|jpeg|webp)$",
+            "title": "Url"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "episode_frame",
+              "task_asset",
+              "illustration"
+            ],
+            "title": "Kind"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption"
+          },
+          "source_environment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Environment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "kind",
+          "caption"
+        ],
+        "title": "EnvironmentPreview"
+      },
+      "EpisodeDetail": {
+        "properties": {
+          "row": {
+            "$ref": "#/components/schemas/EpisodeRow"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline",
+            "description": "Episode id of the baseline with the same environment and seed"
+          },
+          "initial_state": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Initial State",
+            "default": {}
+          },
+          "final_state": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Final State",
+            "default": {}
+          },
+          "events": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Events",
+            "default": []
+          },
+          "frames": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Frames",
+            "description": "Camera -> number of frames"
+          },
+          "plugins": {
+            "items": {
+              "$ref": "#/components/schemas/EpisodePlugin"
+            },
+            "type": "array",
+            "title": "Plugins",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "row"
+        ],
+        "title": "EpisodeDetail"
+      },
+      "EpisodePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EpisodeRow"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "EpisodePage"
+      },
+      "EpisodePlugin": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ENV",
+                  "S1",
+                  "S2",
+                  "S3",
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fault",
+                  "attack",
+                  "defense",
+                  "monitor"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "id"
+        ],
+        "title": "EpisodePlugin"
+      },
+      "EpisodeRow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "<run_id>:<episode index>"
+          },
+          "arm": {
+            "type": "string",
+            "title": "Arm"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "episode": {
+            "type": "integer",
+            "title": "Episode"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "success_step": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Success Step"
+          },
+          "steps": {
+            "type": "integer",
+            "title": "Steps"
+          },
+          "end_reason": {
+            "type": "string",
+            "title": "End Reason"
+          },
+          "hazard_steps": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Hazard Steps",
+            "default": {}
+          },
+          "hazard_total": {
+            "type": "integer",
+            "title": "Hazard Total",
+            "default": 0
+          },
+          "takeovers": {
+            "type": "integer",
+            "title": "Takeovers",
+            "default": 0
+          },
+          "plugin_reports": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Plugin Reports",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "arm",
+          "environment",
+          "run_id",
+          "episode",
+          "seed",
+          "success",
+          "steps",
+          "end_reason"
+        ],
+        "title": "EpisodeRow"
+      },
+      "Estimate": {
+        "properties": {
+          "runs": {
+            "type": "integer",
+            "title": "Runs"
+          },
+          "episodes": {
+            "type": "integer",
+            "title": "Episodes"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes",
+            "description": "null when the model's time per episode is not measured"
+          }
+        },
+        "type": "object",
+        "required": [
+          "runs",
+          "episodes"
+        ],
+        "title": "Estimate"
+      },
+      "Experiment": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "cancelling",
+              "completed",
+              "partial_failed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "config": {
+            "$ref": "#/components/schemas/ExperimentConfig"
+          },
+          "arms": {
+            "items": {
+              "$ref": "#/components/schemas/Arm"
+            },
+            "type": "array",
+            "title": "Arms"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentRun"
+            },
+            "type": "array",
+            "title": "Runs"
+          },
+          "episodes_done": {
+            "type": "integer",
+            "title": "Episodes Done"
+          },
+          "episodes_total": {
+            "type": "integer",
+            "title": "Episodes Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "updated_at",
+          "state",
+          "config",
+          "arms",
+          "runs",
+          "episodes_done",
+          "episodes_total"
+        ],
+        "title": "Experiment"
+      },
+      "ExperimentConfig": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "environments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Environments",
+            "default": []
+          },
+          "plugins": {
+            "items": {
+              "$ref": "#/components/schemas/PluginUse"
+            },
+            "type": "array",
+            "title": "Plugins",
+            "default": []
+          },
+          "seeds": {
+            "$ref": "#/components/schemas/SeedPlan",
+            "default": {
+              "start": 0,
+              "episodes": 20
+            }
+          },
+          "max_steps": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Steps",
+            "description": "Step budget per episode; null = the environment's own"
+          },
+          "control": {
+            "$ref": "#/components/schemas/ControlPlan",
+            "default": {
+              "single": true,
+              "combined": true,
+              "defended": true,
+              "defense_only": true,
+              "monitors_everywhere": true
+            }
+          }
+        },
+        "type": "object",
+        "title": "ExperimentConfig"
+      },
+      "ExperimentPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Experiment"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "ExperimentPage"
+      },
+      "ExperimentRun": {
+        "properties": {
+          "arm": {
+            "type": "string",
+            "title": "Arm"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "cancelling",
+              "completed",
+              "failed",
+              "cancelled",
+              "interrupted"
+            ],
+            "title": "State"
+          },
+          "episodes_done": {
+            "type": "integer",
+            "title": "Episodes Done",
+            "default": 0
+          },
+          "episodes_total": {
+            "type": "integer",
+            "title": "Episodes Total"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "arm",
+          "environment",
+          "run_id",
+          "state",
+          "episodes_total"
+        ],
+        "title": "ExperimentRun"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HazardDefaults": {
+        "properties": {
+          "family": {
+            "type": "string",
+            "title": "Family"
+          },
+          "thresholds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Thresholds"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "family",
+          "thresholds"
+        ],
+        "title": "HazardDefaults"
+      },
+      "HazardKind": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Severity"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "severity",
+          "description"
+        ],
+        "title": "HazardKind"
+      },
+      "Interval": {
+        "properties": {
+          "estimate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate"
+          },
+          "low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low"
+          },
+          "high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "High"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estimate",
+          "low",
+          "high"
+        ],
+        "title": "Interval"
+      },
+      "Label": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Label"
+      },
+      "LogChunk": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "next_offset": {
+            "type": "integer",
+            "title": "Next Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "text",
+          "next_offset"
+        ],
+        "title": "LogChunk"
+      },
+      "Matrix": {
+        "properties": {
+          "stages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stages"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/MatrixRow"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/OutcomeRow"
+            },
+            "type": "array",
+            "title": "Outcomes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stages",
+          "rows",
+          "outcomes"
+        ],
+        "title": "Matrix"
+      },
+      "MatrixCell": {
+        "properties": {
+          "plugins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Plugins"
+          },
+          "events_per_episode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Events Per Episode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plugins"
+        ],
+        "title": "MatrixCell"
+      },
+      "MatrixRow": {
+        "properties": {
+          "arm": {
+            "type": "string",
+            "title": "Arm"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "cells": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MatrixCell"
+            },
+            "type": "object",
+            "title": "Cells",
+            "description": "Stage -> plugins of this arm at that stage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "arm",
+          "name",
+          "cells"
+        ],
+        "title": "MatrixRow"
+      },
+      "ModelEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "policy",
+              "planner"
+            ],
+            "title": "Kind",
+            "description": "planner: the environment's own motion planner, no model"
+          },
+          "probes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Probes",
+            "description": "Model probes plugins can rely on (wms.plugins.base.PROBES)"
+          },
+          "environments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Environments",
+            "description": "Environments this model runs on"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "local",
+              "server"
+            ],
+            "title": "Location",
+            "description": "local: CPU on this machine; server: needs the GPU server"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured",
+            "description": "This service has the machine configuration the model needs"
+          },
+          "configuration_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration Error"
+          },
+          "memory": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory"
+          },
+          "seconds_per_episode": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seconds Per Episode",
+            "description": "Measured wall time per episode; null = not measured"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "probes",
+          "environments",
+          "location",
+          "configured"
+        ],
+        "title": "ModelEntry"
+      },
+      "OutcomeRow": {
+        "properties": {
+          "arm": {
+            "type": "string",
+            "title": "Arm"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "outcomes": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Outcomes",
+            "description": "One entry per seed in order; null = not run yet"
+          }
+        },
+        "type": "object",
+        "required": [
+          "arm",
+          "environment",
+          "outcomes"
+        ],
+        "title": "OutcomeRow"
+      },
+      "PlannedScenario": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "title": "PlannedScenario"
+      },
+      "PluginCheck": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ENV",
+                  "S1",
+                  "S2",
+                  "S3",
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fault",
+                  "attack",
+                  "defense",
+                  "monitor"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "privileged": {
+            "type": "boolean",
+            "title": "Privileged",
+            "default": false
+          },
+          "oracle": {
+            "type": "boolean",
+            "title": "Oracle",
+            "default": false
+          },
+          "requires": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Requires",
+            "default": []
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "description": "Runs with the selected model and environments"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "id",
+          "available"
+        ],
+        "title": "PluginCheck"
+      },
+      "PluginEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "entrypoint": {
+            "type": "string",
+            "title": "Entrypoint"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "ENV",
+              "S1",
+              "S2",
+              "S3",
+              "S4",
+              "S5",
+              "S6"
+            ],
+            "title": "Stage"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "fault",
+              "attack",
+              "defense",
+              "monitor"
+            ],
+            "title": "Role"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "env",
+              "model"
+            ],
+            "title": "Side",
+            "default": "env"
+          },
+          "privileged": {
+            "type": "boolean",
+            "title": "Privileged",
+            "default": false
+          },
+          "requires": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Requires",
+            "default": []
+          },
+          "threat": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threat",
+            "description": "Default threat card (attacks)"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config",
+            "description": "Default config"
+          },
+          "hooks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Hooks",
+            "default": []
+          },
+          "config_dependent": {
+            "type": "string",
+            "title": "Config Dependent",
+            "description": "How the config changes privileged / requires, if it does",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "entrypoint",
+          "stage",
+          "role"
+        ],
+        "title": "PluginEntry"
+      },
+      "PluginUse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key",
+            "description": "Unique within the experiment, e.g. p1"
+          },
+          "plugin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plugin",
+            "description": "Registry plugin id"
+          },
+          "entrypoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entrypoint",
+            "description": "module:Class of a plugin not in the registry"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config",
+            "description": "Merged over the registry default; may hold oracle"
+          },
+          "threat": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threat",
+            "description": "Threat card of an attack, merged into config.threat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "PluginUse"
+      },
+      "Report": {
+        "properties": {
+          "experiment": {
+            "type": "string",
+            "title": "Experiment"
+          },
+          "baseline": {
+            "type": "string",
+            "title": "Baseline"
+          },
+          "complete": {
+            "type": "boolean",
+            "title": "Complete"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "arms": {
+            "items": {
+              "$ref": "#/components/schemas/ArmStats"
+            },
+            "type": "array",
+            "title": "Arms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "experiment",
+          "baseline",
+          "complete",
+          "method",
+          "arms"
+        ],
+        "title": "Report"
+      },
+      "SeedPlan": {
+        "properties": {
+          "start": {
+            "type": "integer",
+            "title": "Start",
+            "default": 0
+          },
+          "episodes": {
+            "type": "integer",
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Episodes",
+            "description": "Episodes per arm and environment; seeds start..start+episodes-1",
+            "default": 20
+          }
+        },
+        "type": "object",
+        "title": "SeedPlan"
+      },
+      "StepIssue": {
+        "properties": {
+          "step": {
+            "type": "string",
+            "enum": [
+              "basic",
+              "model",
+              "envtask",
+              "plugins",
+              "threat",
+              "judge",
+              "control",
+              "review"
+            ],
+            "title": "Step"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning"
+            ],
+            "title": "Severity",
+            "default": "error"
+          },
+          "plugin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plugin",
+            "description": "PluginUse.key the issue is about"
+          }
+        },
+        "type": "object",
+        "required": [
+          "step",
+          "field",
+          "message"
+        ],
+        "title": "StepIssue"
+      },
+      "Trace": {
+        "properties": {
+          "episode": {
+            "type": "string",
+            "title": "Episode"
+          },
+          "start": {
+            "type": "integer",
+            "title": "Start"
+          },
+          "end": {
+            "type": "integer",
+            "title": "End"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/TraceStep"
+            },
+            "type": "array",
+            "title": "Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "episode",
+          "start",
+          "end",
+          "total",
+          "steps"
+        ],
+        "title": "Trace"
+      },
+      "TraceStep": {
+        "properties": {
+          "t": {
+            "type": "integer",
+            "title": "T"
+          },
+          "action": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action"
+          },
+          "action_proposed": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Proposed"
+          },
+          "reward": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reward"
+          },
+          "state_before": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "State Before",
+            "default": {}
+          },
+          "state_after": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "State After",
+            "default": {}
+          },
+          "policy_info": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Policy Info",
+            "default": {}
+          },
+          "hazards": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Hazards",
+            "default": []
+          },
+          "plugins": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Plugins",
+            "description": "Stage -> active plugins"
+          },
+          "events": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Events",
+            "description": "Plugin log records of this step"
+          },
+          "takeover": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeover"
+          },
+          "env_events": {
+            "items": {},
+            "type": "array",
+            "title": "Env Events",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "t"
+        ],
+        "title": "TraceStep"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValidationResult": {
+        "properties": {
+          "valid": {
+            "type": "boolean",
+            "title": "Valid"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/StepIssue"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "plugins": {
+            "items": {
+              "$ref": "#/components/schemas/PluginCheck"
+            },
+            "type": "array",
+            "title": "Plugins"
+          },
+          "arms": {
+            "items": {
+              "$ref": "#/components/schemas/Arm"
+            },
+            "type": "array",
+            "title": "Arms"
+          },
+          "estimate": {
+            "$ref": "#/components/schemas/Estimate"
+          },
+          "recipes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Recipes",
+            "description": "The episode-kernel run configurations that would be submitted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "valid",
+          "issues",
+          "plugins",
+          "arms",
+          "estimate",
+          "recipes"
+        ],
+        "title": "ValidationResult"
+      }
+    }
+  }
+}

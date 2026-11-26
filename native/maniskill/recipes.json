@@ -1,4 +1,70 @@
 {
+  "environments": {
+    "maniskill-pickcube-rgb": {
+      "entrypoint": "wms.scenarios.maniskill.vision:ManiSkillVisionEnv",
+      "capabilities": ["set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+      "config": {
+        "env_id": "PickCube-v1",
+        "obs_mode": "rgb",
+        "control_mode": "pd_joint_pos",
+        "camera_size": [
+          128,
+          128
+        ],
+        "max_episode_steps": 200,
+        "sim_backend": "physx_cpu",
+        "runtime_config": "$runtime.config_file"
+      }
+    },
+    "maniskill-stackcube-rgb": {
+      "entrypoint": "wms.scenarios.maniskill.vision:ManiSkillVisionEnv",
+      "capabilities": ["set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+      "config": {
+        "env_id": "StackCube-v1",
+        "obs_mode": "rgb",
+        "control_mode": "pd_joint_pos",
+        "camera_size": [
+          128,
+          128
+        ],
+        "max_episode_steps": 300,
+        "sim_backend": "physx_cpu",
+        "runtime_config": "$runtime.config_file"
+      }
+    },
+    "maniskill-pushcube-rgb": {
+      "entrypoint": "wms.scenarios.maniskill.vision:ManiSkillVisionEnv",
+      "capabilities": ["set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+      "config": {
+        "env_id": "PushCube-v1",
+        "obs_mode": "rgb",
+        "control_mode": "pd_joint_pos",
+        "camera_size": [
+          128,
+          128
+        ],
+        "max_episode_steps": 200,
+        "sim_backend": "physx_cpu",
+        "runtime_config": "$runtime.config_file"
+      }
+    },
+    "maniskill-pickcube-rgb-ee": {
+      "entrypoint": "wms.scenarios.maniskill.vision:ManiSkillVisionEnv",
+      "capabilities": ["set_object_pose", "set_goal", "hazards", "rgb", "reward"],
+      "config": {
+        "env_id": "PickCube-v1",
+        "obs_mode": "rgb",
+        "control_mode": "pd_ee_delta_pose",
+        "camera_size": [
+          128,
+          128
+        ],
+        "max_episode_steps": 100,
+        "sim_backend": "physx_cpu",
+        "runtime_config": "$runtime.config_file"
+      }
+    }
+  },
   "recipes": {
     "native-maniskill": {
       "name": "ManiSkill 官方运动规划示例",
@@ -43,6 +109,113 @@
         "entrypoint": "wms.scenarios.maniskill.adapter:HoldArmOpenGripperPolicy",
         "config": {}
       }
+    },
+    "maniskill-pickcube-planner-episode": {
+      "name": "ManiSkill PickCube · 回合内核 · 官方运动规划 + 图像扰动 + 目标移动",
+      "description": "官方运动规划器读特权状态、不看图像：图像扰动只进记录、不影响动作；规划后移动方块用来检验开环执行的失败方式。换 environment 为 maniskill-stackcube-rgb / maniskill-pushcube-rgb 换任务。",
+      "task": "native",
+      "direction": "control",
+      "entrypoint": "wms.episodes.kernel:run",
+      "environment": "maniskill-pickcube-rgb",
+      "runtime": {
+        "native_key": "maniskill",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 1800,
+      "params": {
+        "executor": "planner",
+        "episodes": 2,
+        "max_steps": 200,
+        "perturbations": [
+          {
+            "type": "occlude",
+            "start": 10,
+            "end": 25,
+            "box": [
+              0.3,
+              0.3,
+              0.7,
+              0.7
+            ],
+            "value": 0
+          },
+          {
+            "type": "blur",
+            "start": 40,
+            "end": 60,
+            "sigma": 2.0
+          }
+        ],
+        "target_moves": [
+          {
+            "step": 15,
+            "object": "cube",
+            "delta": [
+              0.04,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "save_raw": true,
+        "video": true,
+        "fps": 20
+      },
+      "metrics": [
+        {
+          "name": "visual_robustness",
+          "entrypoint": "wms.episodes.metrics:visual_robustness",
+          "params": {
+            "truth_key": "objects.cube"
+          },
+          "version": "episodes/1"
+        }
+      ],
+      "tags": [
+        "maniskill",
+        "PickCube-v1",
+        "planner",
+        "episode",
+        "S1",
+        "S3"
+      ]
+    },
+    "maniskill-replay": {
+      "name": "ManiSkill · 环境一致性：动作回放",
+      "description": "不加载模型。同一串随机动作分别推动 gym.make 构建的原始环境和 ManiSkillVisionEnv（PickCube、StackCube、PushCube），逐步比较物体与末端位置、成功标志和相机图像。",
+      "task": "native",
+      "direction": "control",
+      "entrypoint": "wms.scenarios.maniskill.parity:replay",
+      "runtime": {
+        "native_key": "maniskill",
+        "config_file": "runtime.json"
+      },
+      "seed": 0,
+      "timeout_s": 1800,
+      "params": {
+        "env_ids": [
+          "PickCube-v1",
+          "StackCube-v1",
+          "PushCube-v1"
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "steps": 30,
+        "control_mode": "pd_joint_pos",
+        "action_scale": 0.3,
+        "pose_tol": 1e-06,
+        "image_tol": 0
+      },
+      "metrics": [],
+      "tags": [
+        "maniskill",
+        "parity",
+        "S1",
+        "S5"
+      ]
     }
   }
 }

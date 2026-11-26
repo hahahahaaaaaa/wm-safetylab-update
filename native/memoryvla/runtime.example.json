@@ -1,0 +1,20 @@
+{
+  "python": "/path/to/world-model/envs/memoryvla-simpler-20261015/bin/python",
+  "source_dir": "/path/to/world-model/repos/MemoryVLA-d732ea9072bc",
+  "simpler_dir": "/path/to/world-model/repos/SimplerEnv-eddb5690749a",
+  "checkpoint": "/path/to/world-model/weights/memvla-bridge/checkpoints/memvla-bridge.pt",
+  "llama2_dir": "/path/to/world-model/weights/llama2-7b-hf-config-tokenizer",
+  "source_commits": {
+    "MemoryVLA": "d732ea9072bc063399ccc817aed74ab172eb50be",
+    "SimplerEnv": "eddb5690749a1e34267807c0f7b5eede323918d7",
+    "ManiSkill2_real2sim": "ef7a4d4fdf4b69f2c2154db5b15b9ac8dfe10682"
+  },
+  "gpu_device": "0",
+  "env": {
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "HF_HOME": "/path/to/world-model/cache/huggingface",
+    "VK_ICD_FILENAMES": "/etc/vulkan/icd.d/nvidia_icd.json"
+  },
+  "timeout_s": 21600
+}

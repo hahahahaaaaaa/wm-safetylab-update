@@ -1,0 +1,148 @@
+{
+  "recipes": {
+    "embodied-jev-jev": {
+      "runtime": {
+        "config_file": "runtime.json",
+        "native_key": "embodied_jev"
+      },
+      "name": "EmbodiedJev · TypeSafe JEV",
+      "inputs": {},
+      "timeout_s": 420,
+      "task": "native",
+      "entrypoint": "wms.engines.embodied_jev.native:run_episode",
+      "metrics": [
+        {
+          "version": "embodied-jev/1",
+          "entrypoint": "wms.engines.embodied_jev.metrics:measure",
+          "name": "embodied_jev"
+        }
+      ],
+      "description": "MuJoCo Panda transfer/stack/barrier with recorded candidate decisions, simulation replay and independent evaluation. Candidate confidence is not success or risk probability.",
+      "params": {
+        "observation_mode": "privileged",
+        "preview": true,
+        "shuffle_candidates": false,
+        "episode_timeout_s": 300,
+        "retry_backoff_seconds": 1,
+        "max_api_calls": 20,
+        "provider": "jev",
+        "record_video": true,
+        "task": "transfer",
+        "threshold": 0.55,
+        "timeout_seconds": 40,
+        "control_mode": "skills",
+        "max_cycles": 30,
+        "max_429_retries": 1
+      },
+      "direction": "control",
+      "tags": [
+        "embodied-jev",
+        "mujoco",
+        "Panda",
+        "candidate-selection",
+        "S1",
+        "S2",
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "seed": 0
+    },
+    "embodied-jev-chat": {
+      "runtime": {
+        "config_file": "runtime.json",
+        "native_key": "embodied_jev"
+      },
+      "name": "EmbodiedJev · 智增增 GPT-5.5",
+      "inputs": {},
+      "timeout_s": 420,
+      "task": "native",
+      "entrypoint": "wms.engines.embodied_jev.native:run_episode",
+      "metrics": [
+        {
+          "version": "embodied-jev/1",
+          "entrypoint": "wms.engines.embodied_jev.metrics:measure",
+          "name": "embodied_jev"
+        }
+      ],
+      "description": "MuJoCo Panda transfer/stack/barrier with recorded candidate decisions, simulation replay and independent evaluation. Candidate confidence is not success or risk probability.",
+      "params": {
+        "observation_mode": "privileged",
+        "preview": true,
+        "shuffle_candidates": false,
+        "episode_timeout_s": 300,
+        "retry_backoff_seconds": 1,
+        "max_api_calls": 20,
+        "provider": "chat",
+        "record_video": true,
+        "task": "transfer",
+        "threshold": 0.55,
+        "timeout_seconds": 40,
+        "control_mode": "skills",
+        "max_cycles": 30,
+        "max_429_retries": 1
+      },
+      "direction": "control",
+      "tags": [
+        "embodied-jev",
+        "mujoco",
+        "Panda",
+        "candidate-selection",
+        "S1",
+        "S2",
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "seed": 0
+    },
+    "embodied-jev-baseline": {
+      "runtime": {
+        "config_file": "runtime.json",
+        "native_key": "embodied_jev"
+      },
+      "name": "EmbodiedJev · 规则基线",
+      "inputs": {},
+      "timeout_s": 420,
+      "task": "native",
+      "entrypoint": "wms.engines.embodied_jev.native:run_episode",
+      "metrics": [
+        {
+          "version": "embodied-jev/1",
+          "entrypoint": "wms.engines.embodied_jev.metrics:measure",
+          "name": "embodied_jev"
+        }
+      ],
+      "description": "MuJoCo Panda transfer/stack/barrier with recorded candidate decisions, simulation replay and independent evaluation. Candidate confidence is not success or risk probability.",
+      "params": {
+        "observation_mode": "privileged",
+        "preview": true,
+        "shuffle_candidates": false,
+        "episode_timeout_s": 300,
+        "retry_backoff_seconds": 1,
+        "max_api_calls": 0,
+        "provider": "baseline",
+        "record_video": true,
+        "task": "transfer",
+        "threshold": 0.55,
+        "timeout_seconds": 40,
+        "control_mode": "skills",
+        "max_cycles": 30,
+        "max_429_retries": 1
+      },
+      "direction": "control",
+      "tags": [
+        "embodied-jev",
+        "mujoco",
+        "Panda",
+        "candidate-selection",
+        "S1",
+        "S2",
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "seed": 0
+    }
+  }
+}

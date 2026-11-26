@@ -106,6 +106,35 @@ def compare(run_ids: list[str], evaluations: Path = typer.Option(None)):
     show(wms.compare(run_ids, evaluations=selected))
 
 
+plugin_app = typer.Typer(no_args_is_help=True, help="S1-S6 plugins (wms.plugins).")
+app.add_typer(plugin_app, name="plugin")
+
+
+@plugin_app.command("test")
+def plugin_test(
+    plugin: str = typer.Argument(..., help="registry ID or module:Class"),
+    config: str = typer.Option("{}", help="JSON object, or a JSON file, merged over the registry config"),
+    registry: list[Path] = typer.Option(None, "--registry", help="extra recipes.json / registry.json"),
+    python: str = typer.Option(None, help="Python with numpy (default: native/toy/runtime.json python)"),
+    output: Path = typer.Option(None),
+):
+    """Check a plugin against the contract on the CPU toy (python -m wms.plugins.conformance)."""
+    import os
+    import subprocess
+    import sys
+    root = Path(__file__).resolve().parents[3]
+    if python is None:
+        runtime = root / "native/toy/runtime.json"
+        python = json.loads(runtime.read_text(encoding="utf-8-sig")).get("python") if runtime.is_file() else sys.executable
+    command = [python, "-m", "wms.plugins.conformance", plugin, "--config", config]
+    for path in registry or []:
+        command += ["--registry", str(path.resolve())]
+    if output:
+        command += ["--output", str(output.resolve())]
+    env = {**os.environ, "PYTHONPATH": os.pathsep.join(filter(None, [str(root / "src"), os.environ.get("PYTHONPATH")]))}
+    raise typer.Exit(subprocess.call(command, env=env))
+
+
 if __name__ == "__main__":
     app()
 

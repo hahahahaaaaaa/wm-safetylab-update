@@ -1,0 +1,78 @@
+{
+  "name": "S34-formal-9-detection",
+  "description": "S3/S4 isolated B acceptance; paired seeds; frozen fast_speed=1.02 for TD-MPC2.",
+  "model": "tdmpc2-pushcube",
+  "environments": [
+    "maniskill-pushcube-state-independent"
+  ],
+  "plugins": [
+    {
+      "key": "goal_move",
+      "plugin": "target-moves",
+      "config": {
+        "moves": [
+          {
+            "step": 20,
+            "goal": {
+              "delta": [
+                0.1,
+                0,
+                0
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "obs_c0.1",
+      "plugin": "a-obs-noise-vector",
+      "config": {
+        "c": 0.1,
+        "start": 20,
+        "end": 50,
+        "stats": "native/plugins/stats/tdmpc2-pushcube-independent.json"
+      }
+    },
+    {
+      "key": "obs_c0.3",
+      "plugin": "a-obs-noise-vector",
+      "config": {
+        "c": 0.3,
+        "start": 20,
+        "end": 50,
+        "stats": "native/plugins/stats/tdmpc2-pushcube-independent.json"
+      }
+    },
+    {
+      "key": "obs_c1",
+      "plugin": "a-obs-noise-vector",
+      "config": {
+        "c": 1,
+        "start": 20,
+        "end": 50,
+        "stats": "native/plugins/stats/tdmpc2-pushcube-independent.json"
+      }
+    },
+    {
+      "key": "residual",
+      "plugin": "b-residual-monitor",
+      "config": {
+        "scale": 0.2478402774542645,
+        "threshold": 0.8173528137616873
+      }
+    }
+  ],
+  "seeds": {
+    "start": 2000,
+    "episodes": 50
+  },
+  "max_steps": 50,
+  "control": {
+    "single": true,
+    "combined": false,
+    "defended": true,
+    "defense_only": true,
+    "monitors_everywhere": true
+  }
+}

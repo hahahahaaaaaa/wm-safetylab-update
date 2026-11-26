@@ -1,4 +1,23 @@
 {
+  "models": {
+    "openvla-bridge": {
+      "entrypoint": "wms.engines.openvla.adapter:OpenVLAPolicy",
+      "probes": [],
+      "config": {
+        "runtime_config": "$runtime.config_file",
+        "unnorm_key": "bridge_orig"
+      }
+    },
+    "openvla-bridge-raw": {
+      "entrypoint": "wms.engines.openvla.adapter:OpenVLAPolicy",
+      "probes": [],
+      "config": {
+        "runtime_config": "$runtime.config_file",
+        "unnorm_key": "bridge_orig",
+        "prompt": "raw"
+      }
+    }
+  },
   "recipes": {
     "native-openvla": {
       "name": "OpenVLA 动作推理",
@@ -31,6 +50,50 @@
           }
         }
       }
+    },
+    "openvla-bridge-episode": {
+      "name": "OpenVLA · 回合内核 · 胡萝卜放盘（无记忆对照）",
+      "description": "平台逐步调用 OpenVLA（与单步推理同一份加载代码）和 SimplerBridgeEnv，作为 MemoryVLA 的无记忆对照。OpenVLA 在 Bridge 上的干净成功率很低，看结果时以此为前提。运行环境用 runtime.simpler.json：MemoryVLA 的 Python（torch 2.2.0 / transformers 4.40.1）加 OpenVLA 权重和 SimplerEnv。",
+      "task": "native",
+      "direction": "vla",
+      "entrypoint": "wms.episodes.kernel:run",
+      "model": "openvla-bridge",
+      "environment": "simpler-bridge-carrot",
+      "runtime": {
+        "native_key": "openvla-simpler",
+        "config_file": "runtime.simpler.json"
+      },
+      "seed": 0,
+      "timeout_s": 10800,
+      "inputs": {},
+      "params": {
+        "episodes": 24,
+        "max_steps": 120,
+        "perturbations": [],
+        "target_moves": [],
+        "save_raw": false,
+        "video": true,
+        "fps": 5
+      },
+      "metrics": [
+        {
+          "name": "visual_robustness",
+          "entrypoint": "wms.episodes.metrics:visual_robustness",
+          "params": {
+            "truth_key": "objects.source"
+          },
+          "version": "episodes/1"
+        }
+      ],
+      "tags": [
+        "openvla",
+        "simplerenv",
+        "bridge",
+        "episode",
+        "no-memory",
+        "S1",
+        "S5"
+      ]
     }
   }
 }

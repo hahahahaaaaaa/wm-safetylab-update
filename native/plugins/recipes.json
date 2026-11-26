@@ -1,0 +1,99 @@
+{
+  "plugins": {
+    "image-perturbation": {
+      "entrypoint": "wms.plugins.builtin:ImagePerturbation",
+      "stage": "S1",
+      "role": "fault",
+      "config": {
+        "schedule": []
+      },
+      "description": "图像扰动（遮挡、模糊、噪声、丢帧、冻结），即原 params.perturbations；跟随物体的遮挡读仿真真值。"
+    },
+    "target-moves": {
+      "entrypoint": "wms.plugins.builtin:TargetMoves",
+      "stage": "ENV",
+      "role": "fault",
+      "config": {
+        "moves": []
+      },
+      "description": "在指定步移动物体或目标，即原 params.target_moves（需为规范形式，goal 写成 {\"goal\": {...}}）。"
+    },
+    "example-action-scale": {
+      "entrypoint": "wms.plugins.examples:ActionScale",
+      "stage": "S5",
+      "role": "fault",
+      "config": {
+        "scale": 0.5,
+        "dims": 2
+      },
+      "description": "教学示例：把动作前几维乘以系数。不是实验。"
+    },
+    "example-memory-age": {
+      "entrypoint": "wms.plugins.examples:MemoryAgeMonitor",
+      "stage": "S2",
+      "role": "monitor",
+      "side": "model",
+      "requires": [
+        "state"
+      ],
+      "config": {},
+      "description": "教学示例：记录玩具策略靠记忆而非画面运行了多少步。不是实验。"
+    },
+    "monitor-state-summary": {
+      "entrypoint": "wms.plugins.examples:StateSummary",
+      "stage": "S2",
+      "role": "monitor",
+      "side": "model",
+      "requires": [
+        "state"
+      ],
+      "config": {},
+      "description": "S2 监控：每次读写记忆或潜状态时记一条摘要（形状、范数、长度）。"
+    },
+    "monitor-prediction-summary": {
+      "entrypoint": "wms.plugins.examples:PredictionSummary",
+      "stage": "S3",
+      "role": "monitor",
+      "side": "model",
+      "requires": [
+        "predict"
+      ],
+      "config": {},
+      "description": "S3 监控：每步规划内的预测次数，以及选中动作的下一步预测摘要。"
+    },
+    "monitor-plan-summary": {
+      "entrypoint": "wms.plugins.examples:PlanSummary",
+      "stage": "S4",
+      "role": "monitor",
+      "side": "model",
+      "requires": [
+        "plan"
+      ],
+      "config": {},
+      "description": "S4 监控：每次规划的候选数、最高分与平均分。"
+    },
+    "monitor-surprise": {
+      "entrypoint": "wms.plugins.examples:SurpriseSummary",
+      "stage": "S6",
+      "role": "monitor",
+      "side": "model",
+      "requires": [
+        "predict",
+        "embed"
+      ],
+      "config": {},
+      "description": "S6 监控：每步记录模型对所选动作的预测与下一观测编码之间的距离（模型自己的空间）。"
+    },
+    "monitor-latent-moments": {
+      "entrypoint": "wms.plugins.examples:LatentMoments",
+      "stage": "S2",
+      "role": "monitor",
+      "side": "model",
+      "requires": [
+        "state"
+      ],
+      "config": {},
+      "description": "S2 监控：累计模型 latent 各维的和与平方和，供 wms.episodes.clean_stats 算干净统计量。"
+    }
+  }
+}

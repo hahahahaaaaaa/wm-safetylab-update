@@ -5,7 +5,7 @@ from pathlib import Path, PureWindowsPath
 import sys
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-GROUPS = ("models", "environments", "algorithms", "runtimes", "recipes")
+GROUPS = ("models", "environments", "algorithms", "runtimes", "plugins", "recipes")
 
 
 def read_json(path):
@@ -104,6 +104,8 @@ class Registry:
                         entry["runtime"] = _runtime_paths(entry["runtime"], path.parent)
                 elif group == "runtimes":
                     entry = _runtime_paths(entry, path.parent)
+                elif group == "plugins":
+                    entry["_python_paths"] = list(extra)
                 pending.append((group, name, entry))
         for group, name, entry in pending:
             self.items[group][name] = entry
@@ -191,6 +193,21 @@ class Registry:
             if config.get(key):
                 config[key] = self.component(group, config[key])
         config = _bind_runtime(config, runtime)
+        if (config.get("params") or {}).get("plugins"):
+            from wms.plugins.resolve import check, resolve_specs
+            try:
+                config["params"]["plugins"] = resolve_specs(config["params"]["plugins"], self.items["plugins"])
+                paths = [p for spec in config["params"]["plugins"] for p in spec.get("python_paths", [])]
+                config["runtime"]["python_paths"] = list(dict.fromkeys(config["runtime"]["python_paths"] + paths))
+                plugin_errors = check(config)
+            except ValueError as exc:
+                plugin_errors = [str(exc)]
+            if plugin_errors:
+                message = "Plugin check failed: " + "; ".join(plugin_errors)
+                if not allow_unconfigured:
+                    raise ValueError(message)
+                config["configured"] = False
+                config["configuration_error"] = "; ".join(filter(None, [config.get("configuration_error"), message]))
         for key, value in {"name": config["task"], "direction": "control", "inputs": {}, "params": {},
                            "seed": 0, "steps": 8, "metrics": [], "tags": []}.items():
             config.setdefault(key, value)

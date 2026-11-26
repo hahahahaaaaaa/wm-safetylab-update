@@ -136,8 +136,8 @@ class StateEnvironment:
         cfg.episode_length = self.horizon
         cfg.seed_steps = max(1000, int(cfg.num_envs) * self.horizon)
 
-    def reset(self, seed=None):
-        obs, info = self.env.reset(seed=seed)
+    def reset(self, seed=None, reconfigure=False):
+        obs, info = self.env.reset(seed=seed, options={"reconfigure": True} if reconfigure else None)
         self.steps = 0
         return obs, info
 

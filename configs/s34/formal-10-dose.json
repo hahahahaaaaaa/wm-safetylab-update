@@ -1,0 +1,43 @@
+{
+  "name": "S34-formal-10-dose",
+  "description": "S3/S4 isolated B acceptance; paired seeds; frozen fast_speed=1.02 for TD-MPC2.",
+  "model": "tdmpc2-pushcube",
+  "environments": [
+    "maniskill-pushcube-state-independent"
+  ],
+  "plugins": [
+    {
+      "key": "score_c0.5",
+      "plugin": "b-score-misspec",
+      "config": {
+        "c": 0.5
+      }
+    },
+    {
+      "key": "score_c1",
+      "plugin": "b-score-misspec",
+      "config": {
+        "c": 1
+      }
+    },
+    {
+      "key": "score_c2",
+      "plugin": "b-score-misspec",
+      "config": {
+        "c": 2
+      }
+    }
+  ],
+  "seeds": {
+    "start": 2000,
+    "episodes": 50
+  },
+  "max_steps": 50,
+  "control": {
+    "single": true,
+    "combined": false,
+    "defended": true,
+    "defense_only": true,
+    "monitors_everywhere": true
+  }
+}

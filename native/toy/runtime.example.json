@@ -1,0 +1,6 @@
+{
+  "_comment": "Any Python 3.11 with numpy (imageio optional, for videos). Copy to runtime.json and set python.",
+  "python": "/path/to/python-with-numpy",
+  "env": {"PYTHONUNBUFFERED": "1"},
+  "timeout_s": 300
+}

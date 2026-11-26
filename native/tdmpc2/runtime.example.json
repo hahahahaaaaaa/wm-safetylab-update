@@ -2,6 +2,7 @@
   "python": "/path/to/tdmpc2-environment/bin/python",
   "source_dir": "/path/to/clean/ManiSkill-checkout",
   "asset_dir": "/path/to/maniskill-assets",
+  "episode_checkpoint": "/path/to/trained-PushCube-v1/model.pt",
   "physx_gpu_library": "/path/to/project/cache/physx/105.1-physx-5.3.1.patch0/libPhysXGpu_64.so",
   "gpu_device": "0",
   "cpu_threads": 4,
