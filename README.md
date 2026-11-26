@@ -254,6 +254,7 @@ docs/                      使用与开发文档
 
 | 目标 | 文档 |
 |---|---|
+| 两条产品线现在做到哪、该读哪份文档 | [项目现状（2026-10-28）](docs/STATUS_20261028.zh-CN.md) |
 | 每个模型的安装、配方、参数、输出和验证范围 | [全部模型与实验使用手册](docs/MODELS_AND_EXPERIMENTS.zh-CN.md) |
 | 后端、CLI、Python API 和独立评价 | [开发与接口手册](docs/DEVELOPMENT.zh-CN.md) |
 | 添加新模型或仿真器 | [开发总指南](docs/ONBOARDING_MODELS_AND_ENVIRONMENTS.zh-CN.md)与[模板](templates/README.zh-CN.md) |

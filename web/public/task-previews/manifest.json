@@ -1,0 +1,1209 @@
+{
+  "generated_at": "2026-10-21",
+  "purpose": "Static task previews, not the current draft or a live simulation. Variants explicitly identify their source environment.",
+  "environments": {
+    "toy-pick": {
+      "url": "/task-previews/toy-pick.png",
+      "kind": "illustration",
+      "caption": "ToyPick 实际初始化渲染（seed 0）：二维非物理场景。",
+      "source_environment": "toy-pick",
+      "sha256": "2399d0265bb43393e74b998ed44af2cef50d3159b092ec716ece191f4eeab651",
+      "bytes": 300
+    },
+    "toy-pick-vector": {
+      "url": "/task-previews/toy-pick.png",
+      "kind": "illustration",
+      "caption": "同一 ToyPick 二维非物理场景；本配置策略输入为状态向量，不接收此图像。",
+      "source_environment": "toy-pick",
+      "sha256": "2399d0265bb43393e74b998ed44af2cef50d3159b092ec716ece191f4eeab651",
+      "bytes": 300
+    },
+    "simpler-bridge-carrot": {
+      "url": "/task-previews/bridge-carrot.png",
+      "kind": "episode_frame",
+      "caption": "无扰动历史回合的初始相机画面（seed 0）；具体布局随实验种子变化。",
+      "source_environment": "simpler-bridge-carrot",
+      "sha256": "a9f69978edb4ab73344537d7a8baa6b749deaeb186b6059af95a03b022b5f090",
+      "bytes": 285520
+    },
+    "simpler-bridge-spoon": {
+      "url": "/task-previews/bridge-spoon.png",
+      "kind": "episode_frame",
+      "caption": "无扰动历史回合的初始相机画面（seed 0）；具体布局随实验种子变化。",
+      "source_environment": "simpler-bridge-spoon",
+      "sha256": "13c6bbb1dec82bcc56d0445b9a1325c226ffb3666138dcdb7b737360a5b14190",
+      "bytes": 298517
+    },
+    "simpler-bridge-cube": {
+      "url": "/task-previews/bridge-cube.png",
+      "kind": "episode_frame",
+      "caption": "无扰动历史回合的初始相机画面（seed 0）；具体布局随实验种子变化。",
+      "source_environment": "simpler-bridge-cube",
+      "sha256": "4661d730295f0ab5d6af32d7650eb5c5857cd58e215a576d8e703bb9c1f6ba6b",
+      "bytes": 282363
+    },
+    "simpler-bridge-eggplant": {
+      "url": "/task-previews/bridge-eggplant.png",
+      "kind": "episode_frame",
+      "caption": "无扰动历史回合的初始相机画面（seed 0）；具体布局随实验种子变化。",
+      "source_environment": "simpler-bridge-eggplant",
+      "sha256": "5aaa602030afb973da7384af030b9703a7154b8df3a644e9770371ec32916aa8",
+      "bytes": 233864
+    },
+    "maniskill-pickcube-rgb": {
+      "url": "/task-previews/maniskill-pickcube.png",
+      "kind": "task_asset",
+      "caption": "ManiSkill 环境实际初始化画面（seed 0），用于展示任务场景。",
+      "source_environment": "maniskill-pickcube-rgb",
+      "sha256": "f857fb3215f6b55d7aaae8618aead6de33939fdf35e571ddc5a32afc699737dc",
+      "bytes": 296536
+    },
+    "maniskill-stackcube-rgb": {
+      "url": "/task-previews/maniskill-stackcube.png",
+      "kind": "task_asset",
+      "caption": "ManiSkill 环境实际初始化画面（seed 0），用于展示任务场景。",
+      "source_environment": "maniskill-stackcube-rgb",
+      "sha256": "656aa81d7780c307599f273627adca27a28fc7f011326dd6d94dc32581aa510b",
+      "bytes": 296478
+    },
+    "maniskill-pushcube-rgb": {
+      "url": "/task-previews/maniskill-pushcube.png",
+      "kind": "task_asset",
+      "caption": "ManiSkill 环境实际初始化画面（seed 0），用于展示任务场景。",
+      "source_environment": "maniskill-pushcube-rgb",
+      "sha256": "209381432a380363591ecc701ab2244bead5dd49da81c0f501b387c3aaa2ba98",
+      "bytes": 286714
+    },
+    "maniskill-pickcube-rgb-ee": {
+      "url": "/task-previews/maniskill-pickcube.png",
+      "kind": "task_asset",
+      "caption": "同一 PickCube 场景参考图；本配置使用末端增量控制。",
+      "source_environment": "maniskill-pickcube-rgb",
+      "sha256": "f857fb3215f6b55d7aaae8618aead6de33939fdf35e571ddc5a32afc699737dc",
+      "bytes": 296536
+    },
+    "maniskill-pushcube-state-independent": {
+      "url": "/task-previews/tdmpc2-pushcube.png",
+      "kind": "episode_frame",
+      "caption": "TD-MPC2 无插件回合初始录像（seed 4000）；策略输入为状态向量，相机只用于展示。",
+      "source_environment": "maniskill-pushcube-state-independent",
+      "sha256": "c65ef0247ed41639cbdc04d0a651fcaa6ad2a6c5dca00a35dec0c8ae176c9462",
+      "bytes": 309514
+    },
+    "maniskill-pushcube-state": {
+      "url": "/task-previews/tdmpc2-pushcube.png",
+      "kind": "episode_frame",
+      "caption": "独立回合版本的同任务场景参考；本配置输入为状态向量，重置方式不同。",
+      "source_environment": "maniskill-pushcube-state-independent",
+      "sha256": "c65ef0247ed41639cbdc04d0a651fcaa6ad2a6c5dca00a35dec0c8ae176c9462",
+      "bytes": 309514
+    },
+    "simpler-bridge-carrot-candle": {
+      "url": "/task-previews/simpler-bridge-carrot-candle.png",
+      "kind": "episode_frame",
+      "caption": "胡萝卜放盘任务添加蜡烛后的实际初始画面（seed 0）。",
+      "source_environment": "simpler-bridge-carrot-candle",
+      "sha256": "1ade2a5dde4ddc285b42c756e271f87bbfac7b853b024ab7cf2fc910950dbf9d",
+      "bytes": 283818
+    }
+  },
+  "sources": {
+    "bridge": {
+      "scope": "Bridge task previews only",
+      "extracted_at_utc": "2026-10-21T11:01:33.788880+00:00",
+      "method": "Read existing remote NPZ with installed NumPy; encode frame 0 as lossless PNG using installed Pillow; transfer over SSH. No simulator, model, or GPU run.",
+      "items": [
+        {
+          "task": "carrot",
+          "environment_id": "simpler-bridge-carrot",
+          "source_host": "10.161.97.111",
+          "source_user": "suzhenjie2026",
+          "source_run": "run_7e0004",
+          "source_project": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry",
+          "source_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0004/output/episodes/ep_000/frames_3rd_view_camera.npz",
+          "source_file_sha256": "06959ed443e554e88e7cb405f78fbd22f8f7a3ca659104229e609c2aa56102b8",
+          "source_environment": {
+            "entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv",
+            "config": {
+              "task": "carrot",
+              "runtime_config": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/memoryvla/runtime.json"
+            },
+            "spec": {
+              "task": "carrot",
+              "env_name": "PutCarrotOnPlateInScene-v0",
+              "action_dim": 7,
+              "action_meaning": [
+                "dx",
+                "dy",
+                "dz",
+                "rot_axangle_x",
+                "rot_axangle_y",
+                "rot_axangle_z",
+                "gripper"
+              ],
+              "action_low": [
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0
+              ],
+              "action_high": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "cameras": {},
+              "objects": [
+                "source",
+                "target"
+              ],
+              "has_goal": true,
+              "max_steps": 120,
+              "control_mode": "arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos",
+              "rebuild_each_episode": true
+            }
+          },
+          "episode": 0,
+          "seed": 0,
+          "camera": "3rd_view_camera",
+          "frame_index": 0,
+          "array_key": "seen",
+          "source_array_shape": [
+            121,
+            480,
+            640,
+            3
+          ],
+          "dimensions": {
+            "width": 640,
+            "height": 480,
+            "channels": 3
+          },
+          "preview_kind": "historical_simulator_camera_frame",
+          "frame_semantics": "Initial camera observation before action 0; no image perturbation, target movement, or plugins configured.",
+          "source_config_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0004/config.json",
+          "source_config_sha256": "f5c42860662695283d5eda795c7c9b3d629cd12654f200bca5db4280a74c533e",
+          "source_manifest_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0004/output/run_manifest.json",
+          "source_manifest_sha256": "9776cfc556c89bcb6993edc681285d61f15e211dbee06567d0f747de5e975e9a",
+          "source_summary_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0004/output/episodes/ep_000/summary.json",
+          "source_summary_sha256": "4e024d66feabbc6e8bdb9ac2c5168f48188c5181a3521932ae3a915905db8bc9",
+          "clean_evidence": {
+            "perturbations": [],
+            "target_moves": [],
+            "plugins": [],
+            "perturbed_steps": 0,
+            "target_moves_applied": 0,
+            "first_step_t": 0,
+            "first_step_perturbations": [],
+            "first_step_target_moves": []
+          },
+          "png_sha256": "a9f69978edb4ab73344537d7a8baa6b749deaeb186b6059af95a03b022b5f090",
+          "local_path": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/bridge-carrot.png",
+          "file_name": "bridge-carrot.png",
+          "visual_review": {
+            "status": "confirmed_by_image_inspection",
+            "observations": "可见胡萝卜、浅黄色盘子和 WidowX 夹爪，符合胡萝卜放盘任务初始场景。",
+            "limit": "核对的是历史仿真画面与任务的对应关系，不代表新实验运行或任务成功验收。"
+          },
+          "png_bytes": 285520
+        },
+        {
+          "task": "spoon",
+          "environment_id": "simpler-bridge-spoon",
+          "source_host": "10.161.97.111",
+          "source_user": "suzhenjie2026",
+          "source_run": "run_7e0211",
+          "source_project": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry",
+          "source_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0211/output/episodes/ep_000/frames_3rd_view_camera.npz",
+          "source_file_sha256": "207037b18ea13aad6325ae5d17f7a3b1f9d7569c855923aacb75eee3bb268171",
+          "source_environment": {
+            "entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv",
+            "config": {
+              "task": "spoon",
+              "runtime_config": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/memoryvla/runtime.json"
+            },
+            "spec": {
+              "task": "spoon",
+              "env_name": "PutSpoonOnTableClothInScene-v0",
+              "action_dim": 7,
+              "action_meaning": [
+                "dx",
+                "dy",
+                "dz",
+                "rot_axangle_x",
+                "rot_axangle_y",
+                "rot_axangle_z",
+                "gripper"
+              ],
+              "action_low": [
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0
+              ],
+              "action_high": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "cameras": {},
+              "objects": [
+                "source",
+                "target"
+              ],
+              "has_goal": true,
+              "max_steps": 120,
+              "control_mode": "arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos",
+              "rebuild_each_episode": true,
+              "safety": {
+                "hazards": [
+                  "workspace_exit",
+                  "object_drop",
+                  "fast_contact"
+                ],
+                "dt_s": 0.2,
+                "workspace_half_xy": 0.35,
+                "floor_margin": 0.03,
+                "ceiling": 0.45,
+                "drop_height": 0.05,
+                "fast_speed": 0.3,
+                "contact_radius": 0.06,
+                "workspace": "objects' initial xy centre +- workspace_half_xy"
+              }
+            }
+          },
+          "episode": 0,
+          "seed": 0,
+          "camera": "3rd_view_camera",
+          "frame_index": 0,
+          "array_key": "seen",
+          "source_array_shape": [
+            121,
+            480,
+            640,
+            3
+          ],
+          "dimensions": {
+            "width": 640,
+            "height": 480,
+            "channels": 3
+          },
+          "preview_kind": "historical_simulator_camera_frame",
+          "frame_semantics": "Initial camera observation before action 0; no image perturbation, target movement, or plugins configured.",
+          "source_config_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0211/config.json",
+          "source_config_sha256": "5cc9aba3db0970c8581b0293b86bb23104c9ff098038f8ac618375a39aea0a88",
+          "source_manifest_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0211/output/run_manifest.json",
+          "source_manifest_sha256": "73c43b20ba58736e7ecbd6546036c7354352dc8beb3a280df4a07abfb1f674d5",
+          "source_summary_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0211/output/episodes/ep_000/summary.json",
+          "source_summary_sha256": "6875b9cf6565dc701dd6b44ea84deffbe7013c8f06e5ee6ced7235dbe60343aa",
+          "clean_evidence": {
+            "perturbations": [],
+            "target_moves": [],
+            "plugins": [],
+            "perturbed_steps": 0,
+            "target_moves_applied": 0,
+            "first_step_t": 0,
+            "first_step_perturbations": [],
+            "first_step_target_moves": []
+          },
+          "png_sha256": "13c6bbb1dec82bcc56d0445b9a1325c226ffb3666138dcdb7b737360a5b14190",
+          "local_path": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/bridge-spoon.png",
+          "file_name": "bridge-spoon.png",
+          "visual_review": {
+            "status": "confirmed_by_image_inspection",
+            "observations": "可见勺子、蓝色台布和 WidowX 夹爪，符合勺子放台布任务初始场景。",
+            "limit": "核对的是历史仿真画面与任务的对应关系，不代表新实验运行或任务成功验收。"
+          },
+          "png_bytes": 298517
+        },
+        {
+          "task": "cube",
+          "environment_id": "simpler-bridge-cube",
+          "source_host": "10.161.97.111",
+          "source_user": "suzhenjie2026",
+          "source_run": "run_7e0212",
+          "source_project": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry",
+          "source_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0212/output/episodes/ep_000/frames_3rd_view_camera.npz",
+          "source_file_sha256": "6121402c85531c5dc77fa046a9a29e85d8d148a275a4d72abb0d548448eef460",
+          "source_environment": {
+            "entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv",
+            "config": {
+              "task": "cube",
+              "runtime_config": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/memoryvla/runtime.json"
+            },
+            "spec": {
+              "task": "cube",
+              "env_name": "StackGreenCubeOnYellowCubeBakedTexInScene-v0",
+              "action_dim": 7,
+              "action_meaning": [
+                "dx",
+                "dy",
+                "dz",
+                "rot_axangle_x",
+                "rot_axangle_y",
+                "rot_axangle_z",
+                "gripper"
+              ],
+              "action_low": [
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0
+              ],
+              "action_high": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "cameras": {},
+              "objects": [
+                "source",
+                "target"
+              ],
+              "has_goal": true,
+              "max_steps": 120,
+              "control_mode": "arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos",
+              "rebuild_each_episode": true,
+              "safety": {
+                "hazards": [
+                  "workspace_exit",
+                  "object_drop",
+                  "fast_contact"
+                ],
+                "dt_s": 0.2,
+                "workspace_half_xy": 0.35,
+                "floor_margin": 0.03,
+                "ceiling": 0.45,
+                "drop_height": 0.05,
+                "fast_speed": 0.3,
+                "contact_radius": 0.06,
+                "workspace": "objects' initial xy centre +- workspace_half_xy"
+              }
+            }
+          },
+          "episode": 0,
+          "seed": 0,
+          "camera": "3rd_view_camera",
+          "frame_index": 0,
+          "array_key": "seen",
+          "source_array_shape": [
+            121,
+            480,
+            640,
+            3
+          ],
+          "dimensions": {
+            "width": 640,
+            "height": 480,
+            "channels": 3
+          },
+          "preview_kind": "historical_simulator_camera_frame",
+          "frame_semantics": "Initial camera observation before action 0; no image perturbation, target movement, or plugins configured.",
+          "source_config_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0212/config.json",
+          "source_config_sha256": "0537213e0aaf568971fdc6275c75156affc0375e375141e7b78a82d67a4327c6",
+          "source_manifest_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0212/output/run_manifest.json",
+          "source_manifest_sha256": "9253ccc155afb240651320c8644b47cf72fc044feb535be8bd87c2e9378fa898",
+          "source_summary_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0212/output/episodes/ep_000/summary.json",
+          "source_summary_sha256": "72d0e26127618a708c1b4208adfd5f4e90c26842a24a97a60d1dab3d8bd751e7",
+          "clean_evidence": {
+            "perturbations": [],
+            "target_moves": [],
+            "plugins": [],
+            "perturbed_steps": 0,
+            "target_moves_applied": 0,
+            "first_step_t": 0,
+            "first_step_perturbations": [],
+            "first_step_target_moves": []
+          },
+          "png_sha256": "4661d730295f0ab5d6af32d7650eb5c5857cd58e215a576d8e703bb9c1f6ba6b",
+          "local_path": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/bridge-cube.png",
+          "file_name": "bridge-cube.png",
+          "visual_review": {
+            "status": "confirmed_by_image_inspection",
+            "observations": "可见分离的绿色和黄色方块及 WidowX 夹爪，符合绿块叠黄块任务初始场景。",
+            "limit": "核对的是历史仿真画面与任务的对应关系，不代表新实验运行或任务成功验收。"
+          },
+          "png_bytes": 282363
+        },
+        {
+          "task": "eggplant",
+          "environment_id": "simpler-bridge-eggplant",
+          "source_host": "10.161.97.111",
+          "source_user": "suzhenjie2026",
+          "source_run": "run_7e0213",
+          "source_project": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry",
+          "source_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0213/output/episodes/ep_000/frames_3rd_view_camera.npz",
+          "source_file_sha256": "e313d6ccb15f0465b2846d28cfccb73fe31a13d92ad729182b073803c7883667",
+          "source_environment": {
+            "entrypoint": "wms.scenarios.simpler.env:SimplerBridgeEnv",
+            "config": {
+              "task": "eggplant",
+              "runtime_config": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/memoryvla/runtime.json"
+            },
+            "spec": {
+              "task": "eggplant",
+              "env_name": "PutEggplantInBasketScene-v0",
+              "action_dim": 7,
+              "action_meaning": [
+                "dx",
+                "dy",
+                "dz",
+                "rot_axangle_x",
+                "rot_axangle_y",
+                "rot_axangle_z",
+                "gripper"
+              ],
+              "action_low": [
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0,
+                -1.0
+              ],
+              "action_high": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "cameras": {},
+              "objects": [
+                "source",
+                "target"
+              ],
+              "has_goal": true,
+              "max_steps": 120,
+              "control_mode": "arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos",
+              "rebuild_each_episode": true,
+              "safety": {
+                "hazards": [
+                  "workspace_exit",
+                  "object_drop",
+                  "fast_contact"
+                ],
+                "dt_s": 0.2,
+                "workspace_half_xy": 0.35,
+                "floor_margin": 0.03,
+                "ceiling": 0.45,
+                "drop_height": 0.05,
+                "fast_speed": 0.3,
+                "contact_radius": 0.06,
+                "workspace": "objects' initial xy centre +- workspace_half_xy"
+              }
+            }
+          },
+          "episode": 0,
+          "seed": 0,
+          "camera": "3rd_view_camera",
+          "frame_index": 0,
+          "array_key": "seen",
+          "source_array_shape": [
+            121,
+            480,
+            640,
+            3
+          ],
+          "dimensions": {
+            "width": 640,
+            "height": 480,
+            "channels": 3
+          },
+          "preview_kind": "historical_simulator_camera_frame",
+          "frame_semantics": "Initial camera observation before action 0; no image perturbation, target movement, or plugins configured.",
+          "source_config_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0213/config.json",
+          "source_config_sha256": "5933553005be9e87e9c6bd20d6af66eed5167088d17d3422da879442fba4e996",
+          "source_manifest_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0213/output/run_manifest.json",
+          "source_manifest_sha256": "99c08685c340375123a5988cf6ccafe6b52c41aea6c20907c434f7ce78562c65",
+          "source_summary_path": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/runs/run_7e0213/output/episodes/ep_000/summary.json",
+          "source_summary_sha256": "ebc16587a44744828289c3ab6e5e525d0e62db7e9675021b29e105d19039246a",
+          "clean_evidence": {
+            "perturbations": [],
+            "target_moves": [],
+            "plugins": [],
+            "perturbed_steps": 0,
+            "target_moves_applied": 0,
+            "first_step_t": 0,
+            "first_step_perturbations": [],
+            "first_step_target_moves": []
+          },
+          "png_sha256": "5aaa602030afb973da7384af030b9703a7154b8df3a644e9770371ec32916aa8",
+          "local_path": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/bridge-eggplant.png",
+          "file_name": "bridge-eggplant.png",
+          "visual_review": {
+            "status": "confirmed_by_image_inspection",
+            "observations": "可见紫色茄子、水槽内黄色篮子及 WidowX 夹爪，符合茄子放篮任务初始场景。",
+            "limit": "核对的是历史仿真画面与任务的对应关系，不代表新实验运行或任务成功验收。"
+          },
+          "png_bytes": 233864
+        }
+      ]
+    },
+    "maniskill": {
+      "scope": "ManiSkill standalone initialized task previews",
+      "items": [
+        {
+          "task": "pickcube",
+          "environment_id": "maniskill-pickcube-rgb",
+          "native_env_id": "PickCube-v1",
+          "asset_kind": "environment_initialization_frame",
+          "source_run": null,
+          "source_host": "10.161.97.111",
+          "source_user": "suzhenjie2026",
+          "source_project": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021",
+          "source_python": "/home/suzhenjie2026/world-model/envs/maniskill-pushcube/bin/python",
+          "source_environment": {
+            "entrypoint": "wms.scenarios.maniskill.vision:ManiSkillVisionEnv",
+            "config": {
+              "env_id": "PickCube-v1",
+              "obs_mode": "rgb",
+              "control_mode": "pd_joint_pos",
+              "camera_size": [
+                512,
+                512
+              ],
+              "max_episode_steps": 200,
+              "sim_backend": "physx_cpu",
+              "runtime_config": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json"
+            },
+            "spec": {
+              "env_id": "PickCube-v1",
+              "control_mode": "pd_joint_pos",
+              "action_dim": 8,
+              "action_low": [
+                -2.8973000049591064,
+                -1.7627999782562256,
+                -2.8973000049591064,
+                -3.0717999935150146,
+                -2.8973000049591064,
+                -0.017500000074505806,
+                -2.8973000049591064,
+                -1.0
+              ],
+              "action_high": [
+                2.8973000049591064,
+                1.7627999782562256,
+                2.8973000049591064,
+                -0.0697999969124794,
+                2.8973000049591064,
+                3.752500057220459,
+                2.8973000049591064,
+                1.0
+              ],
+              "cameras": {
+                "base_camera": [
+                  512,
+                  512,
+                  3
+                ]
+              },
+              "objects": [
+                "cube"
+              ],
+              "has_goal": true,
+              "max_steps": 200,
+              "sim_backend": "physx_cpu",
+              "safety": {
+                "hazards": [
+                  "workspace_exit",
+                  "object_drop",
+                  "fast_contact"
+                ],
+                "dt_s": 0.05,
+                "workspace_half_xy": 0.35,
+                "floor_margin": 0.03,
+                "ceiling": 0.45,
+                "drop_height": 0.05,
+                "fast_speed": 0.3,
+                "contact_radius": 0.06,
+                "workspace": "objects' initial xy centre +- workspace_half_xy"
+              }
+            }
+          },
+          "original_recipe_config": {
+            "env_id": "PickCube-v1",
+            "obs_mode": "rgb",
+            "control_mode": "pd_joint_pos",
+            "camera_size": [
+              128,
+              128
+            ],
+            "max_episode_steps": 200,
+            "sim_backend": "physx_cpu",
+            "runtime_config": "$runtime.config_file"
+          },
+          "overrides": {
+            "runtime_config": {
+              "from": "$runtime.config_file",
+              "to": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json",
+              "reason": "Resolve existing runtime."
+            },
+            "camera_size": {
+              "from": [
+                128,
+                128
+              ],
+              "to": [
+                512,
+                512
+              ],
+              "reason": "Higher-resolution task preview; not an evaluation observation or policy run."
+            }
+          },
+          "seed": 0,
+          "frame_index": 0,
+          "camera": "base_camera",
+          "adapter_step": 0,
+          "policy_actions_executed": 0,
+          "controller_or_planner_run": false,
+          "initial_state": {
+            "t": 0,
+            "qpos": [
+              0.035281047224998474,
+              0.40070223808288574,
+              0.019574759528040886,
+              -1.918677568435669,
+              0.03735116124153137,
+              2.336648941040039,
+              0.8043999075889587,
+              0.03999999910593033,
+              0.03999999910593033
+            ],
+            "tcp_xyz": [
+              0.012253533117473125,
+              0.0380113385617733,
+              0.18215224146842957
+            ],
+            "objects": {
+              "cube": [
+                -0.0007486790418624878,
+                0.053644366562366486,
+                0.019999999552965164,
+                0.5687612295150757,
+                0.0,
+                0.0,
+                0.8225026726722717
+              ]
+            },
+            "goal": [
+              0.026815734803676605,
+              -0.0019813179969787598,
+              0.2889334559440613
+            ],
+            "distance_to_goal": 0.2760058290322969,
+            "success_so_far": false
+          },
+          "dimensions": {
+            "width": 512,
+            "height": 512,
+            "channels": 3
+          },
+          "frame_semantics": "RGB returned by reset(seed=0), before any policy action. Standalone initialized environment preview, not an episode-run artifact.",
+          "runtime_versions": {
+            "numpy": "1.26.4",
+            "torch": "2.7.0+cu128",
+            "mani_skill": "3.0.1",
+            "sapien": "3.0.3",
+            "gymnasium": "1.4.0",
+            "Pillow": "12.3.0"
+          },
+          "runtime_cache_paths": {
+            "XDG_CACHE_HOME": "/home/suzhenjie2026/world-model/cache",
+            "TMPDIR": "/home/suzhenjie2026/world-model/tmp",
+            "TEMP": "/home/suzhenjie2026/world-model/tmp",
+            "TMP": "/home/suzhenjie2026/world-model/tmp",
+            "CUDA_CACHE_PATH": "/home/suzhenjie2026/world-model/cache/cuda",
+            "TORCH_HOME": "/home/suzhenjie2026/world-model/cache/torch",
+            "MS_ASSET_DIR": "/home/suzhenjie2026/world-model/assets/maniskill"
+          },
+          "source_file_sha256": {
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/native/maniskill/recipes.json": "026fdce665dbb715deedcf1d143cd7ea41a00bef4d9d08cee27cf46a90664b8f",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/src/wms/scenarios/maniskill/vision.py": "984e7130554ef905284b0706f420acc5a6654d7ac8795b9f89e43dcd5e2a943e",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/src/wms/engines/maniskill/runtime.py": "cba9d2561c83f889db52df9be17a57c3582e73dffaab0357b8d2deb76cea0fad",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json": "dcd6b0a638c4665ae20caaad12d22a8db333f278d7d000c5b6b0a50a54e95223"
+          },
+          "frame_rgb_sha256": "588d542cc5535391a0c6f26809ccf633adbf0e4815114a4928f9bdfbd654cb7a",
+          "png_sha256": "f857fb3215f6b55d7aaae8618aead6de33939fdf35e571ddc5a32afc699737dc",
+          "generated_at_utc": "2026-10-21T11:04:22.652588+00:00",
+          "local_path": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/maniskill-pickcube.png",
+          "file_name": "maniskill-pickcube.png",
+          "png_bytes": 296536,
+          "initialization_log": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/maniskill-pickcube-initialization.log",
+          "visual_review": {
+            "status": "confirmed_by_image_inspection",
+            "observations": "可见 Panda 夹爪与桌面上的单个红色方块；与 PickCube-v1 初始环境对应。目标点在本任务相机画面中不绘制。",
+            "limit": "独立初始化预览，不是实验 episode 帧、不包含策略执行或成功率验收。"
+          }
+        },
+        {
+          "task": "stackcube",
+          "environment_id": "maniskill-stackcube-rgb",
+          "native_env_id": "StackCube-v1",
+          "asset_kind": "environment_initialization_frame",
+          "source_run": null,
+          "source_host": "10.161.97.111",
+          "source_user": "suzhenjie2026",
+          "source_project": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021",
+          "source_python": "/home/suzhenjie2026/world-model/envs/maniskill-pushcube/bin/python",
+          "source_environment": {
+            "entrypoint": "wms.scenarios.maniskill.vision:ManiSkillVisionEnv",
+            "config": {
+              "env_id": "StackCube-v1",
+              "obs_mode": "rgb",
+              "control_mode": "pd_joint_pos",
+              "camera_size": [
+                512,
+                512
+              ],
+              "max_episode_steps": 300,
+              "sim_backend": "physx_cpu",
+              "runtime_config": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json"
+            },
+            "spec": {
+              "env_id": "StackCube-v1",
+              "control_mode": "pd_joint_pos",
+              "action_dim": 8,
+              "action_low": [
+                -2.8973000049591064,
+                -1.7627999782562256,
+                -2.8973000049591064,
+                -3.0717999935150146,
+                -2.8973000049591064,
+                -0.017500000074505806,
+                -2.8973000049591064,
+                -1.0
+              ],
+              "action_high": [
+                2.8973000049591064,
+                1.7627999782562256,
+                2.8973000049591064,
+                -0.0697999969124794,
+                2.8973000049591064,
+                3.752500057220459,
+                2.8973000049591064,
+                1.0
+              ],
+              "cameras": {
+                "base_camera": [
+                  512,
+                  512,
+                  3
+                ]
+              },
+              "objects": [
+                "cubeA",
+                "cubeB"
+              ],
+              "has_goal": false,
+              "max_steps": 300,
+              "sim_backend": "physx_cpu",
+              "safety": {
+                "hazards": [
+                  "workspace_exit",
+                  "object_drop",
+                  "fast_contact"
+                ],
+                "dt_s": 0.05,
+                "workspace_half_xy": 0.35,
+                "floor_margin": 0.03,
+                "ceiling": 0.45,
+                "drop_height": 0.05,
+                "fast_speed": 0.3,
+                "contact_radius": 0.06,
+                "workspace": "objects' initial xy centre +- workspace_half_xy"
+              }
+            }
+          },
+          "original_recipe_config": {
+            "env_id": "StackCube-v1",
+            "obs_mode": "rgb",
+            "control_mode": "pd_joint_pos",
+            "camera_size": [
+              128,
+              128
+            ],
+            "max_episode_steps": 300,
+            "sim_backend": "physx_cpu",
+            "runtime_config": "$runtime.config_file"
+          },
+          "overrides": {
+            "runtime_config": {
+              "from": "$runtime.config_file",
+              "to": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json",
+              "reason": "Resolve existing runtime."
+            },
+            "camera_size": {
+              "from": [
+                128,
+                128
+              ],
+              "to": [
+                512,
+                512
+              ],
+              "reason": "Higher-resolution task preview; not an evaluation observation or policy run."
+            }
+          },
+          "seed": 0,
+          "frame_index": 0,
+          "camera": "base_camera",
+          "adapter_step": 0,
+          "policy_actions_executed": 0,
+          "controller_or_planner_run": false,
+          "initial_state": {
+            "t": 0,
+            "qpos": [
+              0.035281047224998474,
+              0.40070223808288574,
+              0.019574759528040886,
+              -1.918677568435669,
+              0.03735116124153137,
+              2.336648941040039,
+              0.8043999075889587,
+              0.03999999910593033,
+              0.03999999910593033
+            ],
+            "tcp_xyz": [
+              0.012253533117473125,
+              0.0380113385617733,
+              0.18215224146842957
+            ],
+            "objects": {
+              "cubeA": [
+                -0.08305319398641586,
+                -0.09354343265295029,
+                0.019999999552965164,
+                0.1389477550983429,
+                0.0,
+                0.0,
+                0.9902997016906738
+              ],
+              "cubeB": [
+                -0.03926411643624306,
+                0.1072758361697197,
+                0.019999999552965164,
+                0.3038814663887024,
+                0.0,
+                0.0,
+                0.9527098536491394
+              ]
+            },
+            "distance_to_goal": 0.205537981996435,
+            "success_so_far": false
+          },
+          "dimensions": {
+            "width": 512,
+            "height": 512,
+            "channels": 3
+          },
+          "frame_semantics": "RGB returned by reset(seed=0), before any policy action. Standalone initialized environment preview, not an episode-run artifact.",
+          "runtime_versions": {
+            "numpy": "1.26.4",
+            "torch": "2.7.0+cu128",
+            "mani_skill": "3.0.1",
+            "sapien": "3.0.3",
+            "gymnasium": "1.4.0",
+            "Pillow": "12.3.0"
+          },
+          "runtime_cache_paths": {
+            "XDG_CACHE_HOME": "/home/suzhenjie2026/world-model/cache",
+            "TMPDIR": "/home/suzhenjie2026/world-model/tmp",
+            "TEMP": "/home/suzhenjie2026/world-model/tmp",
+            "TMP": "/home/suzhenjie2026/world-model/tmp",
+            "CUDA_CACHE_PATH": "/home/suzhenjie2026/world-model/cache/cuda",
+            "TORCH_HOME": "/home/suzhenjie2026/world-model/cache/torch",
+            "MS_ASSET_DIR": "/home/suzhenjie2026/world-model/assets/maniskill"
+          },
+          "source_file_sha256": {
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/native/maniskill/recipes.json": "026fdce665dbb715deedcf1d143cd7ea41a00bef4d9d08cee27cf46a90664b8f",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/src/wms/scenarios/maniskill/vision.py": "984e7130554ef905284b0706f420acc5a6654d7ac8795b9f89e43dcd5e2a943e",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/src/wms/engines/maniskill/runtime.py": "cba9d2561c83f889db52df9be17a57c3582e73dffaab0357b8d2deb76cea0fad",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json": "dcd6b0a638c4665ae20caaad12d22a8db333f278d7d000c5b6b0a50a54e95223"
+          },
+          "frame_rgb_sha256": "25368a867a37a5493343253a7a5040c0e2299e24e0cc3bd4c265a1599601236d",
+          "png_sha256": "656aa81d7780c307599f273627adca27a28fc7f011326dd6d94dc32581aa510b",
+          "generated_at_utc": "2026-10-21T11:04:27.138834+00:00",
+          "local_path": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/maniskill-stackcube.png",
+          "file_name": "maniskill-stackcube.png",
+          "png_bytes": 296478,
+          "initialization_log": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/maniskill-stackcube-initialization.log",
+          "visual_review": {
+            "status": "confirmed_by_image_inspection",
+            "observations": "可见 Panda 夹爪、分离的红色与绿色方块；与 StackCube-v1 初始环境对应。",
+            "limit": "独立初始化预览，不是实验 episode 帧、不包含策略执行或成功率验收。"
+          }
+        },
+        {
+          "task": "pushcube",
+          "environment_id": "maniskill-pushcube-rgb",
+          "native_env_id": "PushCube-v1",
+          "asset_kind": "environment_initialization_frame",
+          "source_run": null,
+          "source_host": "10.161.97.111",
+          "source_user": "suzhenjie2026",
+          "source_project": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021",
+          "source_python": "/home/suzhenjie2026/world-model/envs/maniskill-pushcube/bin/python",
+          "source_environment": {
+            "entrypoint": "wms.scenarios.maniskill.vision:ManiSkillVisionEnv",
+            "config": {
+              "env_id": "PushCube-v1",
+              "obs_mode": "rgb",
+              "control_mode": "pd_joint_pos",
+              "camera_size": [
+                512,
+                512
+              ],
+              "max_episode_steps": 200,
+              "sim_backend": "physx_cpu",
+              "runtime_config": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json"
+            },
+            "spec": {
+              "env_id": "PushCube-v1",
+              "control_mode": "pd_joint_pos",
+              "action_dim": 8,
+              "action_low": [
+                -2.8973000049591064,
+                -1.7627999782562256,
+                -2.8973000049591064,
+                -3.0717999935150146,
+                -2.8973000049591064,
+                -0.017500000074505806,
+                -2.8973000049591064,
+                -1.0
+              ],
+              "action_high": [
+                2.8973000049591064,
+                1.7627999782562256,
+                2.8973000049591064,
+                -0.0697999969124794,
+                2.8973000049591064,
+                3.752500057220459,
+                2.8973000049591064,
+                1.0
+              ],
+              "cameras": {
+                "base_camera": [
+                  512,
+                  512,
+                  3
+                ]
+              },
+              "objects": [
+                "cube"
+              ],
+              "has_goal": true,
+              "max_steps": 200,
+              "sim_backend": "physx_cpu",
+              "safety": {
+                "hazards": [
+                  "workspace_exit",
+                  "object_drop",
+                  "fast_contact"
+                ],
+                "dt_s": 0.05,
+                "workspace_half_xy": 0.35,
+                "floor_margin": 0.03,
+                "ceiling": 0.45,
+                "drop_height": 0.05,
+                "fast_speed": 0.3,
+                "contact_radius": 0.06,
+                "workspace": "objects' initial xy centre +- workspace_half_xy"
+              }
+            }
+          },
+          "original_recipe_config": {
+            "env_id": "PushCube-v1",
+            "obs_mode": "rgb",
+            "control_mode": "pd_joint_pos",
+            "camera_size": [
+              128,
+              128
+            ],
+            "max_episode_steps": 200,
+            "sim_backend": "physx_cpu",
+            "runtime_config": "$runtime.config_file"
+          },
+          "overrides": {
+            "runtime_config": {
+              "from": "$runtime.config_file",
+              "to": "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json",
+              "reason": "Resolve existing runtime."
+            },
+            "camera_size": {
+              "from": [
+                128,
+                128
+              ],
+              "to": [
+                512,
+                512
+              ],
+              "reason": "Higher-resolution task preview; not an evaluation observation or policy run."
+            }
+          },
+          "seed": 0,
+          "frame_index": 0,
+          "camera": "base_camera",
+          "adapter_step": 0,
+          "policy_actions_executed": 0,
+          "controller_or_planner_run": false,
+          "initial_state": {
+            "t": 0,
+            "qpos": [
+              0.035281047224998474,
+              0.40070223808288574,
+              0.019574759528040886,
+              -1.918677568435669,
+              0.03735116124153137,
+              2.336648941040039,
+              0.8043999075889587,
+              0.03999999910593033,
+              0.03999999910593033
+            ],
+            "tcp_xyz": [
+              0.012253533117473125,
+              0.0380113385617733,
+              0.18215224146842957
+            ],
+            "objects": {
+              "cube": [
+                -0.0007486790418624878,
+                0.053644366562366486,
+                0.019999999552965164,
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "goal": [
+              0.19925132393836975,
+              0.053644366562366486,
+              0.0010000000474974513
+            ],
+            "distance_to_goal": 0.20000000298023224,
+            "success_so_far": false
+          },
+          "dimensions": {
+            "width": 512,
+            "height": 512,
+            "channels": 3
+          },
+          "frame_semantics": "RGB returned by reset(seed=0), before any policy action. Standalone initialized environment preview, not an episode-run artifact.",
+          "runtime_versions": {
+            "numpy": "1.26.4",
+            "torch": "2.7.0+cu128",
+            "mani_skill": "3.0.1",
+            "sapien": "3.0.3",
+            "gymnasium": "1.4.0",
+            "Pillow": "12.3.0"
+          },
+          "runtime_cache_paths": {
+            "XDG_CACHE_HOME": "/home/suzhenjie2026/world-model/cache",
+            "TMPDIR": "/home/suzhenjie2026/world-model/tmp",
+            "TEMP": "/home/suzhenjie2026/world-model/tmp",
+            "TMP": "/home/suzhenjie2026/world-model/tmp",
+            "CUDA_CACHE_PATH": "/home/suzhenjie2026/world-model/cache/cuda",
+            "TORCH_HOME": "/home/suzhenjie2026/world-model/cache/torch",
+            "MS_ASSET_DIR": "/home/suzhenjie2026/world-model/assets/maniskill"
+          },
+          "source_file_sha256": {
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/native/maniskill/recipes.json": "026fdce665dbb715deedcf1d143cd7ea41a00bef4d9d08cee27cf46a90664b8f",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/src/wms/scenarios/maniskill/vision.py": "984e7130554ef905284b0706f420acc5a6654d7ac8795b9f89e43dcd5e2a943e",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-maniskill-compare-20261021/src/wms/engines/maniskill/runtime.py": "cba9d2561c83f889db52df9be17a57c3582e73dffaab0357b8d2deb76cea0fad",
+            "/home/suzhenjie2026/world-model/deployments/wm-safetylab-dual-entry/native/maniskill/runtime.json": "dcd6b0a638c4665ae20caaad12d22a8db333f278d7d000c5b6b0a50a54e95223"
+          },
+          "frame_rgb_sha256": "a8c4567271133b4f79b290a259eca622311c9ac088820d931fb6afb47306953a",
+          "png_sha256": "209381432a380363591ecc701ab2244bead5dd49da81c0f501b387c3aaa2ba98",
+          "generated_at_utc": "2026-10-21T11:04:31.650914+00:00",
+          "local_path": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/maniskill-pushcube.png",
+          "file_name": "maniskill-pushcube.png",
+          "png_bytes": 286714,
+          "initialization_log": "K:/world-model/deployments/wm-safetylab-review/2026-10-21-preview-toy-fixes/assets/maniskill-pushcube-initialization.log",
+          "visual_review": {
+            "status": "confirmed_by_image_inspection",
+            "observations": "可见 Panda 夹爪、蓝色方块和红白目标圆区域；与 PushCube-v1 初始环境对应。",
+            "limit": "独立初始化预览，不是实验 episode 帧、不包含策略执行或成功率验收。"
+          }
+        }
+      ]
+    },
+    "toy": {
+      "environment": "ToyPickEnv",
+      "source_file": "K:/world-model/deployments/wm-safetylab/src/wms/scenarios/toy/env.py",
+      "seed": 0,
+      "t": 0,
+      "image_shape": [
+        64,
+        64,
+        3
+      ],
+      "dtype": "uint8",
+      "state": {
+        "t": 0,
+        "gripper": [
+          0.5,
+          0.12
+        ],
+        "cube": [
+          0.595873181125018,
+          0.5944253498173546
+        ],
+        "goal": [
+          0.17868146675533628,
+          0.20330552710570582
+        ],
+        "holding": false,
+        "distance_to_goal": 0.57185980996806,
+        "distance_gripper_cube": 0.48401557765050274
+      },
+      "image_sha256": "2399d0265bb43393e74b998ed44af2cef50d3159b092ec716ece191f4eeab651",
+      "pixel_sha256": "12f105d614ad08da1d5b8cebbce9926ffe9884f6c4de63462a83ba168f5e22dc",
+      "caption": "ToyPick 实际环境渲染；二维非物理示意，非真实机器人仿真。",
+      "vector_caption": "同一 ToyPick 场景示例；该配置策略输入为状态向量，不接收此图像。",
+      "torch_loaded": false
+    },
+    "tdmpc2": {
+      "experiment": "rt_a762fde60336",
+      "run": "run_0ca334107c6f4a18",
+      "environment": "maniskill-pushcube-state-independent",
+      "arm": "A0",
+      "plugins": [],
+      "episode": 0,
+      "seed": 4000,
+      "camera": "render_camera",
+      "frame": 0,
+      "dimensions": [
+        512,
+        512
+      ],
+      "retrieved_from": "/api/v1/experiments/rt_a762fde60336/episodes/run_0ca334107c6f4a18%3A0/frames/render_camera/0.png"
+    }
+  },
+  "candle_added_at": "2026-11-23"
+}

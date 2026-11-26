@@ -45,6 +45,13 @@ class ModelEntry(BaseModel):
     note: str = ""
 
 
+class EnvironmentPreview(BaseModel):
+    url: str = Field(pattern=r"^/task-previews/[a-z0-9][a-z0-9._-]*\.(png|jpg|jpeg|webp)$")
+    kind: Literal["episode_frame", "task_asset", "illustration"]
+    caption: str
+    source_environment: str | None = None
+
+
 class EnvironmentEntry(BaseModel):
     id: str
     name: str
@@ -54,6 +61,10 @@ class EnvironmentEntry(BaseModel):
     robot: str = ""
     instruction: str = ""
     max_steps: int | None = None
+    preview: EnvironmentPreview | None = None
+    category: str | None = Field(None, description="Optional UI grouping; embodied_safety is a runnable safety scenario")
+    scenario: str = Field("", description="Scenario scope and hazard interpretation")
+    hazard_ids: list[str] | None = Field(None, description="Relevant hazard IDs; absent keeps the legacy hazard set")
 
 
 class PluginEntry(BaseModel):

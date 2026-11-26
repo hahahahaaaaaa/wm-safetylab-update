@@ -5,6 +5,7 @@
       "probes": ["state", "predict", "plan", "embed"],
       "config": {
         "runtime_config": "$runtime.config_file",
+        "expected_env_id": "PushCube-v1",
         "source_run": ""
       }
     }
@@ -15,6 +16,7 @@
       "capabilities": ["set_object_pose", "set_goal", "hazards", "vector", "reward"],
       "config": {
         "runtime_config": "$runtime.config_file",
+        "expected_env_id": "PushCube-v1",
         "source_run": "",
         "hazards": {"fast_speed": 1.02}
       },
@@ -25,9 +27,11 @@
       "capabilities": ["set_object_pose", "set_goal", "hazards", "vector", "reward"],
       "config": {
         "runtime_config": "$runtime.config_file",
+        "expected_env_id": "PushCube-v1",
         "source_run": "",
         "hazards": {"fast_speed": 1.02},
-        "reconfigure_each_episode": true
+        "reconfigure_each_episode": true,
+        "render": true
       },
       "description": "As maniskill-pushcube-state, but the GPU scene is rebuilt at every reset, so an episode does not depend on what earlier episodes did (without it, a plugin acting in episode k changes episode k+1 from its first step: run_7e0303 vs 7e0013). Use it for plugin acceptance and its clean baseline; the official-parity recipes keep maniskill-pushcube-state."
     }

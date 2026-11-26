@@ -95,7 +95,10 @@ class MemoryVLAPolicy:
         if probed:
             self._offer_state("written")
         self.first = False
-        self.info = {"memory": self.memory, "memory_reset": reset_bank,
+        state = self.export_state()
+        self.info = {"executor": "memoryvla", "uses_images": True, "observation_kind": "rgb_instruction",
+                     "camera": self.camera, "memory": self.memory, "memory_reset": reset_bank,
+                     "memory_bank_sizes": {key: len(state[key]) for key in ("cognitive", "perceptual")},
                      "terminate_episode": bool(np.asarray(action["terminate_episode"]).reshape(-1)[0] > 0),
                      "raw_world_vector": np.asarray(raw["world_vector"]).tolist(),
                      "raw_rotation_delta": np.asarray(raw["rotation_delta"]).tolist(),

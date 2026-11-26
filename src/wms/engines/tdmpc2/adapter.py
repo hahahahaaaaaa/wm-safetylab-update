@@ -33,6 +33,7 @@ class ModelAdapter:
         self.first = True
         self.cold = False
         self.hooks = None
+        self.info = {"executor": "tdmpc2", "uses_images": False, "observation_kind": "privileged_state"}
 
     def _load(self, seed):
         if self.agent is None:
@@ -40,10 +41,14 @@ class ModelAdapter:
             runtime = load_runtime(self.config["runtime_config"])
             compat.prepare(runtime)
             compat.seed_all(seed)
-            from .native import _source
-            checkpoint = _source(self.config, self.config.get("output_dir", "."))
+            from .native import episode_checkpoint
+            checkpoint = episode_checkpoint(self.config, runtime)
             self.config = {**self.config, "checkpoint": str(checkpoint)}
             self.agent, self.cfg, self.metadata = compat.checkpoint_load(checkpoint)
+            expected = self.config.get("expected_env_id")
+            if expected and self.cfg.env_id != expected:
+                raise ValueError(f"Checkpoint task {self.cfg.env_id!r} differs from requested task {expected!r}")
+            self.info["checkpoint"] = str(checkpoint)
             # Checkpoint construction initializes then replaces weights. Use an
             # explicit policy RNG stream, independently of that initialization.
             compat.seed_all(seed)

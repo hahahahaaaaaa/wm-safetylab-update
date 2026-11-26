@@ -41,10 +41,23 @@ class EpisodeEnv(Env, Protocol):
     def get_state(self) -> dict: ...               # true state; logged, never shown to the policy
 
 
+class EpisodeRecordingEnv(Protocol):
+    """Optional observer-only cameras; independent of observations and plugin RGB capability.
+
+    Called after ENV changes, before the action, and once after the final action.
+    Return {} when disabled, or stable camera names mapped to real RGB arrays. Names must
+    not collide with policy RGB cameras. Rendering must not change observations or physics.
+    A spec may advertise these separately as recording_cameras; cameras remains policy input.
+    """
+
+    def recording_frames(self) -> dict[str, Any]: ...
+
+
 EPISODE_POLICY = ("reset", "act")
 EPISODE_ENV = ("reset", "step", "close", "spec", "observe", "get_state")
 # Optional: image_box(name, camera) for occluders that follow an object;
 # set_object_pose(name, xyz, delta) / set_goal(xyz, delta) for target moves;
+# recording_frames() for observer-only cameras (EpisodeRecordingEnv, not required);
 # policy.bind_env(spec).
 
 
