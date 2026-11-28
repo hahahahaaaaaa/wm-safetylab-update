@@ -81,7 +81,9 @@ def build_recipes(config, model, arms, selected, registry):
     for arm in arms:
         for env in config.environments:
             capabilities = registry.items["environments"].get(env, {}).get("capabilities", [])
-            params = {"episodes": config.seeds.episodes, "perturbations": [], "target_moves": [],
+            params = {"episodes": config.seeds.episodes,
+                      "seeds": list(range(config.seeds.start, config.seeds.start + config.seeds.episodes)),
+                      "perturbations": [], "target_moves": [],
                       "plugins": [by_key[key].spec() for key in arm.plugins], "video": False,
                       "save_raw": "rgb" in capabilities}
             if config.max_steps:
@@ -116,6 +118,18 @@ def validate_config(config: ExperimentConfig, catalog: Catalog, registry) -> Val
         where = "需要在实验服务器上的服务提交" if model.location == "server" else "请检查 runtime.json"
         add("model", "model", f"此服务没有 {model.name} 的机器配置（{where}）：{model.configuration_error}")
 
+    # A candle variant is the carrot task with an add-on, not a second task.
+    # Reject ambiguous requests before recipe creation; deduplicating only the
+    # recipes would misalign Experiments.submit's (arm, environment) pairs.
+    task_ids = ["simpler-bridge-carrot" if e == "simpler-bridge-carrot-candle" else e
+                for e in config.environments]
+    duplicate_tasks = len(task_ids) != len(set(task_ids))
+    if duplicate_tasks:
+        message = ("蜡烛是胡萝卜放盘的附加选项，不能同时提交普通版和带蜡烛版；请只保留带蜡烛的任务。"
+                   if {"simpler-bridge-carrot", "simpler-bridge-carrot-candle"}.issubset(config.environments)
+                   else "同一任务不能重复选择。")
+        add("envtask", "environments", message)
+
     chosen = [envs[e] for e in config.environments if e in envs]
     for env in config.environments:
         if env not in envs:
@@ -147,6 +161,10 @@ def validate_config(config: ExperimentConfig, catalog: Catalog, registry) -> Val
         if p.error:
             reasons.append(p.error)
         else:
+            phases = getattr(p.cls, 'required_state_phases', ())
+            offered = registry.items['models'].get(config.model, {}).get('state_phases', [])
+            if phases and not set(phases) <= set(offered):
+                reasons.append(f'需要状态阶段 {list(phases)}，该模型只声明 {offered}')
             for text in base.problems(p.cls, p.config):
                 if "privileged defense" in text:
                     add("threat", f"plugins.{p.use.key}.config.oracle",
@@ -180,7 +198,7 @@ def validate_config(config: ExperimentConfig, catalog: Catalog, registry) -> Val
         add("control", "seeds.episodes", "每组少于 10 个 episode，置信区间会很宽", "warning")
 
     arms = build_arms(usable, config.control)
-    recipes = build_recipes(config, model, arms, usable, registry) if model and chosen else []
+    recipes = build_recipes(config, model, arms, usable, registry) if model and chosen and not duplicate_tasks else []
     episodes = len(recipes) * config.seeds.episodes
     seconds = model.seconds_per_episode if model else None
     minutes = round(episodes * seconds / 60, 1) if seconds is not None else None

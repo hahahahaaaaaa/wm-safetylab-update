@@ -24,7 +24,7 @@ def test_catalog_previews_are_shipped_and_reachable(tmp_path):
     with TestClient(create_app(storage_root=tmp_path / "store", web_dist=web)) as client:
         environments = client.get("/api/v1/catalog").json()["environments"]
         manifest = client.get("/task-previews/manifest.json").json()
-        assert len(environments) == 12
+        assert len(environments) == 13
         for env in environments:
             preview = env["preview"]
             assert preview and preview["caption"]

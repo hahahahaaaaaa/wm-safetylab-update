@@ -98,6 +98,9 @@ def implemented_hooks(cls):
 def threat_card(cls, config):
     card = dict(getattr(cls, "threat", None) or {})
     card.update((config or {}).get("threat") or {})
+    describe = getattr(cls, 'describe_threat', None)
+    if callable(describe):
+        card = describe(config or {}, card)
     return card
 
 

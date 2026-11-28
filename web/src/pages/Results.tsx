@@ -4,7 +4,7 @@ import type { Go, Route } from '../App';
 import { redteam, type Catalog, type EpisodeDetail, type EpisodeRow, type Experiment, type Matrix, type Report, type TraceStep } from '../api/redteam';
 import Replay, { type ReplayBaseline } from '../components/Replay';
 import { ExperimentSelect } from './Progress';
-import { cx, DeltaCell, Empty, ErrorBox, fmt, Forest, HAZARDS, PageHead, Pill, pct, Seg, STAGE_NAME, STAGES, StageTag, Tag } from '../ui';
+import { cx, DeltaCell, Empty, environmentHazards, ErrorBox, fmt, Forest, type HazardDisplay, PageHead, Pill, pct, Seg, STAGE_NAME, STAGES, StageTag, Tag } from '../ui';
 
 const errText = (e: unknown) => e instanceof Error ? e.message : String(e);
 
@@ -45,20 +45,25 @@ export default function Results({ catalog, route, go }: { catalog: Catalog; rout
   if (error) return <ErrorBox message={error} />;
   if (!data) return <div className="empty-state">加载结果…</div>;
   const { exp } = data;
+  const environments = catalog.environments.filter(e => exp.config.environments?.includes(e.id));
+  const hazards = environmentHazards(catalog, environments, [
+    ...data.rows.flatMap(r => Object.keys(r.hazard_steps ?? {})),
+    ...data.report.arms.flatMap(a => Object.keys(a.hazard_by_kind ?? {})),
+  ]);
   const toy = (exp.config.environments ?? []).some(e => catalog.environments.find(x => x.id === e)?.family === 'toy');
   const bar = <div className="card toolbar" style={{ padding: '12px 16px' }}><span className="hint">实验</span>
     <ExperimentSelect items={items.some(e => e.id === exp.id) ? items : [exp, ...items]} value={exp.id} onChange={v => go({ sec: 'results', exp: v, ep: '' })} /><Pill state={exp.state} />
     <span className="hint mono">{exp.config.model} · {(exp.config.environments ?? []).length > 1 ? `${exp.config.environments!.length} 个任务` : exp.config.environments?.[0]}</span>
     {toy && <Tag kind="warn">玩具环境：流程检查，不是机械臂证据</Tag>}<span style={{ flex: 1 }} />
     {exp.state !== 'completed' ? <span className="pill warn">部分结果 {exp.episodes_done} / {exp.episodes_total}</span> : <span className="hint mono">{exp.episodes_total} episode</span>}</div>;
-  const view = route.sub === 'matrix' ? <MatrixView {...data} go={go} /> : route.sub === 'episodes' ? <Episodes {...data} go={go} />
-    : route.sub === 'episode' ? <Episode {...data} route={route} go={go} catalog={catalog} /> : <ReportView {...data} />;
-  return <div className="stack">{bar}{view}</div>;
+  const view = route.sub === 'matrix' ? <MatrixView {...data} go={go} /> : route.sub === 'episodes' ? <Episodes {...data} go={go} hazards={hazards} />
+    : route.sub === 'episode' ? <Episode {...data} route={route} go={go} catalog={catalog} hazards={hazards} /> : <ReportView {...data} hazards={hazards} />;
+  return <div className="stack">{bar}{view}<ReportArtifacts exp={exp} /></div>;
 }
 
 const pluginName = (exp: Experiment, key: string) => { const u = (exp.config.plugins ?? []).find(p => p.key === key); return u?.plugin ?? u?.entrypoint ?? key; };
 
-function ReportView({ exp, report, rows }: { exp: Experiment; report: Report; rows: EpisodeRow[] }) {
+function ReportView({ exp, report, rows, hazards }: { exp: Experiment; report: Report; rows: EpisodeRow[]; hazards: HazardDisplay[] }) {
   const base = report.arms[0];
   const hzRange = Math.max(2, ...report.arms.slice(1).map(a => a.delta_hazard ? Math.max(Math.abs(a.delta_hazard.low), Math.abs(a.delta_hazard.high)) : 0));
   const maxHz = Math.max(0.5, ...report.arms.map(a => a.hazard_steps_mean ?? 0));
@@ -90,10 +95,10 @@ function ReportView({ exp, report, rows }: { exp: Experiment; report: Report; ro
             <td className="num">{fmt(a.takeovers_mean, 1)}</td></tr>; })}</tbody></table></div>
       <div className="card-b hint" style={{ borderTop: '1px solid var(--line)' }}>{report.method}</div></section>
     <div className="cols2">
-      <section className="card"><div className="card-h"><h2>危险类型</h2><span className="sub">每 episode 步数</span><span className="right"><span className="legend">{HAZARDS.map(h => <span key={h.id}><i style={{ background: `var(--${h.color})` }} />{h.id}</span>)}</span></span></div>
-        <div className="scroll"><table><thead><tr><th>组</th>{HAZARDS.map(h => <th key={h.id} className="num">{h.id}</th>)}<th /></tr></thead><tbody>
-          {report.arms.map(a => <tr key={a.arm}><td className="mono">{a.arm}</td>{HAZARDS.map(h => <td key={h.id} className="num">{fmt(a.hazard_by_kind[h.id] ?? 0, 2)}</td>)}
-            <td style={{ minWidth: 160 }}><div className="hzbar" style={{ width: Math.max(4, (a.hazard_steps_mean ?? 0) / maxHz * 100) + '%' }}>{HAZARDS.map(h =>
+      <section className="card"><div className="card-h"><h2>危险类型</h2><span className="sub">每 episode 步数</span><span className="right"><span className="legend">{hazards.map(h => <span key={h.id} title={h.name}><i style={{ background: `var(--${h.color})` }} />{h.id}</span>)}</span></span></div>
+        <div className="scroll"><table><thead><tr><th>组</th>{hazards.map(h => <th key={h.id} className="num" title={h.name}>{h.id}</th>)}<th /></tr></thead><tbody>
+          {report.arms.map(a => <tr key={a.arm}><td className="mono">{a.arm}</td>{hazards.map(h => <td key={h.id} className="num">{fmt(a.hazard_by_kind[h.id] ?? 0, 2)}</td>)}
+            <td style={{ minWidth: 160 }}><div className="hzbar" style={{ width: Math.max(4, (a.hazard_steps_mean ?? 0) / maxHz * 100) + '%' }}>{hazards.map(h =>
               <i key={h.id} style={{ width: (a.hazard_steps_mean ? (a.hazard_by_kind[h.id] ?? 0) / a.hazard_steps_mean * 100 : 0) + '%', background: `var(--${h.color})` }} />)}</div></td></tr>)}</tbody></table></div></section>
       <section className="card"><div className="card-h"><h2>插件输出</h2><span className="sub">end_episode，均值</span></div>
         <div className="scroll"><table><thead><tr><th>组</th><th>插件</th><th>字段</th><th className="num">均值</th><th className="num">ep</th></tr></thead><tbody>
@@ -102,6 +107,28 @@ function ReportView({ exp, report, rows }: { exp: Experiment; report: Report; ro
           {!reports.length && <tr><td colSpan={5} className="empty-state">无</td></tr>}</tbody></table></div></section>
     </div>
   </>;
+}
+
+function ReportArtifacts({ exp }: { exp: Experiment }) {
+  const [files, setFiles] = useState<{run: string; path: string; media_type?: string}[]>([]);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let alive = true;
+    Promise.all(exp.runs.map(async run => {
+      const response = await fetch(`/api/v1/runs/${run.run_id}/files`);
+      if (!response.ok) throw new Error('无法加载报告附件');
+      const data: {items: {path: string; media_type?: string}[]} = await response.json();
+      return data.items.filter(f => f.path.startsWith('s34-report/')).map(f => ({...f, run: run.run_id}));
+    })).then(groups => { if (alive) { setFiles(groups.flat()); setError(''); } }).catch(e => { if (alive) setError(errText(e)); });
+    return () => { alive = false; };
+  }, [exp.id, exp.state]);
+  if (error) return <ErrorBox message={error} />;
+  if (!files.length) return null;
+  return <section className="card"><div className="card-h"><h2>S3/S4 验收报告附件</h2></div><div className="card-b stack">
+    {files.map(f => { const url = `/api/v1/runs/${f.run}/files/${f.path.split('/').map(encodeURIComponent).join('/')}`;
+      return <div key={f.run + f.path}><a href={url} download>{f.path}</a>
+        {f.media_type === 'image/png' && <img src={url} alt="S3/S4 配对结果图" style={{width:'100%', maxWidth:960}} />}</div>; })}
+  </div></section>;
 }
 
 const dotClass = (r?: EpisodeRow) => !r ? 'todo' : r.hazard_total ? (r.success ? 'warn' : 'bad') : r.success ? 'good' : 'fail';
@@ -136,7 +163,7 @@ function MatrixView({ exp, report, matrix, rows, go }: { exp: Experiment; report
 }
 
 type Outcome = 'all' | 'ok' | 'fail' | 'hz' | 'take';
-function Episodes({ exp, rows, go }: { exp: Experiment; rows: EpisodeRow[]; go: Go }) {
+function Episodes({ exp, rows, go, hazards }: { exp: Experiment; rows: EpisodeRow[]; go: Go; hazards: HazardDisplay[] }) {
   const [arm, setArm] = useState('all'), [env, setEnv] = useState('all'), [out, setOut] = useState<Outcome>('all');
   const base = (r: EpisodeRow) => rows.find(x => x.arm === 'A0' && x.environment === r.environment && x.seed === r.seed);
   const list = rows.filter(r => (arm === 'all' || r.arm === arm) && (env === 'all' || r.environment === env)
@@ -145,13 +172,13 @@ function Episodes({ exp, rows, go }: { exp: Experiment; rows: EpisodeRow[]; go: 
     <select aria-label="组" value={arm} onChange={e => setArm(e.target.value)}><option value="all">全部组</option>{exp.arms.map(a => <option key={a.id} value={a.id}>{a.id} {a.name}</option>)}</select>
     {(exp.config.environments ?? []).length > 1 && <select aria-label="任务" value={env} onChange={e => setEnv(e.target.value)}><option value="all">全部任务</option>{exp.config.environments!.map(e => <option key={e}>{e}</option>)}</select>}
     <Seg value={out} onChange={setOut} options={[['all', '全部'], ['ok', '成功'], ['fail', '失败'], ['hz', '有危险'], ['take', '有接管']]} /></span></div>
-    <div className="scroll"><table><thead><tr><th>组</th><th>任务</th><th className="num">seed</th><th>结果</th><th className="num">步数</th>{HAZARDS.map(h => <th key={h.id} className="num">{h.id}</th>)}<th className="num">接管</th><th>基线同种子</th></tr></thead><tbody>
+    <div className="scroll"><table><thead><tr><th>组</th><th>任务</th><th className="num">seed</th><th>结果</th><th className="num">步数</th>{hazards.map(h => <th key={h.id} className="num" title={h.name}>{h.id}</th>)}<th className="num">接管</th><th>基线同种子</th></tr></thead><tbody>
       {list.slice(0, 500).map(r => { const b = r.arm !== 'A0' ? base(r) : undefined;
         return <tr key={r.id} className="click" onClick={() => go({ sec: 'results', sub: 'episode', ep: r.id })}><td className="mono">{r.arm}</td><td className="mono">{r.environment}</td><td className="num">{r.seed}</td>
           <td><Outcome r={r} /></td><td className="num">{r.steps}</td>
-          {HAZARDS.map(h => <td key={h.id} className="num" style={r.hazard_steps?.[h.id] ? { color: 'var(--bad)' } : undefined}>{r.hazard_steps?.[h.id] || '·'}</td>)}
+          {hazards.map(h => <td key={h.id} className="num" style={r.hazard_steps?.[h.id] ? { color: 'var(--bad)' } : undefined}>{r.hazard_steps?.[h.id] || '·'}</td>)}
           <td className="num">{r.takeovers || '·'}</td><td className="hint">{b ? (b.success ? 'success' : b.end_reason) + (b.hazard_total ? ` · 危险 ${b.hazard_total}` : '') : '—'}</td></tr>; })}
-      {!list.length && <tr><td colSpan={10} className="empty-state">没有符合条件的 episode</td></tr>}</tbody></table></div></section>;
+      {!list.length && <tr><td colSpan={7 + hazards.length} className="empty-state">没有符合条件的 episode</td></tr>}</tbody></table></div></section>;
 }
 const Outcome = ({ r }: { r?: EpisodeRow }) => !r ? <>—</> : r.success ? <span className="pill good">success@{r.success_step}</span> : <span className={'pill ' + (r.end_reason === 'plugin_stop' ? 'warn' : 'idle')}>{r.end_reason}</span>;
 
@@ -160,7 +187,7 @@ function pickEpisode(rows: EpisodeRow[]) {
   return rows.find(r => r.arm !== 'A0' && !r.success && base(r)?.success) ?? rows.find(r => r.arm !== 'A0') ?? rows[0];
 }
 
-function Episode({ exp, rows, route, go, catalog }: { exp: Experiment; rows: EpisodeRow[]; route: Route; go: Go; catalog: Catalog }) {
+function Episode({ exp, rows, route, go, catalog, hazards }: { exp: Experiment; rows: EpisodeRow[]; route: Route; go: Go; catalog: Catalog; hazards: HazardDisplay[] }) {
   const row = rows.find(r => r.id === route.ep) ?? pickEpisode(rows);
   const [detail, setDetail] = useState<EpisodeDetail | null>(null);
   const [steps, setSteps] = useState<TraceStep[] | null>(null);
@@ -199,6 +226,7 @@ function Episode({ exp, rows, route, go, catalog }: { exp: Experiment; rows: Epi
   const f = steps ? Math.max(0, Math.min(frame, steps.length - 1)) : 0;
   const isTdmpc2 = exp.config.model === 'tdmpc2-pushcube';
   const isMemoryvlaBridge = family === 'bridge' && ['memoryvla-bridge', 'memoryvla-bridge-nomem'].includes(exp.config.model ?? '');
+  const isCandle = row.environment === 'simpler-bridge-carrot-candle';
   const distance = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? `${fmt(value * 100, 2)} cm` : '未记录';
   return <section className="card">
     <div className="card-h"><button className="icon-btn" aria-label="上一个" disabled={!prev} onClick={() => go({ sec: 'results', sub: 'episode', ep: prev.id })}>‹</button>
@@ -208,8 +236,8 @@ function Episode({ exp, rows, route, go, catalog }: { exp: Experiment; rows: Epi
       <span className="right">{detail?.baseline && <button className="btn" onClick={() => go({ sec: 'results', sub: 'episode', ep: detail.baseline! })}>打开基线同种子</button>}
         <button className="link" onClick={() => go({ sec: 'results', sub: 'episodes' })}>← Episodes</button></span></div>
     <div className="sample-head"><div><div className="k">组</div><div className="v">{arm?.name}{arm?.oracle && <> <Tag kind="warn">oracle</Tag></>}</div></div>
-      <div><div className="k">{isTdmpc2 ? '回合内曾成功' : isMemoryvlaBridge ? '最后一步成功' : '结果'}</div><div className="v"><Outcome r={row} /></div></div>
-      <div><div className="k">{isTdmpc2 ? '基线回合内曾成功（同种子）' : isMemoryvlaBridge ? '基线最后一步成功（同种子）' : '基线（同种子）'}</div><div className="v">{row.arm === 'A0' ? '—' : <Outcome r={base} />}</div></div>
+      <div><div className="k">{isTdmpc2 ? '回合内曾成功' : isMemoryvlaBridge || isCandle ? '最后一步成功' : '结果'}</div><div className="v"><Outcome r={row} /></div></div>
+      <div><div className="k">{isTdmpc2 ? '基线回合内曾成功（同种子）' : isMemoryvlaBridge || isCandle ? '基线最后一步成功（同种子）' : '基线（同种子）'}</div><div className="v">{row.arm === 'A0' ? '—' : <Outcome r={base} />}</div></div>
       <div><div className="k">危险步数</div><div className="v mono">{row.hazard_total}{base && <span className="hint"> 基线 {base.hazard_total}</span>}</div></div>
       <div><div className="k">接管</div><div className="v mono">{row.takeovers}</div></div></div>
     <div className="itabs">{([['replay', '回放'], ['trace', 'Trace'], ['plugins', '插件'], ['meta', '元数据'], ['json', 'JSON']] as const).map(([k, v]) =>
@@ -221,10 +249,11 @@ function Episode({ exp, rows, route, go, catalog }: { exp: Experiment; rows: Epi
             <div className="mono" style={{ marginTop: 4 }}>最终到目标距离：当前 {distance(detail.final_state?.distance_to_goal)}
               {detail.baseline && <> · 基线 {distance(baseline?.steps[baseline.steps.length - 1]?.state_after?.distance_to_goal)}</>}</div></div>}
           {isMemoryvlaBridge && <div className="card-b hint">正常完成回合时，SimplerEnv 按最后一步任务完成情况评价；success@N 表示成功评价步，并非首次到达目标。提前结束的回合请结合结束原因查看。</div>}
+          {isCandle && <div className="card-b hint">纯仿真 · OpenVLA 胡萝卜放盘。正常完成回合时按最后一步任务完成情况评价，提前结束请结合结束原因查看；靠近蜡烛火焰使用末端或胡萝卜中心到有限火焰轴段的几何距离代理，与任务成功独立，不代表燃烧或温度测量。</div>}
           {baselineError && <div className="card-b"><ErrorBox message={'基线回放加载失败，当前回合仍可查看：' + baselineError} /></div>}
           {detail.baseline && !baseline && !baselineError && <div className="card-b hint">加载同环境、同 seed 基线画面…</div>}
           <Replay key={`${exp.id}:${row.id}`} experiment={exp.id} episode={row.id} seed={row.seed} arm={row.arm} endReason={row.end_reason}
-            steps={steps} cameras={detail.frames ?? {}} baseline={baseline} yDown={family === 'toy'} ghost={showGhost ? ghost : null} frame={frame} onFrame={setFrame} />
+            steps={steps} cameras={detail.frames ?? {}} baseline={baseline} hazards={hazards} yDown={family === 'toy'} ghost={showGhost ? ghost : null} frame={frame} onFrame={setFrame} />
         </>
       : tab === 'trace' ? <TraceTable steps={steps} frame={f} onFrame={setFrame} />
       : tab === 'plugins' ? <div className="card-b"><div className="opt-list">{(detail.plugins ?? []).map(p => <div key={p.key} className="opt" style={{ cursor: 'default' }}>

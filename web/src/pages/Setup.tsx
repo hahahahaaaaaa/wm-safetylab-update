@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Go } from '../App';
 import { redteam, type Catalog, type EnvironmentEntry, type ExperimentConfig, type ModelEntry, type PluginEntry,
   type PluginUse, type Role, type Stage, type ValidationResult } from '../api/redteam';
-import { cx, Empty, ErrorBox, fmt, PageHead, ROLE_NAME, RoleTag, STAGE_NAME, STAGES, StageTag, Tag } from '../ui';
+import { cx, Empty, environmentHazards, ErrorBox, fmt, PageHead, ROLE_NAME, RoleTag, STAGE_NAME, STAGES, StageTag, Tag } from '../ui';
 import TaskPreview from '../components/TaskPreview';
+import { CARROT_TASK, CANDLE_VARIANT, normalizeTaskSelection, selectAllTasks, setCandleAddon, taskIds, tasksForModel, toggleTask } from '../taskSelection';
 
 export type StepId = 'basic' | 'model' | 'envtask' | 'plugins' | 'threat' | 'judge' | 'control' | 'review';
 const STEPS: { id: StepId; sec: 'new' | 'config'; title: string }[] = [
@@ -40,7 +41,8 @@ function useDraft(catalog: Catalog) {
   useEffect(() => {
     let local: ExperimentConfig | null = null;
     try { local = JSON.parse(localStorage.getItem(LOCAL_KEY) ?? 'null'); } catch { /* optional browser state */ }
-    redteam.getDraft(DRAFT_ID).then(d => setConfig(d.config)).catch(() => setConfig(local ?? example(catalog)));
+    const restore = (draft: ExperimentConfig) => setConfig({ ...draft, environments: normalizeTaskSelection(draft.environments ?? []) });
+    redteam.getDraft(DRAFT_ID).then(d => restore(d.config)).catch(() => restore(local ?? example(catalog)));
   }, [catalog]);
   const timer = useRef(0);
   useEffect(() => {
@@ -94,7 +96,7 @@ export default function Setup({ catalog, sec, step, go }: { catalog: Catalog; se
   const current = STEPS.find(s => s.id === step && s.sec === sec) ?? STEPS.find(s => s.sec === sec)!;
   if (!config) return <div className="empty-state">加载草稿…</div>;
 
-  const set = (f: (c: ExperimentConfig) => void) => setConfig(prev => { const next = clone(prev!); f(next); return next; });
+  const set = (f: (c: ExperimentConfig) => void) => setConfig(prev => { const next = clone(prev!); f(next); next.environments = normalizeTaskSelection(next.environments ?? []); return next; });
   const model = catalog.models.find(m => m.id === config.model);
   const envs = catalog.environments.filter(e => (config.environments ?? []).includes(e.id));
   const ctx: Ctx = { catalog, config, set, result, model, envs, go };
@@ -180,7 +182,7 @@ function Basic({ config, set, catalog, go }: Ctx) {
 function Model({ catalog, config, set }: Ctx) {
   const [cat, setCat] = useState<'all' | 'local' | 'server'>('all');
   const list = catalog.models.filter(m => cat === 'all' || m.location === cat);
-  const choose = (m: ModelEntry) => set(c => { c.model = m.id; c.environments = (c.environments ?? []).filter(e => (m.environments ?? []).includes(e)); if (!c.environments.length && m.environments?.length) c.environments = [m.environments[0]]; });
+  const choose = (m: ModelEntry) => set(c => { c.model = m.id; c.environments = tasksForModel(c.environments ?? [], m.environments ?? []); });
   return <>
     <PageHead title="被测模型" />
     <section className="card"><div className="card-b">
@@ -188,12 +190,13 @@ function Model({ catalog, config, set }: Ctx) {
         <button key={k} aria-pressed={cat === k} onClick={() => setCat(k)}>{v}</button>)}</div>
       <div className="opt-list">{list.map(m => {
         const sel = config.model === m.id;
+        const tasks = taskIds(m.environments ?? []);
         return <label key={m.id} className={cx('opt', sel && 'sel')}><input type="radio" name="model" checked={sel} onChange={() => choose(m)} />
           <h3>{m.name}<Tag mono>{m.id}</Tag>{m.kind === 'planner' && <Tag>规划器</Tag>}{m.note && <Tag kind="ok">{m.note}</Tag>}
             {!m.configured && <Tag kind="warn" title={m.configuration_error ?? ''}>此服务未配置</Tag>}</h3>
           <div className="meta">{m.location === 'local' ? '当前服务 CPU' : '实验服务器 GPU'}{m.memory != null && ` · ${m.memory ? '有记忆' : '无记忆'}`}{m.seconds_per_episode != null && ` · 约 ${m.seconds_per_episode} s / episode`}</div>
           <div className="tags"><span className="hint" style={{ marginRight: 2 }}>探针</span><Probes model={m} catalog={catalog} />
-            <span className="hint" style={{ margin: '0 2px 0 8px' }}>任务</span>{(m.environments ?? []).length > 2 ? <Tag>{m.environments!.length} 个</Tag> : (m.environments ?? []).map(e => <Tag key={e} mono>{e}</Tag>)}</div>
+            <span className="hint" style={{ margin: '0 2px 0 8px' }}>任务</span>{tasks.length > 2 ? <Tag>{tasks.length} 个</Tag> : tasks.map(e => <Tag key={e} mono>{e}</Tag>)}</div>
         </label>;
       })}</div>
     </div></section>
@@ -203,23 +206,39 @@ function Model({ catalog, config, set }: Ctx) {
 function EnvTask({ catalog, config, set, model }: Ctx) {
   if (!model) return <><PageHead title="环境与任务" /><Empty>先选择被测模型</Empty></>;
   const options = catalog.environments.filter(e => (model.environments ?? []).includes(e.id));
-  const toggle = (id: string) => set(c => { const s = new Set(c.environments ?? []); s.has(id) ? s.delete(id) : s.add(id); c.environments = options.map(o => o.id).filter(o => s.has(o)); });
+  const tasks = options.filter(e => e.id !== CANDLE_VARIANT);
+  const ordinary = tasks.filter(e => e.category !== 'embodied_safety');
+  const safety = tasks.filter(e => e.category === 'embodied_safety');
+  const candle = options.find(e => e.id === CANDLE_VARIANT);
+  const selected = taskIds(config.environments ?? []);
+  const carrotSelected = selected.includes(CARROT_TASK);
+  const candleSelected = (config.environments ?? []).includes(CANDLE_VARIANT);
+  const toggle = (id: string) => set(c => { c.environments = toggleTask(c.environments ?? [], id); });
   const first = options[0];
+  const task = (e: EnvironmentEntry) => {
+    const sel = selected.includes(e.id);
+    return <label key={e.id} className={cx('trow', sel && 'sel')}><input type="checkbox" aria-label={e.name} checked={sel} onChange={() => toggle(e.id)} /><TaskPreview name={e.name} preview={e.preview} />
+      <span className="tmain"><b>{e.name} <Tag mono>{e.id}</Tag></b><span>{e.instruction && `“${e.instruction}” · `}{e.max_steps ? `max_steps ${e.max_steps}` : ''}{e.observation === 'vector' ? ' · 向量观测' : ''}</span>
+        {e.scenario && <span>{e.scenario}</span>}
+        {e.preview && <span className="task-preview-caption">{e.preview.caption}{e.preview.source_environment && e.preview.source_environment !== e.id && <> · 来源环境：<span className="mono">{e.preview.source_environment}</span></>}</span>}</span>
+      <span className="tside"><span className="tags"><Caps caps={e.capabilities ?? []} catalog={catalog} /></span></span></label>;
+  };
   return <>
     <PageHead title="环境与任务" />
     <section className="card"><div className="card-h"><h2>仿真环境</h2><span className="right"><Tag>由 {model.id} 决定</Tag></span></div>
       <div className="card-b"><div className="lockbox"><Lock /><div><b>{first ? ({ toy: 'ToyPick（CPU 玩具，非物理）', bridge: 'SimplerEnv Bridge', maniskill: 'ManiSkill 3' } as Record<string, string>)[first.family] ?? first.family : '—'}</b>
         <p>{first?.robot}</p></div></div></div></section>
-    <section className="card"><div className="card-h"><h2>任务</h2><span className="sub">已选 {(config.environments ?? []).length} / {options.length}</span>
-      {options.length > 1 && <span className="right"><button className="btn" onClick={() => set(c => { c.environments = options.map(o => o.id); })}>全选</button><button className="btn" onClick={() => set(c => { c.environments = []; })}>清空</button></span>}</div>
-      <div className="card-b"><div className="trows">{options.map(e => {
-        const sel = (config.environments ?? []).includes(e.id);
-        return <label key={e.id} className={cx('trow', sel && 'sel')}><input type="checkbox" checked={sel} onChange={() => toggle(e.id)} /><TaskPreview name={e.name} preview={e.preview} />
-          <span className="tmain"><b>{e.name} <Tag mono>{e.id}</Tag></b><span>{e.instruction && `“${e.instruction}” · `}{e.max_steps ? `max_steps ${e.max_steps}` : ''}{e.observation === 'vector' ? ' · 向量观测' : ''}</span>
-            {e.preview && <span className="task-preview-caption">{e.preview.caption}{e.preview.source_environment && e.preview.source_environment !== e.id && <> · 来源环境：<span className="mono">{e.preview.source_environment}</span></>}</span>}</span>
-          <span className="tside"><span className="tags"><Caps caps={e.capabilities ?? []} catalog={catalog} /></span></span></label>;
-      })}</div>
-        <div className="sec-t">具身安全场景</div><div className="trows">{catalog.planned.map(p =>
+    <section className="card"><div className="card-h"><h2>任务</h2><span className="sub">已选 {selected.length} / {tasks.length}</span>
+      {tasks.length > 1 && <span className="right"><button className="btn" onClick={() => set(c => { c.environments = selectAllTasks(c.environments ?? [], options.map(o => o.id)); })}>全选</button><button className="btn" onClick={() => set(c => { c.environments = []; })}>清空</button></span>}</div>
+      <div className="card-b"><div className="trows">{ordinary.map(task)}</div>
+        <div className="sec-t">具身危险场景</div><div className="trows">{candle && <label className={cx('trow', candleSelected && 'sel', !carrotSelected && 'dis')}>
+          <input type="checkbox" aria-label="在场景中添加蜡烛" disabled={!carrotSelected} checked={candleSelected}
+            onChange={e => set(c => { c.environments = setCandleAddon(c.environments ?? [], e.target.checked); })} />
+          <TaskPreview name="胡萝卜放盘（添加蜡烛）" preview={candle.preview} />
+          <span className="tmain"><b>在场景中添加蜡烛</b><span>在胡萝卜放盘任务中添加蜡烛，生成火灾危险场景；勾选后仍是一个任务。</span>
+            {!carrotSelected && <span>请先选择上方的胡萝卜放盘任务。</span>}{candle.scenario && <span>{candle.scenario}</span>}
+            {candle.preview && <span className="task-preview-caption">{candle.preview.caption}</span>}</span>
+          <span className="tside"><Tag>任务附加选项</Tag></span></label>}{safety.map(task)}{catalog.planned.map(p =>
           <label key={p.id} className="trow dis"><input type="checkbox" disabled /><TaskPreview name={p.name} placeholder="场景尚未实现" /><span className="tmain"><b>{p.id} · {p.name}</b><span>{p.description}</span></span>
             <span className="tside"><span className="tags"><Tag kind="plan">规划中</Tag></span></span></label>)}</div>
       </div></section>
@@ -313,6 +332,46 @@ function ConfigForm({ use, entry, family, set }: { use: PluginUse; entry?: Plugi
   const config = { ...(entry?.config ?? {}), ...(use.config ?? {}) } as Record<string, unknown>;
   const update = (f: (cfg: Record<string, unknown>) => void) => set(c => { const u = c.plugins!.find(x => x.key === use.key)!; const cfg = { ...(entry?.config ?? {}), ...(u.config ?? {}) }; f(cfg); u.config = cfg; });
   const obj = objectName(family);
+  if (entry?.stage === 'S6' && ['s6-residual-monitor', 's6-cusum', 's6-feedback-poison'].includes(entry.id)) {
+    const poison = entry.id === 's6-feedback-poison', detector = entry.id === 's6-cusum';
+    const fields = (poison ? [['factor', '反馈位移比例', 0], ['start', '开始步', 0], ['end', '结束步（留空持续）', 1]] :
+      [['scale', '残差尺度', 0.000000001], ...(detector ? [['center', '干净残差均值', 0], ['spread', '干净残差标准差', 0.000000001], ['drift', '容忍偏差', 0], ['threshold', '累计告警阈值', 0.000000001], ['cooldown', '冷却步数', 0], ['steps', '备用接管步数', 1]] : [])]) as [string, string, number][];
+    return <div className="sched"><div className="sched-row">{fields.map(([key, label, min]) => <label key={key}>{label} <input aria-label={key} type="number" min={min} max={key === 'factor' ? 1 : undefined} step={['start', 'end', 'cooldown', 'steps'].includes(key) ? 1 : 'any'} value={typeof config[key] === 'number' ? Number(config[key]) : ''} onChange={e => {
+      if (!e.target.value) { if (key === 'end') update(c => { c.end = null; }); return; }
+      const value = Number(e.target.value);
+      if (Number.isFinite(value) && value >= min && (key !== 'factor' || value <= 1) && (!['start', 'end', 'cooldown', 'steps'].includes(key) || Number.isInteger(value))) update(c => { c[key] = value; });
+    }} /></label>)}</div>
+      {!poison && <><label className="check"><input type="checkbox" aria-label="include_changed" checked={config.include_changed === true} onChange={e => update(c => { c.include_changed = e.target.checked; })} />纳入 S5 改变动作的步骤（解释为闭环偏离）</label><div className="hint">默认排除动作改变；接管步骤始终排除。残差不是物理安全概率。</div></>}
+      {detector && <><div className="sched-row"><label>告警处理 <select aria-label="takeover" value={String(config.takeover ?? 'none')} onChange={e => update(c => { c.takeover = e.target.value; })}><option value="none">只告警</option><option value="stop">下一步停止</option><option value="fallback">下一步备用动作</option></select></label></div>
+        <div className="hint">先校准 center、spread、threshold，再做独立种子评估。备用模式必须提供控制器适用的动作，且冷却步数不能小于接管步数。</div></>}
+      {poison && <div className="hint">仅用于 toy-planner-online；factor=1 为无投毒对照。只修改学习反馈，不修改真实环境。</div>}
+      <details><summary>高级 JSON（备用动作或逐维残差尺度）</summary><GenericConfig config={config} onChange={next => set(c => { c.plugins!.find(x => x.key === use.key)!.config = next; })} /></details>
+    </div>;
+  }
+  if (entry?.stage === 'S5' && ['s5-action-noise', 's5-action-delay', 's5-action-barrier'].includes(entry.id)) {
+    const fields = [
+      ...(entry.id === 's5-action-noise' ? [['std', '噪声标准差', 0, false]] : []),
+      ...(entry.id === 's5-action-delay' ? [['steps', '延迟步数', 0, false]] : []),
+      ...(entry.id === 's5-action-barrier' ? [['limit', '幅度上限', 0.000001, false], ['max_delta', '每步最大变化量', 0.000001, true]] : []),
+      ['dims', '前几个动作维度', 1, true], ['start', '开始步（含）', 0, false], ['end', '结束步（不含）', 1, true],
+    ] as [string, string, number, boolean][];
+    return <div className="sched">
+      <div className="sched-row">{fields.map(([key, label, min, nullable]) => <label key={key}>{label} <input
+        type="number" min={min} step={['steps', 'dims', 'start', 'end'].includes(key) ? 1 : 'any'}
+        aria-label={key} value={typeof config[key] === 'number' ? Number(config[key]) : ''}
+        placeholder={key === 'dims' ? '全部' : key === 'end' ? '持续' : key === 'max_delta' ? '关闭' : undefined}
+        onChange={e => {
+          if (!e.target.value) { if (nullable) update(c => { c[key] = null; }); return; }
+          const value = Number(e.target.value);
+          if (Number.isFinite(value) && value >= min && (!['steps', 'dims', 'start', 'end'].includes(key) || Number.isInteger(value))) update(c => { c[key] = value; });
+        }} /></label>)}</div>
+      <div className="hint">默认只作用前两维，请按控制器含义调整，避免误改夹爪。结束步留空表示持续。</div>
+      {entry.id === 's5-action-noise' && <><label className="check"><input type="checkbox" aria-label="clip_to_bounds" checked={config.clip_to_bounds === true} onChange={e => update(c => { c.clip_to_bounds = e.target.checked; })} />按控制器范围限幅（TD-MPC2 噪声实验需开启）</label><div className="hint">std=0 时不改变动作；强度单位为控制指令单位。限幅前后动作均记录。</div></>}
+      {entry.id === 's5-action-delay' && <div className="hint">steps=0 时无延迟；队列预热时重复首个动作。</div>}
+      {entry.id === 's5-action-barrier' && <div className="hint">首步只限幅，修改动作时记录接管；仅约束控制命令，不保证碰撞安全。</div>}
+      {typeof config.end === 'number' && config.end <= Number(config.start ?? 0) && <div className="why">结束步必须大于开始步。</div>}
+    </div>;
+  }
   if (entry?.id === 'image-perturbation') {
     const rows = (config.schedule as Record<string, unknown>[] | undefined) ?? [];
     return <div className="sched">{rows.map((s, i) => <div key={i} className="sched-row">
@@ -392,18 +451,19 @@ function Threat({ config, set, result, catalog }: Ctx) {
 }
 
 function Judge({ catalog, config, set, envs }: Ctx) {
-  const families = [...new Set(envs.map(e => e.family))];
+  const hazards = environmentHazards(catalog, envs);
   return <>
     <PageHead title="判定" />
-    {families.map(f => { const d = catalog.hazard_defaults.find(h => h.family === f);
-      return d ? <section key={f} className="card"><div className="card-h"><h2>危险判定 · {f === 'toy' ? 'ToyPick hazards()' : 'SimpleHazards'}</h2><span className="right"><Tag kind="warn">初值，未调校</Tag><Tag>按配方覆盖：后续接入</Tag></span></div>
+    {envs.filter(e => e.scenario).map(e => <section key={e.id} className="card"><div className="card-h"><h2>{e.name}</h2></div><div className="card-b hint">{e.scenario}</div></section>)}
+    {envs.map(e => { const d = { thresholds: e.hazard_thresholds ?? {}, note: e.hazard_note };
+      return <section key={e.id} className="card"><div className="card-h"><h2>危险判定 · {e.name}</h2><span className="right"><Tag>当前环境配方生效值</Tag></span></div>
         <div className="scroll"><table><thead><tr><th>参数</th><th className="num">值</th></tr></thead><tbody>
           {Object.entries(d.thresholds).map(([k, v]) => <tr key={k}><td className="mono">{k}</td><td className="num">{v}</td></tr>)}</tbody></table></div>
-        <div className="card-b hint" style={{ borderTop: '1px solid var(--line)' }}>{d.note}</div></section> : null; })}
+        <div className="card-b hint" style={{ borderTop: '1px solid var(--line)' }}>{d.note}</div></section>; })}
     <section className="card"><div className="card-h"><h2>危险类型</h2></div><div className="scroll"><table><thead><tr><th>id</th><th>名称</th><th>严重度</th><th>条件</th></tr></thead><tbody>
-      {catalog.hazards.map(h => <tr key={h.id}><td className="mono">{h.id}</td><td>{h.name}</td><td><Tag kind={h.severity === 'high' ? 'bad' : 'warn'}>{h.severity}</Tag></td><td className="reason">{h.description}</td></tr>)}</tbody></table></div></section>
+      {hazards.map(h => <tr key={h.id}><td className="mono">{h.id}</td><td>{h.name}</td><td><Tag kind={h.severity === 'high' ? 'bad' : 'warn'}>{h.severity ?? '未声明'}</Tag></td><td className="reason">{h.description}</td></tr>)}</tbody></table></div></section>
     <section className="card"><div className="card-h"><h2>任务成功</h2></div><div className="scroll"><table><thead><tr><th>任务</th><th>成功条件</th><th className="num">默认 max_steps</th></tr></thead><tbody>
-      {envs.map(e => <tr key={e.id}><td className="mono">{e.id}</td><td className="reason">环境 success 事件</td><td className="num">{e.max_steps ?? '—'}</td></tr>)}</tbody></table></div>
+      {envs.map(e => <tr key={e.id}><td className="mono">{e.id}</td><td className="reason">{e.id === 'simpler-bridge-carrot-candle' ? '胡萝卜放盘任务成功；与靠近蜡烛火焰的危险判定独立。' : '环境 success 事件'}</td><td className="num">{e.max_steps ?? '—'}</td></tr>)}</tbody></table></div>
       <div className="card-b" style={{ borderTop: '1px solid var(--line)' }}><div className="inline-fields"><div className="field"><label htmlFor="maxSteps">max_steps（留空用环境默认）</label>
         <input type="number" id="maxSteps" min={1} value={config.max_steps ?? ''} onChange={e => set(c => { c.max_steps = e.target.value ? +e.target.value : null; })} /></div></div></div></section>
     <section className="card"><div className="card-h"><h2>语义判定</h2><span className="right"><Tag kind="plan">规划中</Tag></span></div>
@@ -457,7 +517,7 @@ function Review({ config, set, result, model, envs, go }: Ctx) {
     <div className="cols2">
       <section className="card"><div className="card-h"><h2>模型与任务</h2><span className="right"><button className="link" onClick={() => go({ sec: 'new', sub: 'model' })}>修改</button></span></div>
         <div className="card-b"><dl className="kv"><dt>模型</dt><dd className="mono">{model?.id ?? '—'}</dd><dt>探针</dt><dd className="mono">{(model?.probes ?? []).join(', ') || '无'}</dd>
-          <dt>任务</dt><dd className="mono">{envs.map(e => e.id).join(', ') || '—'}</dd><dt>max_steps</dt><dd className="mono">{config.max_steps ?? '环境默认'}</dd></dl></div></section>
+          <dt>任务</dt><dd className="mono">{envs.map(e => e.id === CANDLE_VARIANT ? '胡萝卜放盘（添加蜡烛）' : e.id).join(', ') || '—'}</dd><dt>max_steps</dt><dd className="mono">{config.max_steps ?? '环境默认'}</dd></dl></div></section>
       <section className="card"><div className="card-h"><h2>插件（{(config.plugins ?? []).length}）</h2><span className="right"><button className="link" onClick={() => go({ sec: 'config', sub: 'plugins' })}>修改</button></span></div>
         <div className="card-b" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>{(config.plugins ?? []).map(u => <span key={u.key} className={'chip-x ' + (result?.plugins.find(p => p.key === u.key)?.role ?? '')}>{u.plugin ?? u.entrypoint}</span>)}</div></section>
     </div>

@@ -2,7 +2,7 @@
 // True-state trajectories, plots and timeline come from the recorded trace; no video or 3D is synthesized.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { redteam, type TraceStep } from '../api/redteam';
-import { clamp, fmt, HAZARDS } from '../ui';
+import { clamp, fmt, HAZARDS, type HazardDisplay } from '../ui';
 
 type Vec = number[];
 type State = Record<string, unknown>;
@@ -114,17 +114,19 @@ function drawPlot(cv: HTMLCanvasElement, cfg: PlotCfg, f: number, n: number) {
 }
 
 type Row = [string, (i: number) => [string, string]];
-function timelineRows(s: Series): Row[] {
+export function timelineRows(s: Series, hazards: HazardDisplay[] = HAZARDS): Row[] {
   const used = ['ENV', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'].filter(st => s.stages.some(m => m[st]?.length));
+  const hazardTypes = new Map(hazards.map(h => [h.id, h]));
+  for (const id of s.hazards.flat()) if (!hazardTypes.has(id)) hazardTypes.set(id, { id, name: id, color: 'warn' });
   return [
-    ...HAZARDS.filter(h => s.hazards.some(l => l.includes(h.id))).map(h => [h.id, (i: number) => s.hazards[i].includes(h.id) ? [h.color, ''] : ['ok', '']] as Row),
+    ...[...hazardTypes.values()].filter(h => s.hazards.some(l => l.includes(h.id))).map(h => [h.id, (i: number) => s.hazards[i]?.includes(h.id) ? [h.color, ''] : ['ok', '']] as Row),
     ...used.map(st => [st + ' 插件', (i: number) => { const e = s.stages[i][st]?.[0]; return e ? [e.role === 'attack' ? 'bad' : e.role === 'defense' ? 'good' : 'warn', e.plugin] : ['ok', '']; }] as Row),
     ['接管', i => s.takeover[i] ? ['warn', s.takeover[i]!] : ['ok', '']],
     ...(s.phase.some(Boolean) ? [['阶段', (i: number) => [s.phase[i] ? 'phase' : 'ok', s.phase[i] ?? '']] as Row] : []),
   ];
 }
-function drawTimeline(cv: HTMLCanvasElement, s: Series, f: number, axisLength = s.n) {
-  const rows = timelineRows(s); cv.style.height = (rows.length * 28 + 8) + 'px';
+function drawTimeline(cv: HTMLCanvasElement, s: Series, f: number, axisLength = s.n, hazards: HazardDisplay[] = HAZARDS) {
+  const rows = timelineRows(s, hazards); cv.style.height = (rows.length * 28 + 8) + 'px';
   const [c, W, H] = fit(cv); c.clearRect(0, 0, W, H);
   const n = s.n, x = (i: number) => TL + i / Math.max(1, axisLength - 1) * (W - TL - PR), cw = (W - TL - PR) / Math.max(1, axisLength - 1);
   const fill: Record<string, string> = { bad: colors.bad, warn: colors.warn, high: colors.high, ok: colors['surface-2'], good: colors.good, phase: colors['accent-soft'] };
@@ -184,9 +186,9 @@ function CameraView({ experiment, episode, label, seed, arm, steps, cameras, cur
   </figure>;
 }
 
-export default function Replay({ experiment, episode, seed, arm, endReason, steps, cameras, baseline, yDown, ghost, frame, onFrame }: {
+export default function Replay({ experiment, episode, seed, arm, endReason, steps, cameras, baseline, hazards = HAZARDS, yDown, ghost, frame, onFrame }: {
   experiment: string; episode: string; seed: number; arm: string; endReason: string; steps: TraceStep[]; cameras: Record<string, number>; baseline: ReplayBaseline | null; yDown: boolean;
-  ghost: TraceStep[] | null; frame: number; onFrame: React.Dispatch<React.SetStateAction<number>>;
+  hazards?: HazardDisplay[]; ghost: TraceStep[] | null; frame: number; onFrame: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const s = useMemo(() => series(steps), [steps]);
   const g = useMemo(() => ghost ? series(ghost) : null, [ghost]);
@@ -210,7 +212,7 @@ export default function Replay({ experiment, episode, seed, arm, endReason, step
       if (plots.G.current) drawPlot(plots.G.current, { series: [{ arr: s.dGoal, color: colors.ink }], bad: i => s.hazards[i]?.includes('object_drop') ?? false }, cursor, axisLength);
       if (plots.P.current) drawPlot(plots.P.current, { series: [{ arr: s.mean, color: colors.faint, w: 1.2 }, { arr: s.best, color: colors.ink }, { arr: s.chosen.map((v, i) => v != null && s.best[i] != null && Math.abs(v - s.best[i]!) > 1e-9 ? v : null), color: colors.bad, w: 2 }], marks: takes }, cursor, axisLength);
       if (plots.R.current) drawPlot(plots.R.current, { series: [{ arr: s.residual, color: colors.mon }], marks: takes }, cursor, axisLength);
-      if (timeline.current) drawTimeline(timeline.current, s, cursor, axisLength);
+      if (timeline.current) drawTimeline(timeline.current, s, cursor, axisLength, hazards);
     };
     draw();
     window.addEventListener('resize', draw);

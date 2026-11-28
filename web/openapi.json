@@ -1514,6 +1514,87 @@
           }
         }
       }
+    },
+    "/api/v1/model-library": {
+      "get": {
+        "summary": "Models",
+        "operationId": "models_api_v1_model_library_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/model-library/runs": {
+      "get": {
+        "summary": "Runs",
+        "operationId": "runs_api_v1_model_library_runs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/model-library/{recipe_id}/runs": {
+      "post": {
+        "summary": "Submit",
+        "operationId": "submit_api_v1_model_library__recipe_id__runs_post",
+        "parameters": [
+          {
+            "name": "recipe_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recipe Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "default": {},
+                "title": "Options"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1928,6 +2009,51 @@
                 "type": "null"
               }
             ]
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "description": "Optional UI grouping; embodied_safety is a runnable safety scenario"
+          },
+          "scenario": {
+            "type": "string",
+            "title": "Scenario",
+            "description": "Scenario scope and hazard interpretation",
+            "default": ""
+          },
+          "hazard_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hazard Ids",
+            "description": "Relevant hazard IDs; absent keeps the legacy hazard set"
+          },
+          "hazard_thresholds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Hazard Thresholds"
+          },
+          "hazard_note": {
+            "type": "string",
+            "title": "Hazard Note",
+            "default": ""
           }
         },
         "type": "object",

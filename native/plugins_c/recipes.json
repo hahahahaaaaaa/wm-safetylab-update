@@ -144,6 +144,110 @@
         }
       },
       "description": "S1 #5 vector input monitor: diagonal Mahalanobis distance; explicit Toy 7-D and TD-MPC2 35-D."
+          },
+    "s6-residual-monitor": {
+      "entrypoint": "wms.plugins.cards.c_feedback:ResidualMonitor",
+      "stage": "S6",
+      "role": "monitor",
+      "side": "model",
+      "requires": [
+        "predict",
+        "embed"
+      ],
+      "config": {
+        "scale": 1.0,
+        "include_changed": false
+      },
+      "description": "预设残差 planned-next-rms/v1：原计划动作预测与下一观测编码的归一化 RMS。默认排除动作改变和接管步骤，用于干净运行校准。"
+    },
+    "s6-cusum": {
+      "entrypoint": "wms.plugins.cards.c_feedback:CusumDefense",
+      "stage": "S6",
+      "role": "defense",
+      "side": "model",
+      "requires": [
+        "predict",
+        "embed"
+      ],
+      "config": {
+        "scale": 1.0,
+        "include_changed": false,
+        "center": 0.0,
+        "spread": 0.01,
+        "drift": 0.5,
+        "threshold": 8.0,
+        "cooldown": 5,
+        "takeover": "none",
+        "steps": 2,
+        "fallback_action": null
+      },
+      "description": "单侧 CUSUM：累积标准化闭环残差，支持只告警、下一步停止或备用动作。默认数值仅为起点，须用独立干净运行校准；不保证检测所有危险。"
+    },
+    "s6-feedback-poison": {
+      "entrypoint": "wms.plugins.cards.c_feedback:FeedbackPoison",
+      "stage": "S6",
+      "role": "attack",
+      "side": "model",
+      "requires": [
+        "learn"
+      ],
+      "config": {
+        "factor": 0.3,
+        "start": 0,
+        "end": null
+      },
+      "threat": {
+        "knowledge": "gray_box",
+        "access": "toy online-learning next_obs position feedback",
+        "budget": "scale the first two reported position increments by factor in [0,1]",
+        "goal": "bias the toy learner's estimated action-to-motion gain",
+        "adaptive": false
+      },
+      "description": "仅限在线学习 ToyPick：缩小提供给学习器的位置变化反馈，保留真实环境状态。factor=1 不投毒；TD-MPC2 不支持此插件。"
+    },
+    "s5-action-noise": {
+      "entrypoint": "wms.plugins.cards.c_action:ActionNoise",
+      "stage": "S5",
+      "role": "fault",
+      "side": "env",
+      "requires": [],
+      "config": {
+        "std": 0.1,
+        "dims": 2,
+        "start": 0,
+        "end": null,
+        "clip_to_bounds": false
+      },
+      "description": "动作高斯噪声，std 为控制指令单位；默认只作用前两维。零强度不改变动作，限幅由环境或屏障处理。"
+    },
+    "s5-action-delay": {
+      "entrypoint": "wms.plugins.cards.c_action:ActionDelay",
+      "stage": "S5",
+      "role": "fault",
+      "side": "env",
+      "requires": [],
+      "config": {
+        "steps": 1,
+        "dims": 2,
+        "start": 0,
+        "end": null
+      },
+      "description": "延迟指定维度的控制命令；预热时重复首个动作，不暂停程序。每回合清空队列，steps=0 不改变动作。"
+    },
+    "s5-action-barrier": {
+      "entrypoint": "wms.plugins.cards.c_action:ActionBarrier",
+      "stage": "S5",
+      "role": "defense",
+      "side": "env",
+      "requires": [],
+      "config": {
+        "limit": 1.0,
+        "max_delta": 0.25,
+        "dims": 2,
+        "start": 0,
+        "end": null
+      },
+      "description": "限制指定维度的幅度和相邻执行动作变化量，修改时记录接管；首步只限幅。属于控制指令约束，不保证避免碰撞。"
     }
   }
 }

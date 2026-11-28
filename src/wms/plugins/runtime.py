@@ -166,13 +166,16 @@ def _snapshot(value):
 
 def _same(a, b):
     if hasattr(a, "detach") and hasattr(b, "detach"):
-        return a.shape == b.shape and bool((a == b).all())
+        return a.shape == b.shape and bool(((a == b) | (a.isnan() & b.isnan())).all())
     if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
-        return np.array_equal(np.asarray(a), np.asarray(b))
+        x, y = np.asarray(a), np.asarray(b)
+        return np.array_equal(x, y, equal_nan=True) if x.dtype.kind in "fc" and y.dtype.kind in "fc" else np.array_equal(x, y)
     if isinstance(a, dict) and isinstance(b, dict):
         return a.keys() == b.keys() and all(_same(a[k], b[k]) for k in a)
     if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
         return len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b))
+    if isinstance(a, (float, np.floating)) and isinstance(b, (float, np.floating)) and np.isnan(a) and np.isnan(b):
+        return True
     return a == b
 
 
@@ -250,6 +253,9 @@ class PluginSet:
         from .resolve import mismatches
         for item in self.items:
             errors += problems(type(item.plugin), item.plugin.config)
+            phases = getattr(item.plugin, 'required_state_phases', ())
+            if phases and not set(phases) <= set(getattr(model, 'state_phases', ())):
+                errors.append(f'{item.id}: model does not offer required state phases {list(phases)}')
             errors += [f"{item.id}: {text}" for text in mismatches(type(item.plugin), item.spec)]
             if item.privileged and item.role == "defense" and not item.plugin.config.get("oracle"):
                 errors.append(f"{item.id}: privileged defense needs config.oracle = true")
@@ -326,15 +332,16 @@ class PluginSet:
             self.pending = wanted
 
     def alarm_takeover(self):
-        """After the S5 chain: an alarm's pending takeover, unless an S5 defense took over already."""
+        """Stop dominates fallback. S5 fallback defers, but does not consume, S6 fallback."""
         pending = self.pending
         if pending is None:
+            return self.takeover
+        if self.takeover and (self.takeover["kind"] == "stop" or pending["kind"] != "stop"):
             return self.takeover
         pending["remaining"] -= 1
         if pending["remaining"] <= 0:
             self.pending = None
-        if not self.takeover:
-            self.takeover = {key: pending[key] for key in ("kind", "plugin", "reason", "action", "via", "raised_at")}
+        self.takeover = {key: pending[key] for key in ("kind", "plugin", "reason", "action", "via", "raised_at")}
         return self.takeover
 
     # ------------------------------------------------------------------ hooks

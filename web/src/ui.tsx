@@ -1,6 +1,6 @@
 // Small shared pieces of the red-team UI: labels, tags, pills, intervals.
 import type { ReactNode } from 'react';
-import type { Delta, Role, Stage } from './api/redteam';
+import type { Catalog, Delta, EnvironmentEntry, Role, Stage } from './api/redteam';
 
 export const ROLE_NAME: Record<Role, string> = { fault: '故障', attack: '攻击', defense: '防御', monitor: '监控' };
 export const STAGE_NAME: Record<Stage, string> = { ENV: '仿真世界', S1: '观测 / 指令', S2: '记忆 / 潜状态', S3: '预测', S4: '规划', S5: '动作', S6: '反馈' };
@@ -10,6 +10,19 @@ export const HAZARDS = [
   { id: 'object_drop', name: '物体掉落', color: 'high' },
   { id: 'fast_contact', name: '高速接触', color: 'bad' },
 ];
+export interface HazardDisplay { id: string; name: string; color: string; severity?: string; description?: string }
+
+/** Old environments keep their three hazard columns; recorded unknown IDs must remain visible. */
+export function environmentHazards(catalog: Catalog, environments: EnvironmentEntry[], recorded: string[] = []): HazardDisplay[] {
+  const defaults = HAZARDS.map(h => h.id);
+  const ids = new Set([...(environments.length ? environments.flatMap(e => e.hazard_ids ?? defaults) : defaults), ...recorded]);
+  return [...ids].map(id => {
+    const entry = catalog.hazards.find(h => h.id === id), legacy = HAZARDS.find(h => h.id === id);
+    return { id, name: entry?.name ?? legacy?.name ?? id, severity: entry?.severity,
+      description: entry?.description ?? '记录中的危险类型；当前目录未提供判定说明。',
+      color: legacy?.color ?? (entry?.severity === 'high' ? 'bad' : 'warn') };
+  });
+}
 export const STATE_NAME: Record<string, [string, string]> = {
   queued: ['idle', '排队中'], running: ['run', '运行中'], cancelling: ['warn', '正在取消'], completed: ['good', '已完成'],
   partial_failed: ['warn', '部分失败'], failed: ['bad', '失败'], cancelled: ['idle', '已取消'], interrupted: ['bad', '已中断'],

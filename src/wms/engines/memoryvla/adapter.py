@@ -37,6 +37,7 @@ from .common import load_inference, prepare_process, seed_all
 
 class MemoryVLAPolicy:
     probes = ("state",)
+    state_phases = ('read', 'written')
 
     def __init__(self, config):
         self.config = dict(config)

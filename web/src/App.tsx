@@ -18,6 +18,9 @@ const SECTIONS: { id: Section; title: string; subs?: [string, string][] }[] = [
 const DEFAULT_SUB: Record<Section, string> = { new: 'basic', config: 'plugins', progress: 'runs', results: 'report' };
 
 function readRoute(): Route {
+  if (/^#models(?:[/?]|$)/.test(location.hash)) {
+    history.replaceState(null, '', '#new/basic');
+  }
   const [path, search] = location.hash.slice(1).split('?');
   const [sec, sub] = path.split('/') as [Section, string];
   const params = new URLSearchParams(search ?? '');

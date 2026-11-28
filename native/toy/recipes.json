@@ -1,22 +1,91 @@
 {
   "models": {
-    "toy-centroid": {"entrypoint": "wms.scenarios.toy.policy:CentroidPickPolicy", "probes": ["state"],
-                     "config": {"memory": false}},
-    "toy-centroid-memory": {"entrypoint": "wms.scenarios.toy.policy:CentroidPickPolicy", "probes": ["state"],
-                            "config": {"memory": true}},
-    "toy-planner": {"entrypoint": "wms.scenarios.toy.planner:ToyPlannerPolicy", "probes": ["state", "predict", "plan", "embed"],
-                    "config": {"samples": 32, "horizon": 4}},
-    "toy-planner-online": {"entrypoint": "wms.scenarios.toy.planner:ToyOnlinePlannerPolicy",
-                           "probes": ["state", "predict", "plan", "embed", "learn"],
-                           "config": {"samples": 32, "horizon": 4, "initial_gain": 0.5}}
+    "toy-centroid": {
+      "entrypoint": "wms.scenarios.toy.policy:CentroidPickPolicy",
+      "probes": [
+        "state"
+      ],
+      "config": {
+        "memory": false
+      },
+      "state_phases": [
+        "read",
+        "written"
+      ]
+    },
+    "toy-centroid-memory": {
+      "entrypoint": "wms.scenarios.toy.policy:CentroidPickPolicy",
+      "probes": [
+        "state"
+      ],
+      "config": {
+        "memory": true
+      },
+      "state_phases": [
+        "read",
+        "written"
+      ]
+    },
+    "toy-planner": {
+      "entrypoint": "wms.scenarios.toy.planner:ToyPlannerPolicy",
+      "probes": [
+        "state",
+        "predict",
+        "plan",
+        "embed"
+      ],
+      "config": {
+        "samples": 32,
+        "horizon": 4
+      }
+    },
+    "toy-planner-online": {
+      "entrypoint": "wms.scenarios.toy.planner:ToyOnlinePlannerPolicy",
+      "probes": [
+        "state",
+        "predict",
+        "plan",
+        "embed",
+        "learn"
+      ],
+      "config": {
+        "samples": 32,
+        "horizon": 4,
+        "initial_gain": 0.5
+      }
+    }
   },
   "environments": {
-    "toy-pick": {"entrypoint": "wms.scenarios.toy.env:ToyPickEnv",
-                 "capabilities": ["image_box", "set_object_pose", "set_goal", "hazards", "rgb", "reward"],
-                 "config": {"image_size": 64, "max_steps": 60}},
-    "toy-pick-vector": {"entrypoint": "wms.scenarios.toy.env:ToyPickEnv",
-                        "capabilities": ["set_object_pose", "set_goal", "hazards", "vector", "reward"],
-                        "config": {"image_size": 64, "max_steps": 60, "observation": "vector"}}
+    "toy-pick": {
+      "entrypoint": "wms.scenarios.toy.env:ToyPickEnv",
+      "capabilities": [
+        "image_box",
+        "set_object_pose",
+        "set_goal",
+        "hazards",
+        "rgb",
+        "reward"
+      ],
+      "config": {
+        "image_size": 64,
+        "max_steps": 60
+      }
+    },
+    "toy-pick-vector": {
+      "entrypoint": "wms.scenarios.toy.env:ToyPickEnv",
+      "capabilities": [
+        "set_object_pose",
+        "set_goal",
+        "hazards",
+        "vector",
+        "reward"
+      ],
+      "config": {
+        "image_size": 64,
+        "max_steps": 60,
+        "observation": "vector"
+      }
+    }
   },
   "recipes": {
     "toy-episode-occlusion": {
@@ -27,19 +96,53 @@
       "entrypoint": "wms.episodes.kernel:run",
       "model": "toy-centroid",
       "environment": "toy-pick",
-      "runtime": {"native_key": "toy", "config_file": "runtime.json"},
+      "runtime": {
+        "native_key": "toy",
+        "config_file": "runtime.json"
+      },
       "seed": 0,
       "timeout_s": 300,
       "params": {
         "episodes": 3,
-        "perturbations": [{"type": "occlude", "start": 4, "end": 12, "box": "object:cube", "margin": 0.04}],
-        "target_moves": [{"step": 6, "object": "cube", "delta": [0.15, 0.0]}],
+        "perturbations": [
+          {
+            "type": "occlude",
+            "start": 4,
+            "end": 12,
+            "box": "object:cube",
+            "margin": 0.04
+          }
+        ],
+        "target_moves": [
+          {
+            "step": 6,
+            "object": "cube",
+            "delta": [
+              0.15,
+              0.0
+            ]
+          }
+        ],
         "save_raw": true,
         "video": false
       },
-      "metrics": [{"name": "visual_robustness", "entrypoint": "wms.episodes.metrics:visual_robustness",
-                   "params": {"estimate_key": "estimate_cube", "truth_key": "cube"}, "version": "episodes/1"}],
-      "tags": ["toy", "episode", "cpu", "S1"]
+      "metrics": [
+        {
+          "name": "visual_robustness",
+          "entrypoint": "wms.episodes.metrics:visual_robustness",
+          "params": {
+            "estimate_key": "estimate_cube",
+            "truth_key": "cube"
+          },
+          "version": "episodes/1"
+        }
+      ],
+      "tags": [
+        "toy",
+        "episode",
+        "cpu",
+        "S1"
+      ]
     }
   }
 }

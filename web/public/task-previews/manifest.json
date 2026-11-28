@@ -97,6 +97,14 @@
       "source_environment": "maniskill-pushcube-state-independent",
       "sha256": "c65ef0247ed41639cbdc04d0a651fcaa6ad2a6c5dca00a35dec0c8ae176c9462",
       "bytes": 309514
+    },
+    "simpler-bridge-carrot-candle": {
+      "url": "/task-previews/simpler-bridge-carrot-candle.png",
+      "kind": "episode_frame",
+      "caption": "胡萝卜放盘任务添加蜡烛后的实际初始画面（seed 0）。",
+      "source_environment": "simpler-bridge-carrot-candle",
+      "sha256": "1ade2a5dde4ddc285b42c756e271f87bbfac7b853b024ab7cf2fc910950dbf9d",
+      "bytes": 283818
     }
   },
   "sources": {
@@ -1196,5 +1204,6 @@
       ],
       "retrieved_from": "/api/v1/experiments/rt_a762fde60336/episodes/run_0ca334107c6f4a18%3A0/frames/render_camera/0.png"
     }
-  }
+  },
+  "candle_added_at": "2026-11-23"
 }
