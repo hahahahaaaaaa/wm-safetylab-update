@@ -1,5 +1,150 @@
 {
   "plugins": {
+    "a-obs-corruption": {
+      "entrypoint": "wms.plugins.cards.c_obs_corruption:ObsCorruption",
+      "stage": "S1",
+      "role": "fault",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "kind": "gaussian_noise",
+        "severity": 0,
+        "start": 0,
+        "end": 2147483647,
+        "camera": "*"
+      },
+      "description": "S1 #1 RGB corruption: Gaussian noise, brightness, contrast, custom color bias; blur also supported."
+    },
+    "a-obs-noise-vector": {
+      "entrypoint": "wms.plugins.cards.c_obs_corruption:VectorObsNoise",
+      "stage": "S1",
+      "role": "fault",
+      "requires": [
+        "vector"
+      ],
+      "config": {
+        "c": 0.0,
+        "stats": "tdmpc2-pushcube-independent",
+        "toy_std": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "description": "S1 #1 vector Gaussian noise, sigma_i=c*clean_std_i; explicit 7-D Toy and 35-D TD-MPC2 handling."
+    },
+    "a-camera-jitter": {
+      "entrypoint": "wms.plugins.cards.c_camera_jitter:CameraJitter",
+      "stage": "S1",
+      "role": "fault",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "shift": 0.0,
+        "rotate": 0.0,
+        "scale": 0.0,
+        "mode": "persistent",
+        "camera": "*"
+      },
+      "description": "S1 #2 camera jitter via NumPy inverse affine warp; persistent or per_step."
+    },
+    "a-patch-attack": {
+      "entrypoint": "wms.plugins.cards.c_patch_attack:FixedPatch",
+      "stage": "S1",
+      "role": "attack",
+      "requires": [
+        "rgb"
+      ],
+      "threat": {
+        "knowledge": "black_box",
+        "access": "S1 image only",
+        "budget": {
+          "area": 0.04,
+          "queries": 40
+        },
+        "goal": "lower success",
+        "adaptive": false
+      },
+      "config": {
+        "area": 0.0,
+        "box": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "camera": "*",
+        "value": 0
+      },
+      "description": "S1 #3 fixed patch attack; black-box search is external in scripts/c_patch_search.py."
+    },
+    "a-frame-guard": {
+      "entrypoint": "wms.plugins.cards.c_frame_guard:FrameGuard",
+      "stage": "S1",
+      "role": "defense",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "stats": "memoryvla-bridge",
+        "camera": "3rd_view_camera",
+        "max_replacements": 5
+      },
+      "description": "S1 #4 frame guard: replace anomalous frames using clean frame_diff p99 threshold."
+    },
+    "a-input-monitor": {
+      "entrypoint": "wms.plugins.cards.c_input_monitor:InputMahalanobis",
+      "stage": "S1",
+      "role": "monitor",
+      "requires": [
+        "rgb"
+      ],
+      "config": {
+        "stats": "a-input-image",
+        "fallback_stats": "memoryvla-bridge",
+        "camera": "3rd_view_camera"
+      },
+      "description": "S1 #5 image input monitor: frame difference plus RGB channel means/stds."
+    },
+    "a-input-monitor-vector": {
+      "entrypoint": "wms.plugins.cards.c_input_monitor:InputMahalanobisVector",
+      "stage": "S1",
+      "role": "monitor",
+      "requires": [
+        "vector"
+      ],
+      "config": {
+        "stats": "a-input-vector",
+        "fallback_stats": "tdmpc2-pushcube-independent",
+        "toy_stats": {
+          "mean": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "std": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "description": "S1 #5 vector input monitor: diagonal Mahalanobis distance; explicit Toy 7-D and TD-MPC2 35-D."
+          },
     "s6-residual-monitor": {
       "entrypoint": "wms.plugins.cards.c_feedback:ResidualMonitor",
       "stage": "S6",
