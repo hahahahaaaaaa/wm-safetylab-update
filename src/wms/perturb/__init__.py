@@ -78,6 +78,40 @@ def noise(image, std, rng):
     out = image.astype(np.float64) + rng.normal(0.0, float(std), size=image.shape)
     return np.clip(np.rint(out), 0, 255).astype(image.dtype)
 
+def affine(image, dx, dy, angle, scale):
+    """NumPy-only inverse affine warp with bilinear interpolation and edge extension."""
+    src = np.asarray(image)
+    dx, dy, angle, scale = map(float, (dx, dy, angle, scale))
+    if src.ndim != 3 or not src.shape[0] or not src.shape[1] or not src.shape[2]:
+        raise ValueError("affine expects a non-empty HxWxC image")
+    if not all(math.isfinite(value) for value in (dx, dy, angle, scale)) or scale <= 0:
+        raise ValueError("affine parameters must be finite and scale must be positive")
+    if dx == 0 and dy == 0 and angle == 0 and scale == 1:
+        return image
+
+    height, width, _ = src.shape
+    yy, xx = np.indices((height, width), dtype=np.float64)
+    center_x, center_y = (width - 1.0) / 2.0, (height - 1.0) / 2.0
+    theta = math.radians(angle)
+    cosine, sine = math.cos(theta), math.sin(theta)
+    x = xx - center_x - dx
+    y = yy - center_y - dy
+
+    source_x = np.clip((cosine * x + sine * y) / scale + center_x, 0, width - 1)
+    source_y = np.clip((-sine * x + cosine * y) / scale + center_y, 0, height - 1)
+    x0 = np.floor(source_x).astype(np.int64)
+    y0 = np.floor(source_y).astype(np.int64)
+    x1 = np.minimum(x0 + 1, width - 1)
+    y1 = np.minimum(y0 + 1, height - 1)
+    wx = (source_x - x0)[..., None]
+    wy = (source_y - y0)[..., None]
+
+    data = src.astype(np.float64)
+    top = data[y0, x0] * (1 - wx) + data[y0, x1] * wx
+    bottom = data[y1, x0] * (1 - wx) + data[y1, x1] * wx
+    warped = top * (1 - wy) + bottom * wy
+    return np.clip(np.rint(warped), 0, 255).astype(src.dtype)
+
 
 class Perturbations:
     def __init__(self, schedule=None, seed=0):
@@ -205,3 +239,122 @@ def apply_target_moves(env, moves, t):
         done.append({"index": index, "step": t, "target": what, "xyz": spec.get("xyz"),
                      "delta": spec.get("delta"), "state_before": before, "state_after": after})
     return done
+
+# C/S1 RGB corruption primitives
+def _check_rgb_uint8(image):
+    arr = np.asarray(image)
+    if arr.dtype != np.uint8 or arr.ndim != 3 or arr.shape[-1] != 3:
+        raise ValueError("expected an HxWx3 uint8 RGB image")
+    return arr
+
+
+def _check_severity(severity):
+    if isinstance(severity, (bool, np.bool_)) or not isinstance(
+        severity, (int, np.integer)
+    ):
+        raise ValueError("severity must be an integer from 0 to 5")
+    severity = int(severity)
+    if not 0 <= severity <= 5:
+        raise ValueError("severity must be between 0 and 5")
+    return severity
+
+
+def _to_uint8(values):
+    return np.clip(np.rint(values), 0, 255).astype(np.uint8)
+
+
+def brightness(image, severity):
+    """ImageNet-C style brightness corruption in HSV space."""
+    image = _check_rgb_uint8(image)
+    severity = _check_severity(severity)
+
+    if severity == 0:
+        return image
+
+    levels = (0.1, 0.2, 0.3, 0.4, 0.5)
+    rgb = image.astype(np.float64) / 255.0
+
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    maximum = rgb.max(axis=-1)
+    minimum = rgb.min(axis=-1)
+    delta = maximum - minimum
+
+    safe_delta = np.where(delta > 0, delta, 1.0)
+
+    red_max = (maximum == r) & (delta > 0)
+    green_max = (maximum == g) & (delta > 0)
+    blue_max = (maximum == b) & (delta > 0)
+
+    h = np.select(
+        [red_max, green_max, blue_max],
+        [
+            ((g - b) / safe_delta) % 6.0,
+            ((b - r) / safe_delta) + 2.0,
+            ((r - g) / safe_delta) + 4.0,
+        ],
+        default=0.0,
+    ) / 6.0
+
+    s = np.divide(
+        delta, maximum,
+        out=np.zeros_like(delta),
+        where=maximum > 0,
+    )
+    v = np.clip(maximum + levels[severity - 1], 0.0, 1.0)
+
+    sector_float = h * 6.0
+    sector = np.floor(sector_float).astype(np.int32) % 6
+    f = sector_float - np.floor(sector_float)
+
+    p = v * (1.0 - s)
+    q = v * (1.0 - f * s)
+    t = v * (1.0 - (1.0 - f) * s)
+
+    out = np.empty_like(rgb)
+
+    choices = (
+        (v, t, p), (q, v, p), (p, v, t),
+        (p, q, v), (t, p, v), (v, p, q),
+    )
+
+    for index, channels in enumerate(choices):
+        mask = sector == index
+        candidate = np.stack(channels, axis=-1)
+        out[mask] = candidate[mask]
+
+    return _to_uint8(out * 255.0)
+
+
+def contrast(image, severity):
+    """ImageNet-C style contrast reduction."""
+    image = _check_rgb_uint8(image)
+    severity = _check_severity(severity)
+
+    if severity == 0:
+        return image
+
+    levels = (0.4, 0.3, 0.2, 0.1, 0.05)
+
+    data = image.astype(np.float64) / 255.0
+    means = data.mean(axis=(0, 1), keepdims=True)
+
+    out = (data - means) * levels[severity - 1] + means
+    return _to_uint8(out * 255.0)
+
+
+def color_bias(image, severity):
+    """Custom red-blue channel bias; not an ImageNet-C corruption."""
+    image = _check_rgb_uint8(image)
+    severity = _check_severity(severity)
+
+    if severity == 0:
+        return image
+
+    # Custom normalized channel offsets, increasing with severity.
+    levels = (0.0, 0.02, 0.04, 0.06, 0.08, 0.10)
+    amount = levels[severity] * 255.0
+
+    bias = np.array([amount, 0.0, -amount], dtype=np.float64)
+    out = image.astype(np.float64) + bias.reshape(1, 1, 3)
+
+    return _to_uint8(out)
